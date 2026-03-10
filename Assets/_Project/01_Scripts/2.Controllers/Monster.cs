@@ -40,6 +40,11 @@ public class Monster : MonoBehaviour
     {
         isDead = true;
 
+        FindObjectOfType<Stage>().OnMonsterKilled(this.gameObject);
+
+        if (StageManager.Instance != null)
+            StageManager.Instance.AddKillCount();
+
         if (data is BossMonsterData boss)
         {
             HandleBossClear(boss);
