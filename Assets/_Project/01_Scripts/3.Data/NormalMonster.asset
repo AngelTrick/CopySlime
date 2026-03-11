@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterName: 
   modelPrefab: {fileID: 0}
-  maxHp: 0
-  dropGold: 0
+  maxHp: 100
+  dropGold: 100

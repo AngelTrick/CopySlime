@@ -5,9 +5,16 @@ using UnityEngine;
 public class StageManager : MonoBehaviour
 {
     public static StageManager Instance;
+
     public Stage stageController; 
     public StageData currentStageData;
     private int currentRewardCount = 0;
+
+    public int totalGold = 0; //플레이어가 현재 가진 총 골드
+
+    [Header("스테이지 관리")]
+    public StageData[] allStageDatas; //스테이지 데이터 리스트
+    private int currentStageIndex = 0; //현재 몇 번째 스테이지인지 저장
 
     void Awake()
     {
@@ -19,9 +26,27 @@ public class StageManager : MonoBehaviour
     }
     void Start()
     {
+        if (allStageDatas.Length > 0)
+        {
+            currentStageData = allStageDatas[currentStageIndex];
+        }
         SpawnNextWave(); //게임 시작 시 첫 소환
     }
+    public void GoToNextStage()
+    {
+        currentStageIndex++;
 
+        if (currentStageIndex < allStageDatas.Length)
+        {
+            currentStageData = allStageDatas[currentStageIndex];
+
+            SpawnNextWave();
+        }
+    }
+    public void AddGold(int amount)
+    {
+        totalGold += amount;
+    }
     public void AddKillCount()
     {
         currentRewardCount++;
@@ -34,7 +59,10 @@ public class StageManager : MonoBehaviour
     }
     private void GiveReward()
     {
-       //인벤토리나 골드 시스템에 반영
+        //기본 보상 * 스테이지 보상 배율
+        int finalReward = Mathf.RoundToInt(currentStageData.baseRewardGold * currentStageData.rewardMultiplier);
+
+        totalGold += finalReward;
     }
 
     public void OnWaveCompleted()

@@ -11,10 +11,10 @@ public class Stage : MonoBehaviour
     [Header("스폰 몬스터 수")]
     public int monstersPerGroup = 10;
 
-    [Tooltip("몬스터 사이의 간격")]
+    [Header("몬스터 사이의 간격")]
     public float monsterDistance = 3.0f;
 
-    [Tooltip("몬스터 프리팹")]
+    [Header("몬스터 프리팹")]
     public GameObject monsterBasePrefab;
 
     [Header("이동 및 배경 설정")]
@@ -34,8 +34,19 @@ public class Stage : MonoBehaviour
             Vector3 spawnPos = new Vector3(i * monsterDistance, 0, 0);
             GameObject go = Instantiate(monsterBasePrefab, spawnPos, Quaternion.identity);
 
+            if (data.modelPrefab != null)
+            {
+                GameObject model = Instantiate(data.modelPrefab, go.transform);
+                model.transform.localPosition = Vector3.zero; // 중심 맞추기
+            }
+
             Monster monster = go.GetComponent<Monster>();
-            if (monster != null) monster.data = data;
+            if (monster != null)
+            {
+                float statsMul = StageManager.Instance.currentStageData.statsMultiplier;
+                float rewardMul = StageManager.Instance.currentStageData.rewardMultiplier;
+                monster.Init(data, statsMul, rewardMul);
+            }
 
             activeMonsters.Add(go);
         }
@@ -47,6 +58,8 @@ public class Stage : MonoBehaviour
         {
             activeMonsters.Remove(killedMonster);
         }
+
+        if (isMoving) return;
 
         //맨 앞의 몬스터가 죽으면 다음 몬스터를 위해 배경과 남은 몬스터를 밀어줌
         StopAllCoroutines();
