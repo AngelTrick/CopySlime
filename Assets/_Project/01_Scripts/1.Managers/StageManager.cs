@@ -47,6 +47,24 @@ public class StageManager : MonoBehaviour
     {
         totalGold += amount;
     }
+    //스테이지 레벨
+    public int GetCurrentLevel()
+    {
+        return currentStageData != null ? currentStageData.stageLevel : 0;
+    }
+    //보상 게이지
+    public float GetKillGaugeProgress()
+    {
+        if (currentStageData == null || currentStageData.rewardGoalCount == 0) return 0f;
+
+        //현재 잡은 수 / 목표 수를 계산.
+        return (float)currentRewardCount / currentStageData.rewardGoalCount;
+    }
+    //스테이지 이름
+    public string GetStageName()
+    {
+        return currentStageData != null ? currentStageData.stageName : "Unknown";
+    }
     public void AddKillCount()
     {
         currentRewardCount++;
