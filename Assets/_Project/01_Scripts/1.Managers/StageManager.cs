@@ -8,13 +8,13 @@ public class StageManager : MonoBehaviour
 
     public Stage stageController; 
     public StageData currentStageData;
-    private int currentRewardCount = 0;
+    private int _currentRewardCount = 0;
 
     public int totalGold = 0; //플레이어가 현재 가진 총 골드
 
     [Header("스테이지 관리")]
     public StageData[] allStageDatas; //스테이지 데이터 리스트
-    private int currentStageIndex = 0; //현재 몇 번째 스테이지인지 저장
+    private int _currentStageIndex = 0; //현재 몇 번째 스테이지인지 저장
 
     void Awake()
     {
@@ -28,17 +28,17 @@ public class StageManager : MonoBehaviour
     {
         if (allStageDatas.Length > 0)
         {
-            currentStageData = allStageDatas[currentStageIndex];
+            currentStageData = allStageDatas[_currentStageIndex];
         }
         SpawnNextWave(); //게임 시작 시 첫 소환
     }
     public void GoToNextStage()
     {
-        currentStageIndex++;
+        _currentStageIndex++;
 
-        if (currentStageIndex < allStageDatas.Length)
+        if (_currentStageIndex < allStageDatas.Length)
         {
-            currentStageData = allStageDatas[currentStageIndex];
+            currentStageData = allStageDatas[_currentStageIndex];
 
             SpawnNextWave();
         }
@@ -50,29 +50,45 @@ public class StageManager : MonoBehaviour
     //스테이지 레벨
     public int GetCurrentLevel()
     {
-        return currentStageData != null ? currentStageData.stageLevel : 0;
+        if (currentStageData != null)
+        {
+            return currentStageData.stageLevel;
+        }
+        else
+        {
+            return 0;
+        }
     }
     //보상 게이지
     public float GetKillGaugeProgress()
     {
-        if (currentStageData == null || currentStageData.rewardGoalCount == 0) return 0f;
-
+        if (currentStageData == null || currentStageData.rewardGoalCount == 0)
+        {
+            return 0f;
+        }
         //현재 잡은 수 / 목표 수를 계산.
-        return (float)currentRewardCount / currentStageData.rewardGoalCount;
+        return (float)_currentRewardCount / currentStageData.rewardGoalCount;
     }
     //스테이지 이름
     public string GetStageName()
     {
-        return currentStageData != null ? currentStageData.stageName : "Unknown";
+        if (currentStageData != null)
+        {
+            return currentStageData.stageName;
+        }
+        else
+        {
+            return "Unknown";
+        }
     }
     public void AddKillCount()
     {
-        currentRewardCount++;
+        _currentRewardCount++;
 
-        if (currentRewardCount >= currentStageData.rewardGoalCount)
+        if (_currentRewardCount >= currentStageData.rewardGoalCount)
         {
             GiveReward();
-            currentRewardCount = 0; //게이지 초기화
+            _currentRewardCount = 0; //게이지 초기화
         }
     }
     private void GiveReward()

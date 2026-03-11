@@ -7,26 +7,26 @@ public class Monster : MonoBehaviour
 
     public BaseMonsterData data;
 
-    private float currentHp;
-    private float currentAtk; 
-    private int currentGold;
-    private bool isDead = false;
+    private float _currentHp;
+    private float _currentAtk; 
+    private int _currentGold;
+    private bool _isDead = false;
 
     public void Init(BaseMonsterData newData, float statsMultiplier, float rewardMultiplier)
     {
         data = newData;
-        isDead = false;
+        _isDead = false;
 
         // 1. 공통 데이터 적용 (체력)
-        currentHp = data.maxHp * statsMultiplier;
+        _currentHp = data.maxHp * statsMultiplier;
 
         // 2. 공통 데이터 적용 (골드 보상)
-        currentGold = Mathf.RoundToInt(data.dropGold * rewardMultiplier);
+        _currentGold = Mathf.RoundToInt(data.dropGold * rewardMultiplier);
 
         // 3. 보스 전용 데이터 처리 (공격력)
         if (data is BossMonsterData bossData)
         {
-            currentAtk = bossData.attackPower * statsMultiplier;
+            _currentAtk = bossData.attackPower * statsMultiplier;
         }
 
         SpawnModel();
@@ -44,11 +44,11 @@ public class Monster : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (isDead) return;
+        if (_isDead) return;
 
-        currentHp -= damage;
+        _currentHp -= damage;
 
-        if (currentHp <= 0)
+        if (_currentHp <= 0)
         {
             Die();
         }
@@ -56,13 +56,13 @@ public class Monster : MonoBehaviour
 
     private void Die()
     {
-        isDead = true;
+        _isDead = true;
 
         FindObjectOfType<Stage>().OnMonsterKilled(this.gameObject);
 
         if (StageManager.Instance != null)
         {
-            StageManager.Instance.AddGold(currentGold);
+            StageManager.Instance.AddGold(_currentGold);
             StageManager.Instance.AddKillCount();
         }
 

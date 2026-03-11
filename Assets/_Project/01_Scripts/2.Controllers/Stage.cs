@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Stage : MonoBehaviour
 {
-    private bool isMoving = false; //현재 배경이나 몬스터가 이동 중인지 확인
+    private bool _isMoving = false; //현재 배경이나 몬스터가 이동 중인지 확인
 
     public List<GameObject> activeMonsters = new List<GameObject>();
 
@@ -59,7 +59,7 @@ public class Stage : MonoBehaviour
             activeMonsters.Remove(killedMonster);
         }
 
-        if (isMoving) return;
+        if (_isMoving) return;
 
         //맨 앞의 몬스터가 죽으면 다음 몬스터를 위해 배경과 남은 몬스터를 밀어줌
         StopAllCoroutines();
@@ -68,7 +68,7 @@ public class Stage : MonoBehaviour
 
     IEnumerator MoveWorldRoutine()
     {
-        isMoving = true;
+        _isMoving = true;
         float elapsed = 0f;
 
         Vector3 moveDistance = Vector3.left * monsterDistance; //몬스터 사이 간격만큼 이동
@@ -90,7 +90,7 @@ public class Stage : MonoBehaviour
             yield return null;
         }
 
-        isMoving = false;
+        _isMoving = false;
 
         if (activeMonsters.Count == 0)
         {
