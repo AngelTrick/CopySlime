@@ -8,7 +8,7 @@ public class StageManager : MonoBehaviour
 
     public Stage stageController; 
     public StageData currentStageData;
-    private int _currentRewardCount = 0;
+    private int _currentRewardCount = 0; //킬게이지
 
     public int totalGold = 0; //플레이어가 현재 가진 총 골드
 
