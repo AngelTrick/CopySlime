@@ -1,48 +1,131 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace Scripts.Data
+
+public enum SkillType
 {
-    // 스킬의 성질을 정의하는 열거형
-    public enum SkillType
-    {
-        Strike,     // 물리 타격형 (검기 등)
-        Magic,      // 마법형 (낙뢰, 메테오 등)
-        Buff        // 버프형 (공격력 증가, 속도 증가 등)
-    }
-
-    // 스킬의 등급을 정의하는 열거형 (슬레이어 키우기의 핵심 과금 모델)
-    public enum SkillGrade
-    {
-        Normal,
-        Magic,
-        Rare,
-        Epic,
-        Legendary,
-        Mythic
-    }
-
-    [CreateAssetMenu(fileName = "SkillData_New", menuName = "Project/Skill Data")]
-    public class SkillData : ScriptableObject
-    {
-        [Header("Basic Information")]
-        public string skillId;             // 데이터 관리를 위한 고유 ID (예: SKILL_001)
-        public string skillName;           // 인게임에 표시될 스킬 이름
-        public SkillGrade skillGrade;      // 스킬 등급
-        public SkillType skillType;        // 스킬 종류
-
-        [Header("Cost & Time")]
-        public float cooldown;             // 재사용 대기시간 (초)
-        public float duration;             // 지속 시간 (버프 스킬일 경우 사용, 즉발기면 0)
-
-        [Header("Combat Mechanics")]
-        public float damageMultiplier;     // 데미지 배율 (예: 2.5f면 공격력의 250%)
-        public int maxTargetCount;         // 최대 타격 가능 몬스터 수
-        public int hitCountPerTarget;      // 대상 당 타격 횟수 (다단 히트 스킬용)
-
-        [Header("Visual Resources")]
-        public Sprite skillIcon;           // UI에 표시될 스킬 아이콘
-        public GameObject effectPrefab;    // PoolManager에서 꺼내올 이펙트/투사체 프리팹
-    }
+    Strike,
+    Magic,
+    Buff
 }
 
+public enum SkillGrade
+{
+    Normal,
+    Magic,
+    Rare,
+    Epic,
+    Legendary,
+    Mythic
+}
+
+public enum TargetingType
+{
+    Closest,
+    Random,
+    AllInRange
+}
+
+[CreateAssetMenu(fileName = "SkillData_New", menuName = "Project/Skill Data")]
+public class SkillData : ScriptableObject
+{
+    [Header("Basic Information")]
+    [SerializeField] private string _skillId;
+    [SerializeField] private string _skillName;
+    [SerializeField] private SkillGrade _skillGrade;
+    [SerializeField] private SkillType _skillType;
+
+    [Header("Cost & Time")]
+    [SerializeField] private float _cooldown;
+    [SerializeField] private float _duration;
+
+    [Header("Combat Mechanics")]
+    [SerializeField] private float _damageMultiplier;
+    [SerializeField] private float _skillRange;
+    [SerializeField] private TargetingType _targetType;
+    [SerializeField] private int _maxTargetCount;
+    [SerializeField] private int _hitCountPerTarget;
+
+    [Header("Visual Resources")]
+    [SerializeField] private Sprite _skillIcon;
+    [SerializeField] private GameObject _effectPrefab;
+
+    public string SkillId => _skillId;
+    public string SkillName => _skillName;
+    public SkillGrade Grade => _skillGrade;
+    public SkillType Type => _skillType;
+    public float Cooldown => _cooldown;
+    public float Duration => _duration;
+    public float DamageMultiplier => _damageMultiplier;
+    public float SkillRange => _skillRange;
+    public TargetingType TargetType => _targetType;
+    public int MaxTargetCount => _maxTargetCount;
+    public int HitCountPerTarget => _hitCountPerTarget;
+    public Sprite SkillIcon => _skillIcon;
+    public GameObject EffectPrefab => _effectPrefab;
+   
+    
+       //스킬 범위 내의 적을 탐색하고 조건에 맞게 필터링하여 반환하는 함수
+    public List<Transform> FindTargets(Vector3 casterPosition, LayerMask enemyLayer)
+    {
+        List<Transform> finalTargets = new List<Transform>();
+
+        // 오버랩 스피어를 사용해 범위 내의 모든 콜라이더 검출
+        Collider[] colliders = Physics.OverlapSphere(casterPosition, _skillRange, enemyLayer);
+
+        if (colliders.Length == 0)
+        {
+            return finalTargets;
+        }
+
+        List<Transform> allTargets = new List<Transform>();
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            allTargets.Add(colliders[i].transform);
+        }
+
+        // 2. 타겟팅 방식(TargetingType)에 따른 분기 처리
+        switch (_targetType)
+        {
+            case TargetingType.Closest:
+                // 람다식을 활용한 거리 기준 오름차순 정렬
+                allTargets.Sort((a, b) =>
+                    Vector3.Distance(casterPosition, a.position).CompareTo(Vector3.Distance(casterPosition, b.position)));
+
+                // 정렬된 리스트에서 최대 타격 수만큼만 앞에서부터 뽑아옴
+                int closeCount = Mathf.Min(allTargets.Count, _maxTargetCount);
+                for (int i = 0; i < closeCount; i++)
+                {
+                    finalTargets.Add(allTargets[i]);
+                }
+                break;
+
+            case TargetingType.Random:
+                // 제비뽑기 방식의 랜덤 추출
+                int randomCount = Mathf.Min(allTargets.Count, _maxTargetCount);
+                for (int i = 0; i < randomCount; i++)
+                {
+                    // 남은 타겟들 중 무작위 번호표(인덱스) 하나를 뽑음
+                    int randomIndex = Random.Range(0, allTargets.Count);
+
+                    // 뽑힌 번호표에 해당하는 타겟을 최종 리스트에 넣음
+                    finalTargets.Add(allTargets[randomIndex]);
+
+                    // 중복해서 뽑히지 않도록 원본 리스트에서 해당 타겟을 제거함
+                    allTargets.RemoveAt(randomIndex);
+                }
+                break;
+
+            case TargetingType.AllInRange:
+                // 별도의 정렬 없이 검출된 순서대로 진행 (최대 개수만 제한)
+                int allCount = Mathf.Min(allTargets.Count, _maxTargetCount);
+                for (int i = 0; i < allCount; i++)
+                {
+                    finalTargets.Add(allTargets[i]);
+                }
+                break;
+        }
+
+        // 3. 필터링이 완료된 최종 타겟 리스트 반환
+        return finalTargets;
+    }
+}
