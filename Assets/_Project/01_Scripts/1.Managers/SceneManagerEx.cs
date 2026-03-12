@@ -11,11 +11,22 @@ public class SceneManagerEx : Singleton<SceneManagerEx>
     // 씬 컨트롤러 찾는 프로퍼티
     public BaseScene CurrentScene { get { return GameObject.FindObjectOfType<BaseScene>(); } }
 
+    string GetSceneName(Define.Scene type)
+    {
+        switch (type)
+        {
+            case Define.Scene.Boot: return "00_Boot";
+            case Define.Scene.Title: return "01_Title";
+            case Define.Scene.MainGame: return "02_MainGame";
+        }
+        return System.Enum.GetName(typeof(Define.Scene), type);
+    }
+
     public void LoadScene(Define.Scene type)
     {
         CurrentScene?.Clear();
 
-        SceneManager.LoadScene(System.Enum.GetName(typeof(Define.Scene), type));
+        SceneManager.LoadScene(GetSceneName(type));
     }
 
     public void LoadSceneAsync(Define.Scene type)
@@ -28,7 +39,7 @@ public class SceneManagerEx : Singleton<SceneManagerEx>
     {
         // TODO : 이 부분에 "로딩 중 ...." UI 패널 키기
 
-        string sceneName = System.Enum.GetName(typeof(Define.Scene), type);
+        string sceneName =  GetSceneName(type);
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
 
         // 씬 100% 로드 되기 전까지 못 넘어 가도록 막기
