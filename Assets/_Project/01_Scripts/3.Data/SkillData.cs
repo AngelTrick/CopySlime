@@ -25,27 +25,27 @@ public enum TargetingType
     AllInRange
 }
 
-[CreateAssetMenu(fileName = "SkillData_New", menuName = "Project/Skill Data")]
+[CreateAssetMenu(fileName = "SkillData_New", menuName = "Skill Data")]
 public class SkillData : ScriptableObject
 {
-    [Header("Basic Information")]
+    [Header("기본 정보")]
     [SerializeField] private string _skillId;
     [SerializeField] private string _skillName;
     [SerializeField] private SkillGrade _skillGrade;
     [SerializeField] private SkillType _skillType;
 
-    [Header("Cost & Time")]
+    [Header("발동 조건과 지속시간")]
     [SerializeField] private float _cooldown;
     [SerializeField] private float _duration;
 
-    [Header("Combat Mechanics")]
+    [Header("스킬 작동 방식")]
     [SerializeField] private float _damageMultiplier;
     [SerializeField] private float _skillRange;
     [SerializeField] private TargetingType _targetType;
     [SerializeField] private int _maxTargetCount;
     [SerializeField] private int _hitCountPerTarget;
 
-    [Header("Visual Resources")]
+    [Header("아이콘 및 프리팹")]
     [SerializeField] private Sprite _skillIcon;
     [SerializeField] private GameObject _effectPrefab;
 
@@ -116,9 +116,8 @@ public class SkillData : ScriptableObject
                 break;
 
             case TargetingType.AllInRange:
-                // 별도의 정렬 없이 검출된 순서대로 진행 (최대 개수만 제한)
-                int allCount = Mathf.Min(allTargets.Count, _maxTargetCount);
-                for (int i = 0; i < allCount; i++)
+                // Physics.OverlapSphere가 찾은 범위 내의 '모든' 적을 리스트에 추가.
+                for (int i = 0; i < allTargets.Count; i++)
                 {
                     finalTargets.Add(allTargets[i]);
                 }
