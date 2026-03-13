@@ -294,7 +294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeMonsters: []
   monstersPerGroup: 10
-  monsterDistance: 3
+  monsterDistance: 1
   monsterBasePrefab: {fileID: 7593232589667331525, guid: 02d92e28dce6f3a478a85346ebe01bf8, type: 3}
   backgrounds: []
   backgroundWidth: 20

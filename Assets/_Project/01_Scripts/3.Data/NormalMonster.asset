@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: NormalMonster
   m_EditorClassIdentifier: 
   monsterName: 
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 3122880326768010658, guid: cd7ef3c05854d5b48b3784f99d8b4f57, type: 3}
   maxHp: 100
   dropGold: 100

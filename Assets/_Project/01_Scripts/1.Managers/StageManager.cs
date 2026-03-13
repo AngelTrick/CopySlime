@@ -32,6 +32,31 @@ public class StageManager : MonoBehaviour
         }
         SpawnNextWave(); //게임 시작 시 첫 소환
     }
+    public void ChallengeBoss()
+    {
+        if (stageController._isBossLevel) return;
+
+        if (currentStageData != null && currentStageData.stageBoss != null)
+        {
+            CancelInvoke("SpawnNextWave");
+
+            foreach (GameObject m in stageController.activeMonsters)
+            {
+                if (m != null)
+                {
+                    if (PoolManager.Instance != null)
+                        PoolManager.Instance.Push(m);
+                    else
+                        Destroy(m);
+                }
+            }
+            stageController.activeMonsters.Clear();
+
+            stageController.EnterBossMap();
+
+            stageController.StartNewWave(currentStageData.stageBoss);
+        }
+    }
     public void GoToNextStage()
     {
         _currentStageIndex++;
@@ -39,6 +64,7 @@ public class StageManager : MonoBehaviour
         if (_currentStageIndex < allStageDatas.Length)
         {
             currentStageData = allStageDatas[_currentStageIndex];
+            _currentRewardCount = 0; //게이지 초기화
 
             SpawnNextWave();
         }
