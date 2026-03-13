@@ -8,9 +8,12 @@ public class Monster : MonoBehaviour
     public BaseMonsterData data;
 
     private float _currentHp;
-    private float _currentAtk; 
     private int _currentGold;
     private bool _isDead = false;
+
+    private Transform _target; //테스트용 타겟
+
+    private bool _isBoss = false;
 
     public void Init(BaseMonsterData newData, float statsMultiplier, float rewardMultiplier)
     {
@@ -22,12 +25,6 @@ public class Monster : MonoBehaviour
 
         //공통 데이터 적용 (골드 보상)
         _currentGold = Mathf.RoundToInt(data.dropGold * rewardMultiplier);
-
-        //보스 전용 데이터 처리 (공격력)
-        if (data is BossMonsterData bossData)
-        {
-            _currentAtk = bossData.attackPower * statsMultiplier;
-        }
 
         SpawnModel();
     }
@@ -56,19 +53,18 @@ public class Monster : MonoBehaviour
 
     private void Die()
     {
+        if (_isDead) return;
         _isDead = true;
 
-        FindObjectOfType<Stage>().OnMonsterKilled(this.gameObject);
+        if (StageManager.Instance != null && StageManager.Instance.stageController != null)
+        {
+            StageManager.Instance.stageController.OnMonsterKilled(this.gameObject);
+        }
 
         if (StageManager.Instance != null)
         {
             StageManager.Instance.AddGold(_currentGold);
             StageManager.Instance.AddKillCount();
-        }
-
-        if (data is BossMonsterData boss)
-        {
-            HandleBossClear(boss);
         }
 
         if (PoolManager.Instance != null)
@@ -77,12 +73,5 @@ public class Monster : MonoBehaviour
         }
 
         gameObject.SetActive(false);
-    }
-    private void HandleBossClear(BossMonsterData boss)
-    {
-        if (StageManager.Instance != null)
-        {
-            StageManager.Instance.GoToNextStage();
-        }
     }
 }
