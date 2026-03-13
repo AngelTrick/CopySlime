@@ -17,6 +17,5 @@ MonoBehaviour:
   maxHp: 50
   attackRange: 2
   dropGold: 0
-  attackPower: 1
-  attackSpeed: 1
+  bossTimeLimit: 10
   unlockSkin: {fileID: 0}
