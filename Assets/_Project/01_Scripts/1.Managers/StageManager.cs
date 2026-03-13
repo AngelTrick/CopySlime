@@ -34,7 +34,7 @@ public class StageManager : MonoBehaviour
     }
     public void ChallengeBoss()
     {
-        if (stageController._isBossLevel) return;
+        if (stageController.isBossLevel) return;
 
         if (currentStageData != null && currentStageData.stageBoss != null)
         {
@@ -124,7 +124,23 @@ public class StageManager : MonoBehaviour
 
         totalGold += finalReward;
     }
+    public void OnBossChallengeFailed()
+    {
+        if (stageController.isBossLevel)
+        {
+            foreach (GameObject m in stageController.activeMonsters) //소환된 보스 몬스터 제거
+            {
+                if (m != null) PoolManager.Instance.Push(m);
+            }
+            stageController.activeMonsters.Clear();
 
+            stageController.ReturnToField(); //스테이지 상태 복구
+
+            SpawnNextWave(); //다시 일반 소환 루프 진행
+
+            Debug.Log("보스전 실패: 일반 필드로 돌아갑니다.");
+        }
+    }
     public void OnWaveCompleted()
     {
         Invoke("SpawnNextWave", 1.5f); //보스전 중이 아니라면 무조건 다음 웨이브 소환 (무한 반복)
@@ -136,6 +152,14 @@ public class StageManager : MonoBehaviour
             //여러 일반 몬스터 중 랜덤으로 하나 전달
             int rand = Random.Range(0, currentStageData.fieldMonsters.Length);
             stageController.StartNewWave(currentStageData.fieldMonsters[rand]);
+        }
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Debug.Log("테스트: 플레이어 사망(F키 입력) - 보스 도전 실패 처리 시작");
+            OnBossChallengeFailed();
         }
     }
 }

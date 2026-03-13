@@ -15,4 +15,5 @@ MonoBehaviour:
   monsterName: 
   modelPrefab: {fileID: 3122880326768010658, guid: cd7ef3c05854d5b48b3784f99d8b4f57, type: 3}
   maxHp: 100
+  attackRange: 2
   dropGold: 100
