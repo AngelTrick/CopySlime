@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StageData 1
   m_EditorClassIdentifier: 
   stageName: 
-  stageLevel: 0
+  stageLevel: 1
   statsMultiplier: 1
   rewardMultiplier: 1
   rewardGoalCount: 20
