@@ -202,12 +202,11 @@ public class Stage : MonoBehaviour
             {
                 if (isBossLevel) //보스 처치 시 다음으로 이동
                 {
-                    ReturnToField();
-                    StageManager.Instance.GoToNextStage();
+                    StageManager.Instance.OnBossClear();
                 }
                 else
                 {
-                    StageManager.Instance.OnWaveCompleted(); //일반 몬스터 전부 처치 시 다음 무리 소환 예약
+                    StageManager.Instance.OnWaveCompleted(); ; //일반 몬스터 전부 처치 시 다음 무리 소환 예약
                 }
             }
         }

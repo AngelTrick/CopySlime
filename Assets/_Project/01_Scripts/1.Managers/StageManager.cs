@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StageManager : MonoBehaviour
+public class StageManager : Singleton<StageManager>
 {
-    public static StageManager Instance;
-
-    public Stage stageController; 
+    public Stage stageController;
     public StageData currentStageData;
     private int _currentRewardCount = 0; //킬게이지
 
@@ -16,13 +14,33 @@ public class StageManager : MonoBehaviour
     public StageData[] allStageDatas; //스테이지 데이터 리스트
     private int _currentStageIndex = 0; //현재 몇 번째 스테이지인지 저장
 
-    void Awake()
+    [Header("보스전 타임어택 설정")]
+    private float _currentBossLimitTime;
+    private float _currentBossTimer;
+    private bool _isTimerRunning = false;
+
+    public float GetBossTimerProgress()
     {
-        if (Instance == null)
+        float maxTime = _currentBossLimitTime;
+        if (maxTime <= 0)
         {
-            Instance = this;
+            maxTime = 0.1f;
         }
-        else Destroy(gameObject);
+        float progress = _currentBossTimer / maxTime;
+
+        if (progress > 1.0f) progress = 1.0f;
+        if (progress < 0.0f) progress = 0.0f;
+
+        return progress;
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        if (allStageDatas == null || allStageDatas.Length == 0)
+        {
+            Debug.LogError("StageManager: Stage Data가 할당되지 않았습니다!");
+        }
     }
     void Start()
     {
@@ -31,6 +49,22 @@ public class StageManager : MonoBehaviour
             currentStageData = allStageDatas[_currentStageIndex];
         }
         SpawnNextWave(); //게임 시작 시 첫 소환
+    }
+    void Update()
+    {
+        if (_isTimerRunning)
+        {
+            _currentBossTimer -= Time.deltaTime;
+            if (_currentBossTimer <= 0)
+            {
+                OnBossChallengeFailed(); //시간 종료 시 실패 처리
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F)) //테스트 용
+        {
+            Debug.Log("테스트: 보스 도전 실패 강제 호출");
+            OnBossChallengeFailed();
+        }
     }
     public void ChallengeBoss()
     {
@@ -55,19 +89,34 @@ public class StageManager : MonoBehaviour
             stageController.EnterBossMap();
 
             stageController.StartNewWave(currentStageData.stageBoss);
+
+            _currentBossLimitTime = currentStageData.stageBoss.bossTimeLimit;
+            _currentBossTimer = _currentBossLimitTime;
+
+            _isTimerRunning = true;
+            Debug.Log($"보스전 시작! 제한 시간: {currentStageData.stageBoss.monsterName}초");
         }
+    }
+    public void OnBossClear()
+    {
+        Debug.Log("보스 처치 성공!");
+        _isTimerRunning = false;
+        GoToNextStage();
     }
     public void GoToNextStage()
     {
         _currentStageIndex++;
 
-        if (_currentStageIndex < allStageDatas.Length)
+        if (_currentStageIndex >= allStageDatas.Length)
         {
-            currentStageData = allStageDatas[_currentStageIndex];
-            _currentRewardCount = 0; //게이지 초기화
-
-            SpawnNextWave();
+            _currentStageIndex = allStageDatas.Length - 1;
         }
+
+        currentStageData = allStageDatas[_currentStageIndex];
+        _currentRewardCount = 0; //게이지 초기화
+
+        stageController.ReturnToField();
+        SpawnNextWave();
     }
     public void AddGold(int amount)
     {
@@ -128,6 +177,8 @@ public class StageManager : MonoBehaviour
     {
         if (stageController.isBossLevel)
         {
+            _isTimerRunning = false;
+
             foreach (GameObject m in stageController.activeMonsters) //소환된 보스 몬스터 제거
             {
                 if (m != null) PoolManager.Instance.Push(m);
@@ -143,7 +194,10 @@ public class StageManager : MonoBehaviour
     }
     public void OnWaveCompleted()
     {
-        Invoke("SpawnNextWave", 1.5f); //보스전 중이 아니라면 무조건 다음 웨이브 소환 (무한 반복)
+        if (!stageController.isBossLevel)
+        {
+            Invoke("SpawnNextWave", 1.5f); //보스전 중이 아니라면 무조건 다음 웨이브 소환 (무한 반복)
+        }
     }
     private void SpawnNextWave()
     {
@@ -152,14 +206,6 @@ public class StageManager : MonoBehaviour
             //여러 일반 몬스터 중 랜덤으로 하나 전달
             int rand = Random.Range(0, currentStageData.fieldMonsters.Length);
             stageController.StartNewWave(currentStageData.fieldMonsters[rand]);
-        }
-    }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Debug.Log("테스트: 플레이어 사망(F키 입력) - 보스 도전 실패 처리 시작");
-            OnBossChallengeFailed();
         }
     }
 }
