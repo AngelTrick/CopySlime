@@ -17,13 +17,13 @@ public class Monster : MonoBehaviour
         data = newData;
         _isDead = false;
 
-        // 1. 공통 데이터 적용 (체력)
+        //공통 데이터 적용 (체력)
         _currentHp = data.maxHp * statsMultiplier;
 
-        // 2. 공통 데이터 적용 (골드 보상)
+        //공통 데이터 적용 (골드 보상)
         _currentGold = Mathf.RoundToInt(data.dropGold * rewardMultiplier);
 
-        // 3. 보스 전용 데이터 처리 (공격력)
+        //보스 전용 데이터 처리 (공격력)
         if (data is BossMonsterData bossData)
         {
             _currentAtk = bossData.attackPower * statsMultiplier;
@@ -69,6 +69,11 @@ public class Monster : MonoBehaviour
         if (data is BossMonsterData boss)
         {
             HandleBossClear(boss);
+        }
+
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.Push(this.gameObject);
         }
 
         gameObject.SetActive(false);
