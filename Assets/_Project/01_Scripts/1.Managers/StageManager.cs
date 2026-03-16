@@ -15,8 +15,8 @@ public class StageManager : Singleton<StageManager>
     private int _currentStageIndex = 0; //현재 몇 번째 스테이지인지 저장
 
     [Header("보스전 타임어택 설정")]
-    private float _currentBossLimitTime;
-    private float _currentBossTimer;
+    private float _currentBossLimitTime; //보스전 한계 시간
+    private float _currentBossTimer; //보스전 타이머
     private bool _isTimerRunning = false;
 
     public float GetBossTimerProgress()
