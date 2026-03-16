@@ -1,0 +1,41 @@
+name: PR Auto Labeler
+
+# 언제 이 마법이 발동할 것인가? (PR이 열리거나 다시 열릴 때)
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permission :
+   issues: write
+   pull-requests: write
+jobs:
+  assign-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 브랜치 이름으로 라벨 자동 부여
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const branchName = context.payload.pull_request.head.ref;
+            let labelsToAdd = [];
+            
+            // 브랜치 이름에 따른 라벨 자동 매칭
+            if (branchName.startsWith('feature/')) {
+              labelsToAdd.push('enhancement'); // 기능 추가
+            } else if (branchName.startsWith('bugfix/') || branchName.startsWith('fix/')) {
+              labelsToAdd.push('bug'); // 버그 수정
+            } else if (branchName.startsWith('refactor/')) {
+              labelsToAdd.push('refactor'); // 리팩토링
+            } else if (branchName.startsWith('docs/')) {
+              labelsToAdd.push('documentation'); // 문서 작업
+            }
+            
+            // 매칭된 라벨이 있다면 깃허브 PR에 찰칵! 달아줍니다.
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labelsToAdd
+              });
+            }

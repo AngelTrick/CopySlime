@@ -14,6 +14,10 @@ public class Stage : MonoBehaviour
     [Header("몬스터 사이의 간격")]
     public float monsterDistance = 3.0f;
 
+    [Header("몬스터 스폰 설정")]
+    public float spawnOffset = 5.0f; //일반 몬스터 스폰 위치
+    public float bossSpawnPos = 8.0f; //보스 몬스터 스폰 위치
+
     [Header("몬스터 프리팹")]
     public GameObject monsterBasePrefab;
 
@@ -25,25 +29,29 @@ public class Stage : MonoBehaviour
     [Header("보스전 전용 설정")]
     public Sprite bossBackgroundSprite; //보스 맵 배경 이미지
     private Sprite _originalFieldSprite; //원래 필드 배경 이미지
-    public bool _isBossLevel = false; //현재 보스전 상태인지 확인
+    public bool isBossLevel = false; //현재 보스전 상태인지 확인
+    
     public void StartNewWave(BaseMonsterData data)
     {
         if (data is BossMonsterData) //보스 데이터인지 체크
         {
-            _isBossLevel = true;
+            isBossLevel = true;
         }
         else
         {
-            _isBossLevel = false;
+            isBossLevel = false;
         } 
         SpawnMonsterGroup(data);
+
+        StopAllCoroutines();
+        StartCoroutine(MoveWorldRoutine());
     }
 
     private void SpawnMonsterGroup(BaseMonsterData data)
     {
         int spawnCount;
 
-        if (_isBossLevel)
+        if (isBossLevel)
         {
             spawnCount = 1; //보스전이면 딱 1마리만 소환
         }
@@ -56,13 +64,13 @@ public class Stage : MonoBehaviour
         {
             Vector3 spawnPos;
 
-            if (_isBossLevel) //보스 캐릭터 스폰 좌표 8.0
+            if (isBossLevel) //보스 캐릭터 스폰 좌표 8.0
             {
-                spawnPos = new Vector3(8.0f, 0, 0);
+                spawnPos = new Vector3(bossSpawnPos, 0, 0);
             }
             else
             {
-                spawnPos = new Vector3(i * monsterDistance, 0, 0);
+                spawnPos = new Vector3(spawnOffset + (i * monsterDistance), 0, 0);
             }
 
             GameObject go = PoolManager.Instance.Pop(monsterBasePrefab, spawnPos, Quaternion.identity);
@@ -99,7 +107,7 @@ public class Stage : MonoBehaviour
     }
     public void ReturnToField()
     {
-        _isBossLevel = false; //보스전 상태 해제
+        isBossLevel = false; //보스전 상태 해제
         foreach (Transform bg in backgrounds)
         {
             SpriteRenderer sr = bg.GetComponent<SpriteRenderer>();
@@ -131,7 +139,7 @@ public class Stage : MonoBehaviour
 
         float currentDistance;
 
-        if (_isBossLevel)
+        if (isBossLevel)
         {
             currentDistance = 5.0f;
         }
@@ -140,11 +148,40 @@ public class Stage : MonoBehaviour
             currentDistance = monsterDistance;
         }
 
-        while (elapsed < movingDuration)
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player"); //플레이어 찾기 사거리 계산용
+
+        while (true)
         {
+            if (activeMonsters.Count > 0)
+            {
+                Monster firstMonster = activeMonsters[0].GetComponent<Monster>();
+                if (firstMonster != null && playerObj != null)
+                {
+                    float distance = Vector3.Distance(firstMonster.transform.position, playerObj.transform.position); //실시간 거리 개산
+
+                    if (distance <= firstMonster.data.attackRange)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+
             float deltaTime = Time.deltaTime;
-            float stepSize = (currentDistance / movingDuration) * deltaTime;
-            Vector3 step = Vector3.left * stepSize;
+            float speed;
+
+            if (elapsed < movingDuration)
+            {
+                speed = (currentDistance / movingDuration);
+            }
+            else
+            {
+                speed = 2.0f; 
+            }
+            Vector3 step = Vector3.left * speed * deltaTime;
 
             MoveAndLoopBackgrounds(step); //배경 이동 및 루핑 체크
 
@@ -163,14 +200,13 @@ public class Stage : MonoBehaviour
         {
             if (StageManager.Instance != null)
             {
-                if (_isBossLevel) //보스 처치 시 다음으로 이동
+                if (isBossLevel) //보스 처치 시 다음으로 이동
                 {
-                    ReturnToField();
-                    StageManager.Instance.GoToNextStage();
+                    StageManager.Instance.OnBossClear();
                 }
                 else
                 {
-                    StageManager.Instance.OnWaveCompleted(); //일반 몬스터 전부 처치 시 다음 무리 소환 예약
+                    StageManager.Instance.OnWaveCompleted(); ; //일반 몬스터 전부 처치 시 다음 무리 소환 예약
                 }
             }
         }
