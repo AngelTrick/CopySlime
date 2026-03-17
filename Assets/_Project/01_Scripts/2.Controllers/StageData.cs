@@ -10,7 +10,7 @@ public class StageData : ScriptableObject
     public int stageLevel; //스테이지 번호
 
     [Header("난이도 및 보상 배율")]
-    public float statsMultiplier = 1.0f; //몬스터 체력/공격력 배율 (1.0 = 100%)
+    public float statsMultiplier = 1.0f; //몬스터 체력(1.0 = 100%)
     public float rewardMultiplier = 1.0f; //골드 보상 비율
 
     [Header("반복 보상 설정")]

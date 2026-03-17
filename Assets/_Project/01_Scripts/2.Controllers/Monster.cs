@@ -13,7 +13,11 @@ public class Monster : MonoBehaviour
 
     private Transform _target; //테스트용 타겟
 
-    private bool _isBoss = false;
+    //private bool _isBoss = false;
+
+    [Header("보상 드랍 설정")]
+    public GameObject goldPrefab;
+    public GameObject skinShardPrefab; //조각
 
     public void Init(BaseMonsterData newData, float statsMultiplier, float rewardMultiplier)
     {
@@ -50,7 +54,23 @@ public class Monster : MonoBehaviour
             Die();
         }
     }
-
+    private void DropRewards()
+    {
+        if (goldPrefab != null)
+        {
+            GameObject goldGo = PoolManager.Instance.Pop(goldPrefab, transform.position, Quaternion.identity);
+            Gold goldScript = goldGo.GetComponent<Gold>();
+            if (goldScript != null)
+            {
+                goldScript.Init(_currentGold, false);
+            }
+        }
+        if (data is BossMonsterData && skinShardPrefab != null)
+        {
+            Vector3 shardPos = transform.position + Vector3.up * 0.5f;
+            GameObject shardGo = PoolManager.Instance.Pop(skinShardPrefab, shardPos, Quaternion.identity);
+        }
+    }
     private void Die()
     {
         if (_isDead) return;
@@ -63,7 +83,7 @@ public class Monster : MonoBehaviour
 
         if (StageManager.Instance != null)
         {
-            StageManager.Instance.AddGold(_currentGold);
+            DropRewards();
             StageManager.Instance.AddKillCount();
         }
 

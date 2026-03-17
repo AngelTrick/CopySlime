@@ -19,6 +19,9 @@ public class StageManager : Singleton<StageManager>
     private float _currentBossTimer; //보스전 타이머
     private bool _isTimerRunning = false;
 
+    [Header("보물 상자 설정")]
+    public GameObject treasureChestPrefab;
+
     public float GetBossTimerProgress()
     {
         float maxTime = _currentBossLimitTime;
@@ -168,10 +171,20 @@ public class StageManager : Singleton<StageManager>
     }
     private void GiveReward()
     {
-        //기본 보상 * 스테이지 보상 배율
-        int finalReward = Mathf.RoundToInt(currentStageData.baseRewardGold * currentStageData.rewardMultiplier);
+        if (treasureChestPrefab != null)
+        {
+            float xPos = stageController.bossSpawnPos;
+            Vector3 spawnPos = new Vector3(xPos, 0f, 0f);
 
-        totalGold += finalReward;
+            GameObject chestGo = PoolManager.Instance.Pop(treasureChestPrefab, spawnPos, Quaternion.identity);
+            if (stageController != null)
+            {
+                stageController.activeMonsters.Add(chestGo);
+                stageController.OnMonsterKilled(null);
+            }
+
+            CancelInvoke("SpawnNextWave");
+        }
     }
     public void OnBossChallengeFailed()
     {
@@ -189,7 +202,6 @@ public class StageManager : Singleton<StageManager>
 
             SpawnNextWave(); //다시 일반 소환 루프 진행
 
-            Debug.Log("보스전 실패: 일반 필드로 돌아갑니다.");
         }
     }
     public void OnWaveCompleted()
