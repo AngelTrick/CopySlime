@@ -1,13 +1,13 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewBossData", menuName = "Monster/Boss")]
 public class BossMonsterData : BaseMonsterData
 {
-    [Header("º¸½ºÀü ¼³Á¤")]
-    public float bossTimeLimit = 30f; //º¸½º µµÀü ½Ã°£
+    [Header("ë³´ìŠ¤ì „ ì„¤ì •")]
+    public float bossTimeLimit = 30f; //ë³´ìŠ¤ ë„ì „ ì‹œê°„
 
-    [Header("º¸½º Ã³Ä¡ º¸»ó")]
-    public Sprite unlockSkin; //ÇØ±İ½ºÅ²
+    [Header("ë³´ìŠ¤ ì²˜ì¹˜ ë³´ìƒ")]
+    public Sprite unlockSkin; //í•´ê¸ˆìŠ¤í‚¨
 }
