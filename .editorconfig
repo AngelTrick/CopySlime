@@ -1,0 +1,11 @@
+#최상위 editorconfig 파일임을 명시
+root = true
+
+#모든 C# 스크립트(.cs) 적용되는 규칙
+[*.cs]
+
+# 핵심 : 인코딩을 강제로 UTF-8(BOM 포함)로 고정합니다!
+charset = utf-8-bom
+
+# 줄바꿈 스타일 , 들여쓰기 컨벤션도 팀 전체 통일 되게 강제
+end_of_line = crlf indent_style = space indent_style_size = 4

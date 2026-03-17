@@ -16,6 +16,6 @@ MonoBehaviour:
   modelPrefab: {fileID: 5799408786953190753, guid: 5825951d94f542243a3f9a70414c6ab4, type: 3}
   maxHp: 50
   attackRange: 2
-  dropGold: 0
+  dropGold: 100
   bossTimeLimit: 10
   unlockSkin: {fileID: 0}

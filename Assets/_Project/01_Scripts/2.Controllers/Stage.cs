@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Stage : MonoBehaviour
 {
-    private bool _isMoving = false; //현재 배경이나 몬스터가 이동 중인지 확인
+    public bool isMoving = false; //현재 배경이나 몬스터가 이동 중인지 확인
 
     public List<GameObject> activeMonsters = new List<GameObject>();
 
@@ -90,7 +90,7 @@ public class Stage : MonoBehaviour
     public void EnterBossMap()
     {
         StopAllCoroutines(); //현재 진행 중인 배경 이동이 있다면 멈춤
-        _isMoving = false;
+        isMoving = false;
 
         foreach (Transform bg in backgrounds)
         {
@@ -125,7 +125,7 @@ public class Stage : MonoBehaviour
             activeMonsters.Remove(killedMonster);
         }
 
-        if (_isMoving) return;
+        if (isMoving) return;
 
         //맨 앞의 몬스터가 죽으면 다음 몬스터를 위해 배경과 남은 몬스터를 밀어줌
         StopAllCoroutines();
@@ -134,7 +134,7 @@ public class Stage : MonoBehaviour
 
     IEnumerator MoveWorldRoutine()
     {
-        _isMoving = true;
+        isMoving = true;
         float elapsed = 0f;
 
         float currentDistance;
@@ -154,12 +154,18 @@ public class Stage : MonoBehaviour
         {
             if (activeMonsters.Count > 0)
             {
-                Monster firstMonster = activeMonsters[0].GetComponent<Monster>();
-                if (firstMonster != null && playerObj != null)
-                {
-                    float distance = Vector3.Distance(firstMonster.transform.position, playerObj.transform.position); //실시간 거리 개산
+                GameObject firstTarget = activeMonsters[0];
 
-                    if (distance <= firstMonster.data.attackRange)
+                if (firstTarget != null && playerObj != null)
+                {
+                    float distance = Vector3.Distance(firstTarget.transform.position, playerObj.transform.position);
+
+                    float targetRange = 2.0f; //기본값
+
+                    if (firstTarget.TryGetComponent<Monster>(out var m)) targetRange = m.data.attackRange;
+                    else if (firstTarget.TryGetComponent<TreasureChest>(out var t)) targetRange = t.attackRange;
+
+                    if (distance <= targetRange)
                     {
                         break;
                     }
@@ -181,7 +187,9 @@ public class Stage : MonoBehaviour
             {
                 speed = 2.0f; 
             }
-            Vector3 step = Vector3.left * speed * deltaTime;
+            float currentSpeed = speed;
+
+            Vector3 step = Vector3.left * speed * Time.deltaTime;
 
             MoveAndLoopBackgrounds(step); //배경 이동 및 루핑 체크
 
@@ -194,7 +202,7 @@ public class Stage : MonoBehaviour
             yield return null;
         }
 
-        _isMoving = false;
+        isMoving = false;
 
         if (activeMonsters.Count == 0)
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 public class UIGold : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI goldText;
-    private float gold = 0;
+    [SerializeField] private float gold = 0;
 
     void Update()
     {
@@ -18,7 +18,7 @@ public class UIGold : MonoBehaviour
 
     public void AddGold() // 임시 버튼용
     {
-        gold += 10000f;
+        gold += 100000f;
     }
     private string FormatNumber(float number) //일단은 K, M~~ 으로 띄움 나중에 더 생각하기
     {
