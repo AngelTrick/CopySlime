@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIManager : MonoBehaviour // 설정도 여기에 추가 생각
+public class UIManager : Singleton<UIManager> // 설정도 여기에 추가 생각
 {
     public GameObject panelSkill;
     public GameObject panelAbility;
