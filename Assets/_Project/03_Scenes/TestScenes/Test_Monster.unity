@@ -348,6 +348,7 @@ MonoBehaviour:
   allStageDatas:
   - {fileID: 11400000, guid: fb173fa35394bad4494fc9f9269600b5, type: 2}
   - {fileID: 11400000, guid: d9444c78baf67d84ca2295fe75f24454, type: 2}
+  treasureChestPrefab: {fileID: 8793641479586315572, guid: 95c9ec7e4e9ea524a88a9e6bf2d0f537, type: 3}
 --- !u!4 &371708547
 Transform:
   m_ObjectHideFlags: 0
@@ -484,6 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f943af988c33104d8ccfc68e914033e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
   activeMonsters: []
   monstersPerGroup: 10
   monsterDistance: 2
@@ -769,7 +771,7 @@ GameObject:
   - component: {fileID: 1624330032}
   - component: {fileID: 1624330036}
   - component: {fileID: 1624330037}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}

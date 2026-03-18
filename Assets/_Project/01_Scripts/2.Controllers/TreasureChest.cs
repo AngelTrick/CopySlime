@@ -5,7 +5,7 @@ using UnityEngine;
 public class TreasureChest : MonoBehaviour
 {
     [Header("상자 설정")]
-    public float maxHp = 50f;          // 상자의 체력 (몇 번 때려야 부서질지)
+    public float maxHp = 50f; //상자의 체력
     private float _currentHp;
     private bool _isDestroyed = false;
 
@@ -37,11 +37,6 @@ public class TreasureChest : MonoBehaviour
     void Update()
     {
         if (_isDestroyed) return;
-
-        if (StageManager.Instance.stageController != null && StageManager.Instance.stageController.isMoving)
-        {
-            transform.Translate(Vector3.left * 2.0f * Time.deltaTime);
-        }
     }
     private void Explode()
     {
@@ -61,9 +56,9 @@ public class TreasureChest : MonoBehaviour
                 }
             }
         }
-        if (StageManager.Instance != null)
+        if (StageManager.Instance != null && StageManager.Instance.stageController != null)
         {
-            StageManager.Instance.OnWaveCompleted();
+            StageManager.Instance.stageController.OnMonsterKilled(this.gameObject);
         }
 
         if (PoolManager.Instance != null)
