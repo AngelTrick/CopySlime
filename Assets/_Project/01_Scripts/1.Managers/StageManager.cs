@@ -22,6 +22,8 @@ public class StageManager : Singleton<StageManager>
     [Header("보물 상자 설정")]
     public GameObject treasureChestPrefab;
 
+    public System.Action<int> OnGoldChanged;
+
     public float GetBossTimerProgress()
     {
         float maxTime = _currentBossLimitTime;
@@ -65,7 +67,6 @@ public class StageManager : Singleton<StageManager>
         }
         if (Input.GetKeyDown(KeyCode.F)) //테스트 용
         {
-            Debug.Log("테스트: 보스 도전 실패 강제 호출");
             OnBossChallengeFailed();
         }
     }
@@ -102,8 +103,12 @@ public class StageManager : Singleton<StageManager>
     }
     public void OnBossClear()
     {
-        Debug.Log("보스 처치 성공!");
         _isTimerRunning = false;
+        StartCoroutine(WaitAndGoToNextStage(2.0f));
+    }
+    private IEnumerator WaitAndGoToNextStage(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         GoToNextStage();
     }
     public void GoToNextStage()
@@ -121,9 +126,10 @@ public class StageManager : Singleton<StageManager>
         stageController.ReturnToField();
         SpawnNextWave();
     }
-    public void AddGold(int amount)
+    public void AddGold(int amount) //골드 획득 부분
     {
         totalGold += amount;
+        OnGoldChanged?.Invoke(totalGold); //골드 획득 사운드 등 이벤트
     }
     //스테이지 레벨
     public int GetCurrentLevel()
@@ -173,8 +179,7 @@ public class StageManager : Singleton<StageManager>
     {
         if (treasureChestPrefab != null)
         {
-            float xPos = stageController.bossSpawnPos;
-            Vector3 spawnPos = new Vector3(xPos, 0f, 0f);
+            Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, 0f, 0f);
 
             GameObject chestGo = PoolManager.Instance.Pop(treasureChestPrefab, spawnPos, Quaternion.identity);
             if (stageController != null)
@@ -208,6 +213,8 @@ public class StageManager : Singleton<StageManager>
     {
         if (!stageController.isBossLevel)
         {
+            if (stageController.activeMonsters.Count > 0) return;
+
             Invoke("SpawnNextWave", 1.5f); //보스전 중이 아니라면 무조건 다음 웨이브 소환 (무한 반복)
         }
     }
