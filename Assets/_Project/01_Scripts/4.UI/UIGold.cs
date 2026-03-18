@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,21 +6,21 @@ using UnityEngine;
 public class UIGold : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI goldText;
-    private float gold = 0;
+    [SerializeField] private float gold = 0;
 
     void Update()
     {
-        gold += 100f * Time.deltaTime; // ÀÓ½Ã
+        gold += 100f * Time.deltaTime; // ì„ì‹œ
 
-        goldText.text = $"Gold: {FormatNumber(gold)}"; // ³ªÁß¿¡ ´Ù¸¥°É·Î ¹Ù²Ü»ı°¢ÇØº¸±â
+        goldText.text = $"Gold: {FormatNumber(gold)}"; // ë‚˜ì¤‘ì— ë‹¤ë¥¸ê±¸ë¡œ ë°”ê¿€ìƒê°í•´ë³´ê¸°
 
     }
 
-    public void AddGold() // ÀÓ½Ã ¹öÆ°¿ë
+    public void AddGold() // ì„ì‹œ ë²„íŠ¼ìš©
     {
-        gold += 10000f;
+        gold += 100000f;
     }
-    private string FormatNumber(float number) //ÀÏ´ÜÀº K, M~~ À¸·Î ¶ç¿ò ³ªÁß¿¡ ´õ »ı°¢ÇÏ±â
+    private string FormatNumber(float number) //ì¼ë‹¨ì€ K, M~~ ìœ¼ë¡œ ë„ì›€ ë‚˜ì¤‘ì— ë” ìƒê°í•˜ê¸°
     {
         string[] suffixes = { "", "K", "M", "B", "T" };
         int suffixIndex = 0;

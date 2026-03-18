@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,23 +11,23 @@ public class Monster : MonoBehaviour
     private int _currentGold;
     private bool _isDead = false;
 
-    private Transform _target; //Å×½ºÆ®¿ë Å¸°Ù
+    private Transform _target; //í…ŒìŠ¤íŠ¸ìš© íƒ€ê²Ÿ
 
     //private bool _isBoss = false;
 
-    [Header("º¸»ó µå¶ø ¼³Á¤")]
+    [Header("ë³´ìƒ ë“œë ì„¤ì •")]
     public GameObject goldPrefab;
-    public GameObject skinShardPrefab; //Á¶°¢
+    public GameObject skinShardPrefab; //ì¡°ê°
 
     public void Init(BaseMonsterData newData, float statsMultiplier, float rewardMultiplier)
     {
         data = newData;
         _isDead = false;
 
-        //°øÅë µ¥ÀÌÅÍ Àû¿ë (Ã¼·Â)
+        //ê³µí†µ ë°ì´í„° ì ìš© (ì²´ë ¥)
         _currentHp = data.maxHp * statsMultiplier;
 
-        //°øÅë µ¥ÀÌÅÍ Àû¿ë (°ñµå º¸»ó)
+        //ê³µí†µ ë°ì´í„° ì ìš© (ê³¨ë“œ ë³´ìƒ)
         _currentGold = Mathf.RoundToInt(data.dropGold * rewardMultiplier);
 
         SpawnModel();

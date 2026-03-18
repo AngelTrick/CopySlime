@@ -1,20 +1,35 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIItemManager : MonoBehaviour
+public class UIItemManager : Singleton<UIItemManager>
 {
     [SerializeField] private Transform content;
+    [SerializeField] private TTItembase database;
     [SerializeField] private ItemSlot itemSlotPrefab;
-    [SerializeField] private int itemCount = 20; // ´õ ÁÁÀº ¹æ¹ıÀº »ı°¢
+    //[SerializeField] private int itemCount = 20; // ë” ì¢‹ì€ ë°©ë²•ì„ ìƒê°
 
-    void Start()
+    private void Start()
     {
-        CreateItems();
-    }
+        if (database == null) { Debug.LogError("Database null!!!!!!!!!"); return; }
+        if (itemSlotPrefab == null) { Debug.LogError("Prefab null!!!!!!!!!"); return; }
+        if (content == null) { Debug.LogError("Content null!!!!!!!!!"); return; }
 
-    void CreateItems()
-    {
+        List<TempItemData> list = database.GetAll();
+        if (list == null || list.Count == 0)
+        {
+            Debug.LogError("Database ë¦¬ìŠ¤íŠ¸ ë¹„ì–´ìˆìŒ!!!!!!!!!");
+            return;
+        }
+
+        Debug.Log($"ì•„ì´í…œ ê°œìˆ˜: {list.Count}");
+
+        foreach (TempItemData data in list)
+        {
+            ItemSlot slot = Instantiate(itemSlotPrefab, content);
+            slot.SetItem(data);
+        }
+        
     }
 
 }

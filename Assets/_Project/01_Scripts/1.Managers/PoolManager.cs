@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
     public class PoolManager : Singleton<PoolManager>
@@ -32,7 +32,7 @@ using UnityEngine;
             else
             {
                 obj = Instantiate(prefab, position, rotation);
-                obj.name = key; // (Clone) ±ÛÀÚ Á¦°Å
+                obj.name = key; // (Clone) ê¸€ì ì œê±°
             }
 
             return obj;
@@ -44,7 +44,7 @@ using UnityEngine;
 
             if (!_poolDictionary.ContainsKey(key))
             {
-                Debug.LogWarning($"³ÖÀ¸·Á´Â Ç®¿¡ {key}°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù. ¿ÀºêÁ§Æ®°¡ ÆÄ±«µË´Ï´Ù.");
+                Debug.LogWarning($"ë„£ìœ¼ë ¤ëŠ” í’€ì— {key}ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤. ì˜¤ë¸Œì íŠ¸ê°€ íŒŒê´´ë©ë‹ˆë‹¤.");
                 Destroy(obj);
                 return;
             }

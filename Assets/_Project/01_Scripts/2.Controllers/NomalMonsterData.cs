@@ -1,9 +1,9 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewNormalData", menuName = "Monster/Normal")]
 public class NormalMonsterData : BaseMonsterData
 {
-    //º£ÀÌ½º¸ó½ºÅÍµ¥ÀÌÅÍ °¡Á®¿È
+    //ë² ì´ìŠ¤ëª¬ìŠ¤í„°ë°ì´í„° ê°€ì ¸ì˜´
 }

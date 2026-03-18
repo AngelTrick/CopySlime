@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public enum SkillType
@@ -25,27 +25,27 @@ public enum TargetingType
     AllInRange
 }
 
-[CreateAssetMenu(fileName = "SkillData_New", menuName = "Project/Skill Data")]
+[CreateAssetMenu(fileName = "SkillData_New", menuName = "Skill Data")]
 public class SkillData : ScriptableObject
 {
-    [Header("Basic Information")]
+    [Header("ê¸°ë³¸ ì •ë³´")]
     [SerializeField] private string _skillId;
     [SerializeField] private string _skillName;
     [SerializeField] private SkillGrade _skillGrade;
     [SerializeField] private SkillType _skillType;
 
-    [Header("Cost & Time")]
+    [Header("ë°œë™ ì¡°ê±´ê³¼ ì§€ì†ì‹œê°„")]
     [SerializeField] private float _cooldown;
     [SerializeField] private float _duration;
 
-    [Header("Combat Mechanics")]
+    [Header("ìŠ¤í‚¬ ì‘ë™ ë°©ì‹")]
     [SerializeField] private float _damageMultiplier;
     [SerializeField] private float _skillRange;
     [SerializeField] private TargetingType _targetType;
     [SerializeField] private int _maxTargetCount;
     [SerializeField] private int _hitCountPerTarget;
 
-    [Header("Visual Resources")]
+    [Header("ì•„ì´ì½˜ ë° í”„ë¦¬íŒ¹")]
     [SerializeField] private Sprite _skillIcon;
     [SerializeField] private GameObject _effectPrefab;
 
@@ -64,12 +64,12 @@ public class SkillData : ScriptableObject
     public GameObject EffectPrefab => _effectPrefab;
    
     
-       //½ºÅ³ ¹üÀ§ ³»ÀÇ ÀûÀ» Å½»öÇÏ°í Á¶°Ç¿¡ ¸Â°Ô ÇÊÅÍ¸µÇÏ¿© ¹İÈ¯ÇÏ´Â ÇÔ¼ö
+       //ìŠ¤í‚¬ ë²”ìœ„ ë‚´ì˜ ì ì„ íƒìƒ‰í•˜ê³  ì¡°ê±´ì— ë§ê²Œ í•„í„°ë§í•˜ì—¬ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜
     public List<Transform> FindTargets(Vector3 casterPosition, LayerMask enemyLayer)
     {
         List<Transform> finalTargets = new List<Transform>();
 
-        // ¿À¹ö·¦ ½ºÇÇ¾î¸¦ »ç¿ëÇØ ¹üÀ§ ³»ÀÇ ¸ğµç Äİ¶óÀÌ´õ °ËÃâ
+        // ì˜¤ë²„ë© ìŠ¤í”¼ì–´ë¥¼ ì‚¬ìš©í•´ ë²”ìœ„ ë‚´ì˜ ëª¨ë“  ì½œë¼ì´ë” ê²€ì¶œ
         Collider[] colliders = Physics.OverlapSphere(casterPosition, _skillRange, enemyLayer);
 
         if (colliders.Length == 0)
@@ -83,15 +83,15 @@ public class SkillData : ScriptableObject
             allTargets.Add(colliders[i].transform);
         }
 
-        // 2. Å¸°ÙÆÃ ¹æ½Ä(TargetingType)¿¡ µû¸¥ ºĞ±â Ã³¸®
+        // 2. íƒ€ê²ŸíŒ… ë°©ì‹(TargetingType)ì— ë”°ë¥¸ ë¶„ê¸° ì²˜ë¦¬
         switch (_targetType)
         {
             case TargetingType.Closest:
-                // ¶÷´Ù½ÄÀ» È°¿ëÇÑ °Å¸® ±âÁØ ¿À¸§Â÷¼ø Á¤·Ä
+                // ëŒë‹¤ì‹ì„ í™œìš©í•œ ê±°ë¦¬ ê¸°ì¤€ ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬
                 allTargets.Sort((a, b) =>
                     Vector3.Distance(casterPosition, a.position).CompareTo(Vector3.Distance(casterPosition, b.position)));
 
-                // Á¤·ÄµÈ ¸®½ºÆ®¿¡¼­ ÃÖ´ë Å¸°İ ¼ö¸¸Å­¸¸ ¾Õ¿¡¼­ºÎÅÍ »Ì¾Æ¿È
+                // ì •ë ¬ëœ ë¦¬ìŠ¤íŠ¸ì—ì„œ ìµœëŒ€ íƒ€ê²© ìˆ˜ë§Œí¼ë§Œ ì•ì—ì„œë¶€í„° ë½‘ì•„ì˜´
                 int closeCount = Mathf.Min(allTargets.Count, _maxTargetCount);
                 for (int i = 0; i < closeCount; i++)
                 {
@@ -100,32 +100,31 @@ public class SkillData : ScriptableObject
                 break;
 
             case TargetingType.Random:
-                // Á¦ºñ»Ì±â ¹æ½ÄÀÇ ·£´ı ÃßÃâ
+                // ì œë¹„ë½‘ê¸° ë°©ì‹ì˜ ëœë¤ ì¶”ì¶œ
                 int randomCount = Mathf.Min(allTargets.Count, _maxTargetCount);
                 for (int i = 0; i < randomCount; i++)
                 {
-                    // ³²Àº Å¸°Ùµé Áß ¹«ÀÛÀ§ ¹øÈ£Ç¥(ÀÎµ¦½º) ÇÏ³ª¸¦ »ÌÀ½
+                    // ë‚¨ì€ íƒ€ê²Ÿë“¤ ì¤‘ ë¬´ì‘ìœ„ ë²ˆí˜¸í‘œ(ì¸ë±ìŠ¤) í•˜ë‚˜ë¥¼ ë½‘ìŒ
                     int randomIndex = Random.Range(0, allTargets.Count);
 
-                    // »ÌÈù ¹øÈ£Ç¥¿¡ ÇØ´çÇÏ´Â Å¸°ÙÀ» ÃÖÁ¾ ¸®½ºÆ®¿¡ ³ÖÀ½
+                    // ë½‘íŒ ë²ˆí˜¸í‘œì— í•´ë‹¹í•˜ëŠ” íƒ€ê²Ÿì„ ìµœì¢… ë¦¬ìŠ¤íŠ¸ì— ë„£ìŒ
                     finalTargets.Add(allTargets[randomIndex]);
 
-                    // Áßº¹ÇØ¼­ »ÌÈ÷Áö ¾Êµµ·Ï ¿øº» ¸®½ºÆ®¿¡¼­ ÇØ´ç Å¸°ÙÀ» Á¦°ÅÇÔ
+                    // ì¤‘ë³µí•´ì„œ ë½‘íˆì§€ ì•Šë„ë¡ ì›ë³¸ ë¦¬ìŠ¤íŠ¸ì—ì„œ í•´ë‹¹ íƒ€ê²Ÿì„ ì œê±°í•¨
                     allTargets.RemoveAt(randomIndex);
                 }
                 break;
 
             case TargetingType.AllInRange:
-                // º°µµÀÇ Á¤·Ä ¾øÀÌ °ËÃâµÈ ¼ø¼­´ë·Î ÁøÇà (ÃÖ´ë °³¼ö¸¸ Á¦ÇÑ)
-                int allCount = Mathf.Min(allTargets.Count, _maxTargetCount);
-                for (int i = 0; i < allCount; i++)
+                // Physics.OverlapSphereê°€ ì°¾ì€ ë²”ìœ„ ë‚´ì˜ 'ëª¨ë“ ' ì ì„ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€.
+                for (int i = 0; i < allTargets.Count; i++)
                 {
                     finalTargets.Add(allTargets[i]);
                 }
                 break;
         }
 
-        // 3. ÇÊÅÍ¸µÀÌ ¿Ï·áµÈ ÃÖÁ¾ Å¸°Ù ¸®½ºÆ® ¹İÈ¯
+        // 3. í•„í„°ë§ì´ ì™„ë£Œëœ ìµœì¢… íƒ€ê²Ÿ ë¦¬ìŠ¤íŠ¸ ë°˜í™˜
         return finalTargets;
     }
 }
