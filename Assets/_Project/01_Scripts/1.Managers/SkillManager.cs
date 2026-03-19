@@ -11,14 +11,14 @@ public class SkillManager : Singleton<SkillManager>
     private Dictionary<string, float> _cooldownTimers = new Dictionary<string, float>();
 
     // 플레이어의 정보와 위치를 참조하기 위한 캐싱 변수
-    private Player _player;
+    private PlayerController _player;
 
     protected override void Awake()
     {
         base.Awake();
 
         // 합의된 룰: 최초 기동 시 Find 계열 함수를 사용하여 Player 스크립트 캐싱
-        _player = FindObjectOfType<Player>();
+        _player = FindObjectOfType<PlayerController>();
         if (_player == null)
         {
             Debug.LogWarning("[SkillManager] Player를 찾을 수 없습니다.");
