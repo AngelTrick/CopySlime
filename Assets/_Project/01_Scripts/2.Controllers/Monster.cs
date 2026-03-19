@@ -23,6 +23,7 @@ public class Monster : MonoBehaviour
     {
         data = newData;
         _isDead = false;
+        gameObject.SetActive(true);
 
         //공통 데이터 적용 (체력)
         currentHp = data.maxHp * statsMultiplier;
