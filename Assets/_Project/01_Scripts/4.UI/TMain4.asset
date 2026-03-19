@@ -15,7 +15,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 86ad9de90ecd16545b90828a33af73b7, type: 3}
   itemName: 12313213
   maxLevel: 123123
-  currentLevel: 5
+  currentLevel: 0
   baseValue: 123
   growthRate: 123
   baseCost: 123

@@ -15,7 +15,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 3ac73d7c1b497434183006d18af9c0af, type: 3}
   itemName: T1
   maxLevel: 100
-  currentLevel: 7
+  currentLevel: 0
   baseValue: 2
   growthRate: 2
   baseCost: 10
