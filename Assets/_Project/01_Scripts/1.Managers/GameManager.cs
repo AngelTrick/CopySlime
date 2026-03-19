@@ -35,7 +35,7 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         // Start 에서 바로 파밍 시작 X , 초기화 (Boot) 후 실행
-        ChangeState(GameState.StageFarming);
+        ChangeState(GameState.Boot);
         InitializeGame();
     }
 
@@ -45,14 +45,17 @@ public class GameManager : Singleton<GameManager>
     {
         Debug.Log("[GameManager] 초기화 진행 중...");
 
-        /* 나중에 초기화 시킬 다른 매니저  
-         * UIManager.Instance.InitMainHUD();       // 2. UI 세팅
-         * StageManager.Instance.LoadStage();      // 3. 스테이지 및 몬스터 로드
-         * 
-         */
-
         DataManager.Instance.LoadGameData();    // 1. 게임 세이브 파일 로드
+        //SoundManager.Instance.LoadSetting();
+        //UIManager.Instance.Init();
         Debug.Log("[GameManager] 게임 초기화 완료");
+        //ChangeState(GameState.StageFarming);
+    }
+
+    //[추가 된 함수 ] 메인 게임 씬이 완전히 열렸을 때 외부에서 호출해 줄 함수
+    public void StartMainGameFarming()
+    {
+        Debug.Log("[GameManager] 메인 씬 확인! 본격적인 파밍을 시작합니다.");
         ChangeState(GameState.StageFarming);
     }
 

@@ -30,7 +30,7 @@ public class Stage : MonoBehaviour
     public Sprite bossBackgroundSprite; //보스 맵 배경 이미지
     private Sprite _originalFieldSprite; //원래 필드 배경 이미지
     public bool isBossLevel = false; //현재 보스전 상태인지 확인
-    
+
     public void StartNewWave(BaseMonsterData data)
     {
         if (data is BossMonsterData) //보스 데이터인지 체크
@@ -77,11 +77,31 @@ public class Stage : MonoBehaviour
 
             //몬스터의 능력치 초기화
             Monster monster = go.GetComponent<Monster>();
-            if (monster != null)
+
+            if (monster != null && StageManager.Instance.currentStageData != null)
             {
-                float statsMul = StageManager.Instance.currentStageData.statsMultiplier;
-                float rewardMul = StageManager.Instance.currentStageData.rewardMultiplier;
-                monster.Init(data, statsMul, rewardMul);
+                var sData = StageManager.Instance.currentStageData;
+
+                //실제 스테이지 번호
+                int actualStageNum;
+                if (DataManager.Instance != null)
+                {
+                    actualStageNum = DataManager.Instance.CurrentStage;
+                }
+                else
+                {
+                    actualStageNum = 1;
+                }
+
+                //현제 스테이지 성장률
+                float growth = sData.monsterGrowthRate;
+
+                float exponentialMultiplier = Mathf.Pow(growth, actualStageNum - 1);
+
+                float finalStatsMul = sData.statsMultiplier * exponentialMultiplier;
+                float finalRewardMul = sData.rewardMultiplier * exponentialMultiplier;
+
+                monster.Init(data, finalStatsMul, finalRewardMul);
             }
 
             activeMonsters.Add(go); //리스트에 추가해서 관리 시작
@@ -162,8 +182,14 @@ public class Stage : MonoBehaviour
 
                     float targetRange = 2.0f; //기본값
 
-                    if (firstTarget.TryGetComponent<Monster>(out var m)) targetRange = m.data.attackRange;
-                    else if (firstTarget.TryGetComponent<TreasureChest>(out var t)) targetRange = t.attackRange;
+                    if (firstTarget.TryGetComponent<Monster>(out var m))
+                    {
+                        targetRange = m.data.attackRange;
+                    }
+                    else if (firstTarget.TryGetComponent<TreasureChest>(out var t))
+                    {
+                        targetRange = t.attackRange;
+                    }
 
                     if (distance <= targetRange)
                     {
@@ -176,7 +202,6 @@ public class Stage : MonoBehaviour
                 break;
             }
 
-            float deltaTime = Time.deltaTime;
             float speed;
 
             if (elapsed < movingDuration)
@@ -187,8 +212,7 @@ public class Stage : MonoBehaviour
             {
                 speed = 2.0f; 
             }
-            float currentSpeed = speed;
-
+            
             Vector3 step = Vector3.left * speed * Time.deltaTime;
 
             MoveAndLoopBackgrounds(step); //배경 이동 및 루핑 체크
@@ -198,7 +222,7 @@ public class Stage : MonoBehaviour
                 if (m != null) m.transform.Translate(step);
             }
 
-            elapsed += deltaTime;
+            elapsed += Time.deltaTime; 
             yield return null;
         }
 
