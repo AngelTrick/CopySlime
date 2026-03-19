@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: af8dc8e36aeeb2e4aa32970f43a0ad5f, type: 3}
   itemName: T3
-  maxLevel: 5566576
-  currentLevel: 654
-  currentValue: 778
-  nextValue: 6666
-  upgradeCost: 788
+  maxLevel: 50000
+  currentLevel: 0
+  baseValue: 1
+  growthRate: 1
+  baseCost: 1
+  costGrowthRate: 1.3

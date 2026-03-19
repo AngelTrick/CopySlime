@@ -51,8 +51,8 @@ public class SceneManagerEx : Singleton<SceneManagerEx>
             {
                 op.allowSceneActivation = true;
             }
+            yield return null;
         }
-        yield return op;
     }
 
     // TODO : "로딩 중 ... " UI 패널 끄기

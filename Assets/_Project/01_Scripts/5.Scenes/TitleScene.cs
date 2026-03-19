@@ -2,6 +2,7 @@
 
 public class TitleScene : BaseScene
 {
+    private bool _isLoading = false;
     protected override void Init()
     {
         base.Init();
@@ -18,12 +19,13 @@ public class TitleScene : BaseScene
     private void Update()
     {
         // 3. 유저 입력 대기 : 화면의 아무 곳이나 마우스 클릭(터치)하면 다음 씬으로 넘어 감
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !_isLoading)
         {
+            _isLoading = true;
             Debug.Log("[TItleScene] 화면 터치 감지! 메인 게임으로 진입");
 
             // TODO : SceneManagerEX 안 로딩 을 완료 한다음에 주석 해제
-            // SceneManagerEx.Instance.LoadSceneAsync(Define.Scene.MainGame);
+            SceneManagerEx.Instance.LoadSceneAsync(Define.Scene.MainGame);
 
             // 현재는 테스트 용으로 클릭 감지만 함
         }
