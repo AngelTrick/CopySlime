@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [Header("기본 스탯")]
     public string characterName;
@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 
     public List<SkillData> EquippedSkills => equippedSkills;
 
-    public void ShowStatus() 
+    public void ShowStatus()
     {
         Debug.Log($"캐릭터 이름: {characterName}");
         Debug.Log($"공격력: {attackPower}");
@@ -77,28 +77,28 @@ public class Player : MonoBehaviour
             try
             {
                 level = Mathf.Max(1, DataManager.Instance.AttackLevel); // AttacKLevel 부분 데이터 매니저에서 
-                // 추가를 해줘야 attackLevel 빨간줄이 사라집니다 . 
-                // 예시 코드 입니다 . 
-                // public class DataManager : MonoBehaviour 
-                //{
-                    //public static DataManager Instance ; 
-                    //[Header("플레이어 데이터")]
-                    //public int AttackLevel = 1; 
+                                                                        // 추가를 해줘야 attackLevel 빨간줄이 사라집니다 . 
+                                                                        // 예시 코드 입니다 . 
+                                                                        // public class DataManager : MonoBehaviour 
+                                                                        //{
+                                                                        //public static DataManager Instance ; 
+                                                                        //[Header("플레이어 데이터")]
+                                                                        //public int AttackLevel = 1; 
 
-                    // private void Awake()
-                    //{
-                        // if (Instance == null)
-                        // {
-                              // Instance = this ; 
-                              // DontDestroyOnLoad(gameObject);
-                        //}
+                // private void Awake()
+                //{
+                // if (Instance == null)
+                // {
+                // Instance = this ; 
+                // DontDestroyOnLoad(gameObject);
+                //}
 
                 // else 
-                 //{
-                     // Destroy(gameObject);
-                 //}
-                 
-                  
+                //{
+                // Destroy(gameObject);
+                //}
+
+
 
 
 
@@ -130,7 +130,7 @@ public class Player : MonoBehaviour
 
 
         characterName = "용사";
-     
+
         critDamage = 150f;
         critRate = 25f;
         luck = 10f;
