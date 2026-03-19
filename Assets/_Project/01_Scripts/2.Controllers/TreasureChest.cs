@@ -15,8 +15,23 @@ public class TreasureChest : MonoBehaviour
     [Header("보상 설정")]
     public GameObject goldPrefab;
     public int goldCount = 10; //뿌려지는 동전 수
-    public int goldAmountPerPiece = 50; //동전 1개당 금액
+    private int _calculatedGoldPerPiece; //동전 1개당 금액
 
+    public void Init(int totalGoldAmount)
+    {
+        _isDestroyed = false;
+        _currentHp = maxHp;
+        gameObject.SetActive(true);
+
+        if (goldCount > 0)
+        {
+            _calculatedGoldPerPiece = totalGoldAmount / goldCount;
+        }
+        else
+        {
+            _calculatedGoldPerPiece = totalGoldAmount;
+        }
+    }
     void OnEnable()
     {
         _currentHp = maxHp;
@@ -34,10 +49,6 @@ public class TreasureChest : MonoBehaviour
             Explode(); 
         }
     }
-    void Update()
-    {
-        if (_isDestroyed) return;
-    }
     private void Explode()
     {
         if (_isDestroyed) return;
@@ -52,7 +63,7 @@ public class TreasureChest : MonoBehaviour
 
                 if (goldScript != null)
                 {
-                    goldScript.Init(goldAmountPerPiece, true);
+                    goldScript.Init(_calculatedGoldPerPiece, true);
                 }
             }
         }
