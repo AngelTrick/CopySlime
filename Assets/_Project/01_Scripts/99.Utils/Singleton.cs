@@ -1,13 +1,19 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance;
+    private static bool _applicationIsQuitting = false;  // 앱이 종료 되는 중인지 체크
 
     public static T Instance
     {
         get
         {
+            if (_applicationIsQuitting)
+            {
+                return null;
+            }
             if(_instance == null)
             {
                 _instance = FindObjectOfType<T>();
@@ -32,5 +38,15 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             // 한 이유 : 하이어레키 창에서 관리 법으로 부모 (Managers) 자식 (Game,Data,Pool , etc..) 가져 가기 ?문에
         }
         else Destroy(gameObject);
+    }
+
+    private void OnApplicationQuit()
+    {
+        _applicationIsQuitting = true;
+    }
+
+    private void OnDestroy()
+    {
+        _applicationIsQuitting = true;
     }
 }

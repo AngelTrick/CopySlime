@@ -45,10 +45,6 @@ public class StageManager : Singleton<StageManager>
     protected override void Awake()
     {
         base.Awake();
-        if (allStageDatas == null || allStageDatas.Length == 0)
-        {
-            Debug.LogError("StageManager: Stage Data가 할당되지 않았습니다!");
-        }
     }
     void Start()
     {
@@ -202,15 +198,25 @@ public class StageManager : Singleton<StageManager>
     {
         if (treasureChestPrefab != null)
         {
+            int actualLevel = GetCurrentLevel();
+
+            float growth = currentStageData.monsterGrowthRate;
+            float exponentialMultiplier = Mathf.Pow(growth, actualLevel - 1);
+
+            int finalChestGold = Mathf.RoundToInt(currentStageData.baseRewardGold * currentStageData.rewardMultiplier * exponentialMultiplier);
+
             Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, 0f, 0f);
 
             GameObject chestGo = PoolManager.Instance.Pop(treasureChestPrefab, spawnPos, Quaternion.identity);
-            if (stageController != null)
+
+            TreasureChest chestScript = chestGo.GetComponent<TreasureChest>();
+            if (chestScript != null)
             {
-                stageController.activeMonsters.Add(chestGo);
-                stageController.OnMonsterKilled(null);
+                //계산된 최종 골드를 상자에 주입
+                chestScript.Init(finalChestGold);
             }
 
+            stageController.activeMonsters.Add(chestGo);
             CancelInvoke("SpawnNextWave");
         }
     }
