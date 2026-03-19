@@ -131,8 +131,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   amount: 10
-  collectDistance: 4
-  moveSpeed: 2
+  collectDistance: 1
+  magnetDistance: 6
+  moveSpeed: 4
 --- !u!54 &4970721097597601331
 Rigidbody:
   m_ObjectHideFlags: 0
