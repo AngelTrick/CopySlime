@@ -14,6 +14,8 @@ public class PlayerSaveData
     public int copyFragments = 0;   // 카피 조각 
     public int currentStage = 1;    // 현재 스테이지
 
+    public int attackLevel = 1;     // 공격력 업그레이드 레벨 (기본 1렙)
+
     // 나중에 스킬(해금) 단계 에서 목록 추가 (확장성)
     // public List<int> unlockSkillDs = new List<int>(); << Ex
 }
@@ -32,6 +34,8 @@ public class DataManager : Singleton<DataManager>
     public int Gold { get { return _saveData.gold; } }
     public int CopyFragments { get { return _saveData.copyFragments; } }
     public int CurrentStage { get { return _saveData.currentStage; } }
+
+    public int AttackLevel { get { return _saveData.attackLevel; } }
 
     // [ 2. 데이터 변경 알림 방송국]
     // 골드 나 조각이 바뀔 때마다 UI들에게 Ex) "화면 숫자 바꿔!" 라고 알리는 곳
@@ -116,6 +120,15 @@ public class DataManager : Singleton<DataManager>
 
         // 안전 저장을 위해
         SaveGameData();
+    }
+
+    public void UpgradeAttackLevel()
+    {
+        _saveData.attackLevel++;
+
+        SaveGameData();
+
+        OnDataChanged?.Invoke();
     }
 
     // JSON 데이터 초기화 함수
