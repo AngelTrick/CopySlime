@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -76,7 +76,7 @@ public class Player : MonoBehaviour
         {
             try
             {
-                level = Mathf.Max(1, DataManager.Instance.attackLevel); // AttacKLevel 부분 데이터 매니저에서 
+                level = Mathf.Max(1, DataManager.Instance.AttackLevel); // AttacKLevel 부분 데이터 매니저에서 
                 // 추가를 해줘야 attackLevel 빨간줄이 사라집니다 . 
                 // 예시 코드 입니다 . 
                 // public class DataManager : MonoBehaviour 
