@@ -16,7 +16,7 @@ MonoBehaviour:
   stageLevel: 0
   statsMultiplier: 1
   rewardMultiplier: 1
-  rewardGoalCount: 20
+  rewardGoalCount: 10
   baseRewardGold: 100
   fieldMonsters:
   - {fileID: 11400000, guid: 25846b84fece3544db9033568b5961da, type: 2}

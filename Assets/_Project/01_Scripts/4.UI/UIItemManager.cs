@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ public class UIItemManager : Singleton<UIItemManager>
     [SerializeField] private Transform content;
     [SerializeField] private TTItembase database;
     [SerializeField] private ItemSlot itemSlotPrefab;
-    //[SerializeField] private int itemCount = 20; // ´õ ÁÁÀº ¹æ¹ıÀ» »ı°¢
+    //[SerializeField] private int itemCount = 20; // ë” ì¢‹ì€ ë°©ë²•ì„ ìƒê°
 
     private void Start()
     {
@@ -18,11 +18,11 @@ public class UIItemManager : Singleton<UIItemManager>
         List<TempItemData> list = database.GetAll();
         if (list == null || list.Count == 0)
         {
-            Debug.LogError("Database ¸®½ºÆ® ºñ¾îÀÖÀ½!!!!!!!!!");
+            Debug.LogError("Database ë¦¬ìŠ¤íŠ¸ ë¹„ì–´ìˆìŒ!!!!!!!!!");
             return;
         }
 
-        Debug.Log($"¾ÆÀÌÅÛ °³¼ö: {list.Count}");
+        Debug.Log($"ì•„ì´í…œ ê°œìˆ˜: {list.Count}");
 
         foreach (TempItemData data in list)
         {

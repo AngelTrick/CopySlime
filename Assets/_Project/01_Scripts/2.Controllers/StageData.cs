@@ -1,23 +1,23 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewStageData", menuName = "ScriptableObjects/StageData")]
 public class StageData : ScriptableObject
 {
-    [Header("½ºÅ×ÀÌÁö Á¤º¸")]
-    public string stageName; //½ºÅ×ÀÌÁö ÀÌ¸§
-    public int stageLevel; //½ºÅ×ÀÌÁö ¹øÈ£
+    [Header("ìŠ¤í…Œì´ì§€ ì •ë³´")]
+    public string stageName; //ìŠ¤í…Œì´ì§€ ì´ë¦„
+    public int stageLevel; //ìŠ¤í…Œì´ì§€ ë²ˆí˜¸
 
-    [Header("³­ÀÌµµ ¹× º¸»ó ¹èÀ²")]
-    public float statsMultiplier = 1.0f; //¸ó½ºÅÍ Ã¼·Â(1.0 = 100%)
-    public float rewardMultiplier = 1.0f; //°ñµå º¸»ó ºñÀ²
+    [Header("ë‚œì´ë„ ë° ë³´ìƒ ë°°ìœ¨")]
+    public float statsMultiplier = 1.0f; //ëª¬ìŠ¤í„° ì²´ë ¥(1.0 = 100%)
+    public float rewardMultiplier = 1.0f; //ê³¨ë“œ ë³´ìƒ ë¹„ìœ¨
 
-    [Header("¹İº¹ º¸»ó ¼³Á¤")]
-    public int rewardGoalCount = 20; //20¸¶¸® ÀâÀ¸¸é º¸»ó Áö±Ş
-    public int baseRewardGold = 100; //±âº» °ñµå ¾ç
+    [Header("ë°˜ë³µ ë³´ìƒ ì„¤ì •")]
+    public int rewardGoalCount = 20; //20ë§ˆë¦¬ ì¡ìœ¼ë©´ ë³´ìƒ ì§€ê¸‰
+    public int baseRewardGold = 100; //ê¸°ë³¸ ê³¨ë“œ ì–‘
 
-    [Header("µîÀå ¸ó½ºÅÍ")]
-    public NormalMonsterData[] fieldMonsters; //ÇÊµå ¹«ÇÑ ·çÇÁ¿ë ¸ó½ºÅÍµé
-    public BossMonsterData stageBoss; //¹öÆ° ´­·¶À» ¶§ ³ª¿Ã º¸½º
+    [Header("ë“±ì¥ ëª¬ìŠ¤í„°")]
+    public NormalMonsterData[] fieldMonsters; //í•„ë“œ ë¬´í•œ ë£¨í”„ìš© ëª¬ìŠ¤í„°ë“¤
+    public BossMonsterData stageBoss; //ë²„íŠ¼ ëˆŒë €ì„ ë•Œ ë‚˜ì˜¬ ë³´ìŠ¤
 }

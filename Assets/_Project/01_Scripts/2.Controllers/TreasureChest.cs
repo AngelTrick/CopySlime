@@ -1,21 +1,21 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TreasureChest : MonoBehaviour
 {
-    [Header("»óÀÚ ¼³Á¤")]
-    public float maxHp = 50f;          // »óÀÚÀÇ Ã¼·Â (¸î ¹ø ¶§·Á¾ß ºÎ¼­ÁúÁö)
+    [Header("ìƒì ì„¤ì •")]
+    public float maxHp = 50f; //ìƒìì˜ ì²´ë ¥
     private float _currentHp;
     private bool _isDestroyed = false;
 
-    [Header("ÀÌµ¿ ¼³Á¤")]
-    public float attackRange = 2.0f; //ÇÃ·¹ÀÌ¾î¿Í °Å¸®
+    [Header("ì´ë™ ì„¤ì •")]
+    public float attackRange = 2.0f; //í”Œë ˆì´ì–´ì™€ ê±°ë¦¬
 
-    [Header("º¸»ó ¼³Á¤")]
+    [Header("ë³´ìƒ ì„¤ì •")]
     public GameObject goldPrefab;
-    public int goldCount = 10; //»Ñ·ÁÁö´Â µ¿Àü ¼ö
-    public int goldAmountPerPiece = 50; //µ¿Àü 1°³´ç ±İ¾×
+    public int goldCount = 10; //ë¿Œë ¤ì§€ëŠ” ë™ì „ ìˆ˜
+    public int goldAmountPerPiece = 50; //ë™ì „ 1ê°œë‹¹ ê¸ˆì•¡
 
     void OnEnable()
     {
@@ -37,11 +37,6 @@ public class TreasureChest : MonoBehaviour
     void Update()
     {
         if (_isDestroyed) return;
-
-        if (StageManager.Instance.stageController != null && StageManager.Instance.stageController.isMoving)
-        {
-            transform.Translate(Vector3.left * 2.0f * Time.deltaTime);
-        }
     }
     private void Explode()
     {
@@ -61,9 +56,9 @@ public class TreasureChest : MonoBehaviour
                 }
             }
         }
-        if (StageManager.Instance != null)
+        if (StageManager.Instance != null && StageManager.Instance.stageController != null)
         {
-            StageManager.Instance.OnWaveCompleted();
+            StageManager.Instance.stageController.OnMonsterKilled(this.gameObject);
         }
 
         if (PoolManager.Instance != null)

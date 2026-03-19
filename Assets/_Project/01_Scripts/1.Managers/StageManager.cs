@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,21 +6,23 @@ public class StageManager : Singleton<StageManager>
 {
     public Stage stageController;
     public StageData currentStageData;
-    private int _currentRewardCount = 0; //Å³°ÔÀÌÁö
+    private int _currentRewardCount = 0; //í‚¬ê²Œì´ì§€
 
-    public int totalGold = 0; //ÇÃ·¹ÀÌ¾î°¡ ÇöÀç °¡Áø ÃÑ °ñµå
+    public int totalGold = 0; //í”Œë ˆì´ì–´ê°€ í˜„ì¬ ê°€ì§„ ì´ ê³¨ë“œ
 
-    [Header("½ºÅ×ÀÌÁö °ü¸®")]
-    public StageData[] allStageDatas; //½ºÅ×ÀÌÁö µ¥ÀÌÅÍ ¸®½ºÆ®
-    private int _currentStageIndex = 0; //ÇöÀç ¸î ¹øÂ° ½ºÅ×ÀÌÁöÀÎÁö ÀúÀå
+    [Header("ìŠ¤í…Œì´ì§€ ê´€ë¦¬")]
+    public StageData[] allStageDatas; //ìŠ¤í…Œì´ì§€ ë°ì´í„° ë¦¬ìŠ¤íŠ¸
+    private int _currentStageIndex = 0; //í˜„ì¬ ëª‡ ë²ˆì§¸ ìŠ¤í…Œì´ì§€ì¸ì§€ ì €ì¥
 
-    [Header("º¸½ºÀü Å¸ÀÓ¾îÅÃ ¼³Á¤")]
-    private float _currentBossLimitTime; //º¸½ºÀü ÇÑ°è ½Ã°£
-    private float _currentBossTimer; //º¸½ºÀü Å¸ÀÌ¸Ó
+    [Header("ë³´ìŠ¤ì „ íƒ€ì„ì–´íƒ ì„¤ì •")]
+    private float _currentBossLimitTime; //ë³´ìŠ¤ì „ í•œê³„ ì‹œê°„
+    private float _currentBossTimer; //ë³´ìŠ¤ì „ íƒ€ì´ë¨¸
     private bool _isTimerRunning = false;
 
-    [Header("º¸¹° »óÀÚ ¼³Á¤")]
+    [Header("ë³´ë¬¼ ìƒì ì„¤ì •")]
     public GameObject treasureChestPrefab;
+
+    public System.Action<int> OnGoldChanged;
 
     public float GetBossTimerProgress()
     {
@@ -42,7 +44,7 @@ public class StageManager : Singleton<StageManager>
         base.Awake();
         if (allStageDatas == null || allStageDatas.Length == 0)
         {
-            Debug.LogError("StageManager: Stage Data°¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+            Debug.LogError("StageManager: Stage Dataê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤!");
         }
     }
     void Start()
@@ -51,7 +53,7 @@ public class StageManager : Singleton<StageManager>
         {
             currentStageData = allStageDatas[_currentStageIndex];
         }
-        SpawnNextWave(); //°ÔÀÓ ½ÃÀÛ ½Ã Ã¹ ¼ÒÈ¯
+        SpawnNextWave(); //ê²Œì„ ì‹œì‘ ì‹œ ì²« ì†Œí™˜
     }
     void Update()
     {
@@ -60,12 +62,11 @@ public class StageManager : Singleton<StageManager>
             _currentBossTimer -= Time.deltaTime;
             if (_currentBossTimer <= 0)
             {
-                OnBossChallengeFailed(); //½Ã°£ Á¾·á ½Ã ½ÇÆĞ Ã³¸®
+                OnBossChallengeFailed(); //ì‹œê°„ ì¢…ë£Œ ì‹œ ì‹¤íŒ¨ ì²˜ë¦¬
             }
         }
-        if (Input.GetKeyDown(KeyCode.F)) //Å×½ºÆ® ¿ë
+        if (Input.GetKeyDown(KeyCode.F)) //í…ŒìŠ¤íŠ¸ ìš©
         {
-            Debug.Log("Å×½ºÆ®: º¸½º µµÀü ½ÇÆĞ °­Á¦ È£Ãâ");
             OnBossChallengeFailed();
         }
     }
@@ -97,13 +98,17 @@ public class StageManager : Singleton<StageManager>
             _currentBossTimer = _currentBossLimitTime;
 
             _isTimerRunning = true;
-            Debug.Log($"º¸½ºÀü ½ÃÀÛ! Á¦ÇÑ ½Ã°£: {currentStageData.stageBoss.monsterName}ÃÊ");
+            Debug.Log($"ë³´ìŠ¤ì „ ì‹œì‘! ì œí•œ ì‹œê°„: {currentStageData.stageBoss.monsterName}ì´ˆ");
         }
     }
     public void OnBossClear()
     {
-        Debug.Log("º¸½º Ã³Ä¡ ¼º°ø!");
         _isTimerRunning = false;
+        StartCoroutine(WaitAndGoToNextStage(2.0f));
+    }
+    private IEnumerator WaitAndGoToNextStage(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         GoToNextStage();
     }
     public void GoToNextStage()
@@ -116,16 +121,17 @@ public class StageManager : Singleton<StageManager>
         }
 
         currentStageData = allStageDatas[_currentStageIndex];
-        _currentRewardCount = 0; //°ÔÀÌÁö ÃÊ±âÈ­
+        _currentRewardCount = 0; //ê²Œì´ì§€ ì´ˆê¸°í™”
 
         stageController.ReturnToField();
         SpawnNextWave();
     }
-    public void AddGold(int amount)
+    public void AddGold(int amount) //ê³¨ë“œ íšë“ ë¶€ë¶„
     {
         totalGold += amount;
+        OnGoldChanged?.Invoke(totalGold); //ê³¨ë“œ íšë“ ì‚¬ìš´ë“œ ë“± ì´ë²¤íŠ¸
     }
-    //½ºÅ×ÀÌÁö ·¹º§
+    //ìŠ¤í…Œì´ì§€ ë ˆë²¨
     public int GetCurrentLevel()
     {
         if (currentStageData != null)
@@ -137,17 +143,17 @@ public class StageManager : Singleton<StageManager>
             return 0;
         }
     }
-    //º¸»ó °ÔÀÌÁö
+    //ë³´ìƒ ê²Œì´ì§€
     public float GetKillGaugeProgress()
     {
         if (currentStageData == null || currentStageData.rewardGoalCount == 0)
         {
             return 0f;
         }
-        //ÇöÀç ÀâÀº ¼ö / ¸ñÇ¥ ¼ö¸¦ °è»ê.
+        //í˜„ì¬ ì¡ì€ ìˆ˜ / ëª©í‘œ ìˆ˜ë¥¼ ê³„ì‚°.
         return (float)_currentRewardCount / currentStageData.rewardGoalCount;
     }
-    //½ºÅ×ÀÌÁö ÀÌ¸§
+    //ìŠ¤í…Œì´ì§€ ì´ë¦„
     public string GetStageName()
     {
         if (currentStageData != null)
@@ -166,15 +172,14 @@ public class StageManager : Singleton<StageManager>
         if (_currentRewardCount >= currentStageData.rewardGoalCount)
         {
             GiveReward();
-            _currentRewardCount = 0; //°ÔÀÌÁö ÃÊ±âÈ­
+            _currentRewardCount = 0; //ê²Œì´ì§€ ì´ˆê¸°í™”
         }
     }
     private void GiveReward()
     {
         if (treasureChestPrefab != null)
         {
-            float xPos = stageController.bossSpawnPos;
-            Vector3 spawnPos = new Vector3(xPos, 0f, 0f);
+            Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, 0f, 0f);
 
             GameObject chestGo = PoolManager.Instance.Pop(treasureChestPrefab, spawnPos, Quaternion.identity);
             if (stageController != null)
@@ -192,15 +197,15 @@ public class StageManager : Singleton<StageManager>
         {
             _isTimerRunning = false;
 
-            foreach (GameObject m in stageController.activeMonsters) //¼ÒÈ¯µÈ º¸½º ¸ó½ºÅÍ Á¦°Å
+            foreach (GameObject m in stageController.activeMonsters) //ì†Œí™˜ëœ ë³´ìŠ¤ ëª¬ìŠ¤í„° ì œê±°
             {
                 if (m != null) PoolManager.Instance.Push(m);
             }
             stageController.activeMonsters.Clear();
 
-            stageController.ReturnToField(); //½ºÅ×ÀÌÁö »óÅÂ º¹±¸
+            stageController.ReturnToField(); //ìŠ¤í…Œì´ì§€ ìƒíƒœ ë³µêµ¬
 
-            SpawnNextWave(); //´Ù½Ã ÀÏ¹İ ¼ÒÈ¯ ·çÇÁ ÁøÇà
+            SpawnNextWave(); //ë‹¤ì‹œ ì¼ë°˜ ì†Œí™˜ ë£¨í”„ ì§„í–‰
 
         }
     }
@@ -208,14 +213,16 @@ public class StageManager : Singleton<StageManager>
     {
         if (!stageController.isBossLevel)
         {
-            Invoke("SpawnNextWave", 1.5f); //º¸½ºÀü ÁßÀÌ ¾Æ´Ï¶ó¸é ¹«Á¶°Ç ´ÙÀ½ ¿şÀÌºê ¼ÒÈ¯ (¹«ÇÑ ¹İº¹)
+            if (stageController.activeMonsters.Count > 0) return;
+
+            Invoke("SpawnNextWave", 1.5f); //ë³´ìŠ¤ì „ ì¤‘ì´ ì•„ë‹ˆë¼ë©´ ë¬´ì¡°ê±´ ë‹¤ìŒ ì›¨ì´ë¸Œ ì†Œí™˜ (ë¬´í•œ ë°˜ë³µ)
         }
     }
     private void SpawnNextWave()
     {
         if (currentStageData != null && stageController != null)
         {
-            //¿©·¯ ÀÏ¹İ ¸ó½ºÅÍ Áß ·£´ıÀ¸·Î ÇÏ³ª Àü´Ş
+            //ì—¬ëŸ¬ ì¼ë°˜ ëª¬ìŠ¤í„° ì¤‘ ëœë¤ìœ¼ë¡œ í•˜ë‚˜ ì „ë‹¬
             int rand = Random.Range(0, currentStageData.fieldMonsters.Length);
             stageController.StartNewWave(currentStageData.fieldMonsters[rand]);
         }
