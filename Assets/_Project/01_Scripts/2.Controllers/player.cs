@@ -1,116 +1,149 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 스킬 데이터 클래스: 스킬의 모든 정보를 담음
-/// </summary>
-/*[System.Serializable]
-public class SkillData
-{
-    public int SkillId { get; set; }          // 스킬 고유 ID
-    public string SkillName { get; set; }     // 스킬 이름
-    public int DamageMultiplier { get; set; } // 스킬 데미지 배율
-    public float Cooldown { get; set; }       // 스킬 쿨타임 (초)
-
-    public override string ToString()
-    {
-        return $"{SkillName} (ID:{SkillId}, Damage:{DamageMultiplier}, Cooldown:{Cooldown}s)";
-    }
-}
-*/
 public class Player : MonoBehaviour
 {
-    // ------------------ 캐릭터 기본 스탯 ------------------
-    // 이제는 필드 대신 프로퍼티로 선언하여 외부에서 get/set 가능
-    public string CharacterName { get; set; }   // 캐릭터 이름
-    public int AttackPower { get; set; }        // 기본 공격력 (고정 수치)
-    public float CritDamage { get; set; }       // 치명타 공격력 배율 (%)
-    public float CritRate { get; set; }         // 치명타 확률 (%)
-    public float Luck { get; set; }             // 골드 추가 획득량 (%)
-    public float AttackSpeed { get; set; }      // 공격속도 증가 (%)
-    public int SkillSlots { get; set; }         // 보유 가능한 스킬 슬롯 개수
+    [Header("기본 스탯")]
+    public string characterName;
+    public int attackPower { get; set; }
+    public float critDamage { get; set; }
+    public float critRate { get; set; }
+    public float luck { get; set; }
+    public float attackSpeed { get; set; }
+    public int skillSlots { get; set; }
 
-    // ------------------ 스킬 관련 ------------------
-    [SerializeField]
-    private List<SkillData> _skills = new List<SkillData>(); // 실제 장착된 스킬 목록
+    [Header("장착된 스킬 (SO 드래그 앤 드롭)")]
+    [SerializeField] private List<SkillData> equippedSkills = new List<SkillData>();
 
-    // 외부에서 읽기 전용으로 접근할 수 있도록 프로퍼티 제공
-    public List<SkillData> EquippedSkills => _skills;
+    public List<SkillData> EquippedSkills => equippedSkills;
 
-    /// <summary>
-    /// 캐릭터 현재 상태 출력
-    /// </summary>
-    public void ShowStatus()
+    public void ShowStatus() 
     {
-       
-        Debug.Log($"캐릭터 이름: {CharacterName}");
-        Debug.Log($"공격력: {AttackPower}");
-        Debug.Log($"치명타 공격력: {CritDamage}%");
-        Debug.Log($"치명타 확률: {CritRate}%");
-        Debug.Log($"럭(추가 골드): {Luck}%");
-        Debug.Log($"공격속도 증가: {AttackSpeed}%");
-        Debug.Log($"스킬 슬롯: {SkillSlots}");
+        Debug.Log($"캐릭터 이름: {characterName}");
+        Debug.Log($"공격력: {attackPower}");
+        Debug.Log($"치명타 공격력: {critDamage}%");
+        Debug.Log($"치명타 확률: {critRate}%");
+        Debug.Log($"럭(추가 골드): {luck}%");
+        Debug.Log($"공격속도 증가: {attackSpeed}%");
+        Debug.Log($"스킬 슬롯: {skillSlots}");
         Debug.Log("장착된 스킬:");
-        if (_skills.Count > 0)
+
+        if (equippedSkills.Count > 0)
         {
-            foreach (var skill in _skills)
+            foreach (var skill in equippedSkills)
             {
-                Debug.Log($"- {skill}");
+                Debug.Log($"- {skill.SkillName} (등급:{skill.Grade}, 타입:{skill.Type})");
             }
         }
         else
         {
             Debug.Log("없음");
         }
-      
     }
 
-    /// <summary>
-    /// 공격 메서드: 치명타 여부를 판정하고 최종 데미지를 계산
-    /// </summary>
     public float Attack()
     {
-        bool isCrit = Random.value < (CritRate / 100f);
+        bool isCrit = Random.value < (critRate / 100f);
 
         float damage;
         if (isCrit)
         {
-            damage = AttackPower * (1 + CritDamage / 100f);
+            damage = attackPower * (1 + critDamage / 100f);
             Debug.Log($"[CRIT] 치명타 발생! {damage:F2} 데미지를 입혔습니다.");
         }
         else
         {
-            damage = AttackPower;
+            damage = attackPower;
             Debug.Log($"[HIT] 일반 공격! {damage:F2} 데미지를 입혔습니다.");
         }
 
         return damage;
     }
 
-    /// <summary>
-    /// 골드 획득 메서드
-    /// </summary>
     public float FarmGold(float baseGold)
     {
-        float bonus = baseGold * (Luck / 100f);
+        float bonus = baseGold * (luck / 100f);
         float totalGold = baseGold + bonus;
         Debug.Log($"[GOLD] 기본 {baseGold} + 추가 {bonus:F2} = 총 {totalGold:F2} 골드 획득");
         return totalGold;
     }
+    public void UpdateStatsFromData()
+    {
+        // DataManager가 없거나 AttackLevel이 정의되지 않았을 경우 대비
+        int level = 1; // 기본 레벨
+
+        if (DataManager.Instance != null)
+        {
+            try
+            {
+                level = Mathf.Max(1, DataManager.Instance.attackLevel); // AttacKLevel 부분 데이터 매니저에서 
+                // 추가를 해줘야 attackLevel 빨간줄이 사라집니다 . 
+                // 예시 코드 입니다 . 
+                // public class DataManager : MonoBehaviour 
+                //{
+                    //public static DataManager Instance ; 
+                    //[Header("플레이어 데이터")]
+                    //public int AttackLevel = 1; 
+
+                    // private void Awake()
+                    //{
+                        // if (Instance == null)
+                        // {
+                              // Instance = this ; 
+                              // DontDestroyOnLoad(gameObject);
+                        //}
+
+                // else 
+                 //{
+                     // Destroy(gameObject);
+                 //}
+                 
+                  
+
+
+
+
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[Player] AttackLevel 접근 실패 → 기본 Lv.1 적용 ({e.Message})");
+                level = 1;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[Player] DataManager가 존재하지 않습니다. 기본 Lv.1 적용!");
+        }
+
+        int baseAttack = 50;
+        float growthRate = 1.1f;
+
+        attackPower = Mathf.RoundToInt(baseAttack + (level * 5) * Mathf.Pow(growthRate, level - 1));
+
+        Debug.Log($"[Player] Lv.{level} 스탯 적용 완료 → 공격력: {attackPower}");
+    }
+
 
     void Start()
     {
-        // 예시: 프로퍼티를 통해 값 세팅
-        CharacterName = "용사";
-        AttackPower = 50;
-        CritDamage = 150f;
-        CritRate = 25f;
-        Luck = 10f;
-        AttackSpeed = 20f;
-        SkillSlots = 3;
+        UpdateStatsFromData();
+
+
+        characterName = "용사";
+     
+        critDamage = 150f;
+        critRate = 25f;
+        luck = 10f;
+        attackSpeed = 20f;
+        skillSlots = 3;
 
         ShowStatus();
+
+        foreach (var skill in equippedSkills)
+        {
+            Debug.Log($"스킬 [{skill.SkillName}] 사용! " +
+                      $"배율:{skill.DamageMultiplier}, 쿨타임:{skill.Cooldown}, 범위:{skill.SkillRange}");
+        }
 
         for (int i = 0; i < 5; i++)
         {
@@ -119,4 +152,5 @@ public class Player : MonoBehaviour
 
         FarmGold(100);
     }
+
 }
