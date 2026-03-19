@@ -7,7 +7,7 @@ public class Monster : MonoBehaviour
 
     public BaseMonsterData data;
 
-    private float _currentHp;
+    public float currentHp;
     private int _currentGold;
     private bool _isDead = false;
 
@@ -25,7 +25,7 @@ public class Monster : MonoBehaviour
         _isDead = false;
 
         //공통 데이터 적용 (체력)
-        _currentHp = data.maxHp * statsMultiplier;
+        currentHp = data.maxHp * statsMultiplier;
 
         //공통 데이터 적용 (골드 보상)
         _currentGold = Mathf.RoundToInt(data.dropGold * rewardMultiplier);
@@ -47,9 +47,9 @@ public class Monster : MonoBehaviour
     {
         if (_isDead) return;
 
-        _currentHp -= damage;
+        currentHp -= damage;
 
-        if (_currentHp <= 0)
+        if (currentHp <= 0)
         {
             Die();
         }
