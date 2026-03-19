@@ -50,13 +50,17 @@ public class StageManager : Singleton<StageManager>
     {
         if (DataManager.Instance != null && allStageDatas.Length > 0)
         {
-            _currentStageIndex = (DataManager.Instance.CurrentStage - 1) % allStageDatas.Length;
+            int actualLevel = DataManager.Instance.CurrentStage;
+            _currentStageIndex = (actualLevel - 1) / stagesPerTheme;
+
+            _currentStageIndex = _currentStageIndex % allStageDatas.Length;
             currentStageData = allStageDatas[_currentStageIndex];
         }
         else if (allStageDatas.Length > 0)
         {
             currentStageData = allStageDatas[_currentStageIndex];
         }
+        Debug.Log($"[게임 시작] 현재 스테이지: {GetCurrentLevel()}, 데이터 인덱스: {_currentStageIndex}");
         SpawnNextWave(); //게임 시작 시 첫 소환
     }
     void Update()
@@ -187,7 +191,9 @@ public class StageManager : Singleton<StageManager>
     public void AddKillCount()
     {
         _currentRewardCount++;
-
+        Debug.Log($"[데이터 체크] 현재 리스트 번호(Index): {_currentStageIndex} | " +
+               $"데이터 이름: {currentStageData.name} | " +
+               $"목표 수치: {currentStageData.rewardGoalCount}");
         if (_currentRewardCount >= currentStageData.rewardGoalCount)
         {
             GiveReward();
@@ -198,6 +204,8 @@ public class StageManager : Singleton<StageManager>
     {
         if (treasureChestPrefab != null)
         {
+            CancelInvoke("SpawnNextWave");
+
             int actualLevel = GetCurrentLevel();
 
             float growth = currentStageData.monsterGrowthRate;
@@ -217,7 +225,13 @@ public class StageManager : Singleton<StageManager>
             }
 
             stageController.activeMonsters.Add(chestGo);
-            CancelInvoke("SpawnNextWave");
+
+            if (stageController != null)
+            {
+                //혹시 돌아가고 있을지 모를 루틴을 안전하게 끄고 다시 시작합니다.
+                stageController.StopAllCoroutines();
+                stageController.StartCoroutine("MoveWorldRoutine");
+            }
         }
     }
     public void OnBossChallengeFailed()

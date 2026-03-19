@@ -17,7 +17,7 @@ public class Gold : MonoBehaviour
     public int maxBounce = 2; //최대 몇 번 튕길지
 
     [Header("튕기기 속도 조절")]
-    public float gravityScale = -40f; //중력을 기본값(-9.8)보다 훨씬 높게 설정
+    public float gravityScale = -20f; //중력을 기본값(-9.8)보다 훨씬 높게 설정
     public float explosionForceUp = 12f; //위로 솟구치는 힘의 최댓값
     public float explosionForceSide = 5f; //옆으로 퍼지는 힘의 최댓값
 
@@ -64,7 +64,7 @@ public class Gold : MonoBehaviour
         FindPlayer();
 
         CancelInvoke("EnableCollection");
-        Invoke("EnableCollection", 0.4f);
+        Invoke("EnableCollection", 0.7f);
     }
     private void FindPlayer()
     {
