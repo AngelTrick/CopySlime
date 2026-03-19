@@ -104,6 +104,10 @@ public class StageManager : Singleton<StageManager>
     public void OnBossClear()
     {
         _isTimerRunning = false;
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.StageCleared();
+        }
         StartCoroutine(WaitAndGoToNextStage(2.0f));
     }
     private IEnumerator WaitAndGoToNextStage(float delay)

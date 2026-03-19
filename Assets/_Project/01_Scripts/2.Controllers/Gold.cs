@@ -101,6 +101,10 @@ public class Gold : MonoBehaviour
 
     private void Collect()
     {
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.AddGold(amount);
+        }
         if (StageManager.Instance != null) 
         { 
             StageManager.Instance.AddGold(amount);
