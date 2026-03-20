@@ -76,16 +76,41 @@ public class DebugCheatMenu : MonoBehaviour
         // 스테이지 관련 치트
         //=====================================================================
         GUILayout.Label("[스테이지 치트]", EditorStyles.boldLabel);
+
+        // [테스트 로직] CurrentScene이 null이면 팀원의 개인 테스트 씨능로 간주하여 치트 허용
+        bool _isPlayableScene = (SceneManagerEx.Instance.CurrentScene != null) ||
+                                (SceneManagerEx.Instance.CurrentScene.SceneType == Define.Scene.MainGame);
         if(GUILayout.Button("다음 스테이지로 강제 이동", GUILayout.Height(40)))
         {
-            DataManager.Instance.StageCleared();
-            // TODO : StageManager.Instance.LoadNextStage(); 등 연결
-            Debug.Log("[Cheat] 스테이지 스킵 완료");
+            //1. SceneManagerEx를 통해 현재 씬이 '메인 게임' 인지확인
+            if(_isPlayableScene)
+            {
+                if(StageManager.Instance != null)
+                {
+                    StageManager.Instance.GoToNextStage();
+                    Debug.Log("[Cheat] 스테이지 스킵 완료");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[Cheat] 메인 게임 씬에서만 작동하는 치트입니다.");
+            }
         }
         if (GUILayout.Button("보스 강제 소환", GUILayout.Height(40)))
         {
-            // TODO : StageManager.Instance.SpawnBoss(); 등 연결
-            Debug.Log("[Cheat] 보스 강제 소환!");
+            //2. 타이틀 화면 이나 로딩 중일 때 버튼을 눌러서 버그가 나는 것을 방지
+            if(_isPlayableScene)
+            {
+                if(StageManager.Instance != null)
+                {
+                    StageManager.Instance.ChallengeBoss();
+                    Debug.Log("[Cheat] 보스 강제 소환!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[Cheat] 메인 게임 씬에서만 작동하는 치트입니다.");
+            }
         }
 
         GUILayout.Space(20);
