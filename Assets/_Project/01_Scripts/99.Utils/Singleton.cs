@@ -10,19 +10,23 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         get
         {
-            if (_applicationIsQuitting)
-            {
-                return null;
-            }
+            // 1. 인스턴스가 아직 없을 때만 생성을 시도합니다.
             if(_instance == null)
             {
+                // 2. [핵심 방어막] 앱이 꺼지는 중이라면 , 억지로 새로 만들지 말고 null로 반환
+                if (_applicationIsQuitting)
+                {
+                    return null;
+                }
+                
                 _instance = FindObjectOfType<T>();
                 if(_instance == null)
                 {
                     GameObject obj = new GameObject(typeof(T).Name);
-                    _instance = obj.AddComponent<T>();
+                   _instance = obj.AddComponent<T>();
                 }
-            }
+            }    
+            // 4. 이미 인스턴스가 잘 살아 있다면 (앱 종료 중이든 아니든) 정상적으로 반환됩니다.
             return _instance;
         }
     }
