@@ -1,6 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum SpawnPositionType
+{
+    Player,     // 플레이어 위치에서 발사 (파이어볼 등)
+    Target      // 타겟 위치에서 생성 (낙뢰, 메테오 등)
+}
 public enum SkillType
 {
     Strike,
@@ -34,6 +39,13 @@ public class SkillData : ScriptableObject
     [SerializeField] private SkillGrade _skillGrade;
     [SerializeField] private SkillType _skillType;
 
+    [Header("스킬 사용 위치설정")]
+    [Tooltip("스킬 이펙트가 생성될 기준 위치")]
+    [SerializeField] private SpawnPositionType _spawnType;
+
+    [Tooltip("기준 위치로부터의 오프셋 (예: 적 머리 위면 Y값을 3으로 설정)")]
+    [SerializeField] private Vector3 _spawnOffset;
+
     [Header("발동 조건과 지속시간")]
     [SerializeField] private float _cooldown;
     [SerializeField] private float _duration;
@@ -62,9 +74,11 @@ public class SkillData : ScriptableObject
     public int HitCountPerTarget => _hitCountPerTarget;
     public Sprite SkillIcon => _skillIcon;
     public GameObject EffectPrefab => _effectPrefab;
-   
-    
-       //스킬 범위 내의 적을 탐색하고 조건에 맞게 필터링하여 반환하는 함수
+    public SpawnPositionType SpawnType => _spawnType;
+    public Vector3 SpawnOffset => _spawnOffset;
+
+
+    //스킬 범위 내의 적을 탐색하고 조건에 맞게 필터링하여 반환하는 함수
     public List<Transform> FindTargets(Vector3 casterPosition, LayerMask enemyLayer)
     {
         List<Transform> finalTargets = new List<Transform>();
@@ -116,7 +130,7 @@ public class SkillData : ScriptableObject
                 break;
 
             case TargetingType.AllInRange:
-                // Physics.OverlapSphere가 찾은 범위 내의 '모든' 적을 리스트에 추가.
+                // Physics.OverlapSphere가 찾은 범위 내의 '모든' 적을 리스트에 추가.(Max Target Count 무시)
                 for (int i = 0; i < allTargets.Count; i++)
                 {
                     finalTargets.Add(allTargets[i]);
