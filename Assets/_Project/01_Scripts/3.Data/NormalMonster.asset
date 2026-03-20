@@ -17,3 +17,4 @@ MonoBehaviour:
   maxHp: 20
   attackRange: 2
   dropGold: 100
+  goldPrefab: {fileID: 8377179083550755068, guid: cb29c5263e5eced44b204f6cc10ee617, type: 3}

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class StageManager : Singleton<StageManager>
 {
@@ -8,7 +9,20 @@ public class StageManager : Singleton<StageManager>
     public StageData currentStageData;
     private int _currentRewardCount = 0; //킬게이지
 
-    public int totalGold = 0; //플레이어가 현재 가진 총 골드
+    public int totalGold //플레이어가 현재 가진 총 골드
+    {
+        get
+        {
+            return DataManager.Instance.Gold;
+        }
+    }
+    public int totalSkinShards //플레이어가 현재 가진 총 조각
+    {
+        get
+        {
+            return DataManager.Instance.CopyFragments;
+        }
+    }
 
     [Header("스테이지 관리")]
     public StageData[] allStageDatas; //스테이지 데이터 리스트
@@ -26,6 +40,9 @@ public class StageManager : Singleton<StageManager>
     public GameObject treasureChestPrefab;
 
     public System.Action<int> OnGoldChanged;
+    public System.Action<int> OnSkinShardChanged;
+
+    private PlayerController _player;
 
     public float GetBossTimerProgress()
     {
@@ -48,16 +65,37 @@ public class StageManager : Singleton<StageManager>
     }
     void Start()
     {
+        _player = FindObjectOfType<PlayerController>();
+
         if (DataManager.Instance != null && allStageDatas.Length > 0)
         {
-            _currentStageIndex = (DataManager.Instance.CurrentStage - 1) % allStageDatas.Length;
+            int actualLevel = DataManager.Instance.CurrentStage;
+            _currentStageIndex = (actualLevel - 1) / stagesPerTheme;
+
+            _currentStageIndex = _currentStageIndex % allStageDatas.Length;
             currentStageData = allStageDatas[_currentStageIndex];
         }
         else if (allStageDatas.Length > 0)
         {
             currentStageData = allStageDatas[_currentStageIndex];
         }
-        SpawnNextWave(); //게임 시작 시 첫 소환
+        if (GameManager.Instance == null)
+        {
+            SpawnNextWave();
+        }
+        else
+        {
+            GameManager.Instance.OnStateChanged += HandleGameStateChanged;
+
+            if (GameManager.Instance.CurrentState == GameManager.GameState.StageFarming)
+            {
+                if (stageController != null && stageController.activeMonsters.Count == 0)
+                {
+                    SpawnNextWave();
+                }
+            }
+
+            }
     }
     void Update()
     {
@@ -72,6 +110,23 @@ public class StageManager : Singleton<StageManager>
         if (Input.GetKeyDown(KeyCode.F)) //테스트 용
         {
             OnBossChallengeFailed();
+        }
+    }
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnStateChanged -= HandleGameStateChanged;
+        }
+    }
+    private void HandleGameStateChanged(GameManager.GameState oldState, GameManager.GameState newState)
+    {
+        if (newState == GameManager.GameState.StageFarming)
+        {
+            if (stageController != null && stageController.activeMonsters.Count == 0 && !stageController.isBossLevel)
+            {
+                SpawnNextWave();
+            }
         }
     }
     public void ChallengeBoss()
@@ -102,7 +157,6 @@ public class StageManager : Singleton<StageManager>
             _currentBossTimer = _currentBossLimitTime;
 
             _isTimerRunning = true;
-            Debug.Log($"보스전 시작! 제한 시간: {currentStageData.stageBoss.monsterName}초");
         }
     }
     public void OnBossClear()
@@ -118,19 +172,11 @@ public class StageManager : Singleton<StageManager>
     public void GoToNextStage()
     {
         if (DataManager.Instance != null)
-        { 
+        {
             DataManager.Instance.StageCleared(); //실제 스테이지 번호 증가
         }
 
-        int actualLevel;
-        if (DataManager.Instance != null)
-        {
-            actualLevel = DataManager.Instance.CurrentStage;
-        }
-        else
-        {
-            actualLevel = 1;
-        }
+        int actualLevel = GetCurrentLevel();
 
         int zoneIndex = (actualLevel - 1) / stagesPerTheme; //스테이지 간격
 
@@ -141,14 +187,26 @@ public class StageManager : Singleton<StageManager>
         }
 
         _currentRewardCount = 0; //게이지 초기화
-       
+
         stageController.ReturnToField();
         SpawnNextWave();
     }
     public void AddGold(int amount) //골드 획득 부분
     {
-        totalGold += amount;
+        int finalAmount = amount;
+
+        if (_player != null)
+        {
+            finalAmount = Mathf.RoundToInt(_player.FarmGold(amount));
+        }
+
+        DataManager.Instance.AddGold(finalAmount);
         OnGoldChanged?.Invoke(totalGold); //골드 획득 사운드 등 이벤트
+    }
+    public void AddSkinShard(int amount)
+    {
+        DataManager.Instance.Addfragments(amount);
+        OnSkinShardChanged?.Invoke(totalSkinShards);
     }
     //스테이지 레벨
     public int GetCurrentLevel()
@@ -187,7 +245,6 @@ public class StageManager : Singleton<StageManager>
     public void AddKillCount()
     {
         _currentRewardCount++;
-
         if (_currentRewardCount >= currentStageData.rewardGoalCount)
         {
             GiveReward();
@@ -198,6 +255,8 @@ public class StageManager : Singleton<StageManager>
     {
         if (treasureChestPrefab != null)
         {
+            CancelInvoke("SpawnNextWave");
+
             int actualLevel = GetCurrentLevel();
 
             float growth = currentStageData.monsterGrowthRate;
@@ -217,7 +276,13 @@ public class StageManager : Singleton<StageManager>
             }
 
             stageController.activeMonsters.Add(chestGo);
-            CancelInvoke("SpawnNextWave");
+
+            if (stageController != null)
+            {
+                //혹시 돌아가고 있을지 모를 루틴을 안전하게 끄고 다시 시작합니다.
+                stageController.StopAllCoroutines();
+                stageController.StartCoroutine("MoveWorldRoutine");
+            }
         }
     }
     public void OnBossChallengeFailed()
