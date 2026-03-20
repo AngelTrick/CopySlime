@@ -49,7 +49,6 @@ public class GameManager : Singleton<GameManager>
         //SoundManager.Instance.LoadSetting();
         //UIManager.Instance.Init();
         Debug.Log("[GameManager] 게임 초기화 완료");
-        //ChangeState(GameState.StageFarming);
     }
 
     //[추가 된 함수 ] 메인 게임 씬이 완전히 열렸을 때 외부에서 호출해 줄 함수
@@ -110,7 +109,8 @@ public class GameManager : Singleton<GameManager>
         if (isPause)
         {
             // 앱이 백그라운드 내려감 (일시정지)
-            // TODO : DataManager를 통해 현재 시간 저장 후 세이브 파일 강제 저장
+            DataManager.Instance?.SaveLogoutTime();
+            DataManager.Instance?.SaveGameData();
             Debug.Log("[GameManager] 앱이 백그라운드로 전환 됨 . 데이터 임시 저장");
         }
         else
@@ -133,7 +133,7 @@ public class GameManager : Singleton<GameManager>
     private void OnApplicationQuit()
     {
         //TODO : 게임이 꺼지기 직전에 마지막으로 데이터를 한번 더 꽉 묶어서 저장합니다.
-        //DataManager.Instnace.SaveGameData();
+        DataManager.Instance?.SaveGameData();
         Debug.Log("[GameManager] 게임 종료. 데이터 안전 저장 완료");
     }
 }
