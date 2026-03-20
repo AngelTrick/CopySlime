@@ -632,6 +632,7 @@ GameObject:
   - component: {fileID: 1812564078263977621}
   - component: {fileID: 8902935713362417547}
   - component: {fileID: 2932661017714308677}
+  - component: {fileID: 3120414966999725117}
   - component: {fileID: 5243142154556117982}
   m_Layer: 5
   m_Name: Button
@@ -698,6 +699,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3120414966999725117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4856907706142993498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a555b165c06073741bbfe2f77f357fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  holdDelay: 0.5
+  holdInterval: 0.1
 --- !u!114 &5243142154556117982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -769,7 +784,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5105725886239933053}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -802,6 +817,7 @@ MonoBehaviour:
   increase: {fileID: 768427557657619485}
   upgradeCost: {fileID: 4602852749671144205}
   upgradeButton: {fileID: 5243142154556117982}
+  holdButton: {fileID: 3120414966999725117}
 --- !u!222 &8783798164412788303
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -14,6 +14,9 @@ public class StageManager : Singleton<StageManager>
     public StageData[] allStageDatas; //스테이지 데이터 리스트
     private int _currentStageIndex = 0; //현재 몇 번째 스테이지인지 저장
 
+    [Header("테마 변경 설정")]
+    public int stagesPerTheme = 20; //기본값 20
+
     [Header("보스전 타임어택 설정")]
     private float _currentBossLimitTime; //보스전 한계 시간
     private float _currentBossTimer; //보스전 타이머
@@ -42,14 +45,15 @@ public class StageManager : Singleton<StageManager>
     protected override void Awake()
     {
         base.Awake();
-        if (allStageDatas == null || allStageDatas.Length == 0)
-        {
-            Debug.LogError("StageManager: Stage Data가 할당되지 않았습니다!");
-        }
     }
     void Start()
     {
-        if (allStageDatas.Length > 0)
+        if (DataManager.Instance != null && allStageDatas.Length > 0)
+        {
+            _currentStageIndex = (DataManager.Instance.CurrentStage - 1) % allStageDatas.Length;
+            currentStageData = allStageDatas[_currentStageIndex];
+        }
+        else if (allStageDatas.Length > 0)
         {
             currentStageData = allStageDatas[_currentStageIndex];
         }
@@ -113,16 +117,31 @@ public class StageManager : Singleton<StageManager>
     }
     public void GoToNextStage()
     {
-        _currentStageIndex++;
-
-        if (_currentStageIndex >= allStageDatas.Length)
-        {
-            _currentStageIndex = allStageDatas.Length - 1;
+        if (DataManager.Instance != null)
+        { 
+            DataManager.Instance.StageCleared(); //실제 스테이지 번호 증가
         }
 
-        currentStageData = allStageDatas[_currentStageIndex];
-        _currentRewardCount = 0; //게이지 초기화
+        int actualLevel;
+        if (DataManager.Instance != null)
+        {
+            actualLevel = DataManager.Instance.CurrentStage;
+        }
+        else
+        {
+            actualLevel = 1;
+        }
 
+        int zoneIndex = (actualLevel - 1) / stagesPerTheme; //스테이지 간격
+
+        if (allStageDatas.Length > 0)
+        {
+            _currentStageIndex = zoneIndex % allStageDatas.Length;
+            currentStageData = allStageDatas[_currentStageIndex];
+        }
+
+        _currentRewardCount = 0; //게이지 초기화
+       
         stageController.ReturnToField();
         SpawnNextWave();
     }
@@ -134,13 +153,13 @@ public class StageManager : Singleton<StageManager>
     //스테이지 레벨
     public int GetCurrentLevel()
     {
-        if (currentStageData != null)
+        if (DataManager.Instance != null)
         {
-            return currentStageData.stageLevel;
+            return DataManager.Instance.CurrentStage;
         }
         else
         {
-            return 0;
+            return 1;
         }
     }
     //보상 게이지
@@ -179,15 +198,25 @@ public class StageManager : Singleton<StageManager>
     {
         if (treasureChestPrefab != null)
         {
+            int actualLevel = GetCurrentLevel();
+
+            float growth = currentStageData.monsterGrowthRate;
+            float exponentialMultiplier = Mathf.Pow(growth, actualLevel - 1);
+
+            int finalChestGold = Mathf.RoundToInt(currentStageData.baseRewardGold * currentStageData.rewardMultiplier * exponentialMultiplier);
+
             Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, 0f, 0f);
 
             GameObject chestGo = PoolManager.Instance.Pop(treasureChestPrefab, spawnPos, Quaternion.identity);
-            if (stageController != null)
+
+            TreasureChest chestScript = chestGo.GetComponent<TreasureChest>();
+            if (chestScript != null)
             {
-                stageController.activeMonsters.Add(chestGo);
-                stageController.OnMonsterKilled(null);
+                //계산된 최종 골드를 상자에 주입
+                chestScript.Init(finalChestGold);
             }
 
+            stageController.activeMonsters.Add(chestGo);
             CancelInvoke("SpawnNextWave");
         }
     }
