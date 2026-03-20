@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class StageManager : Singleton<StageManager>
 {
@@ -8,8 +9,20 @@ public class StageManager : Singleton<StageManager>
     public StageData currentStageData;
     private int _currentRewardCount = 0; //킬게이지
 
-    public int totalGold = 0; //플레이어가 현재 가진 총 골드
-    public int totalSkinShards = 0; //보유 조각 수
+    public int totalGold //플레이어가 현재 가진 총 골드
+    {
+        get
+        {
+            return DataManager.Instance.Gold;
+        }
+    }
+    public int totalSkinShards //플레이어가 현재 가진 총 조각
+    {
+        get
+        {
+            return DataManager.Instance.CopyFragments;
+        }
+    }
 
     [Header("스테이지 관리")]
     public StageData[] allStageDatas; //스테이지 데이터 리스트
@@ -28,6 +41,8 @@ public class StageManager : Singleton<StageManager>
 
     public System.Action<int> OnGoldChanged;
     public System.Action<int> OnSkinShardChanged;
+
+    private PlayerController _player;
 
     public float GetBossTimerProgress()
     {
@@ -50,6 +65,8 @@ public class StageManager : Singleton<StageManager>
     }
     void Start()
     {
+        _player = FindObjectOfType<PlayerController>();
+
         if (DataManager.Instance != null && allStageDatas.Length > 0)
         {
             int actualLevel = DataManager.Instance.CurrentStage;
@@ -62,7 +79,6 @@ public class StageManager : Singleton<StageManager>
         {
             currentStageData = allStageDatas[_currentStageIndex];
         }
-        Debug.Log($"[게임 시작] 현재 스테이지: {GetCurrentLevel()}, 데이터 인덱스: {_currentStageIndex}");
         SpawnNextWave(); //게임 시작 시 첫 소환
     }
     void Update()
@@ -123,19 +139,11 @@ public class StageManager : Singleton<StageManager>
     public void GoToNextStage()
     {
         if (DataManager.Instance != null)
-        { 
+        {
             DataManager.Instance.StageCleared(); //실제 스테이지 번호 증가
         }
 
-        int actualLevel;
-        if (DataManager.Instance != null)
-        {
-            actualLevel = DataManager.Instance.CurrentStage;
-        }
-        else
-        {
-            actualLevel = 1;
-        }
+        int actualLevel = GetCurrentLevel();
 
         int zoneIndex = (actualLevel - 1) / stagesPerTheme; //스테이지 간격
 
@@ -146,18 +154,25 @@ public class StageManager : Singleton<StageManager>
         }
 
         _currentRewardCount = 0; //게이지 초기화
-       
+
         stageController.ReturnToField();
         SpawnNextWave();
     }
     public void AddGold(int amount) //골드 획득 부분
     {
-        totalGold += amount;
+        int finalAmount = amount;
+
+        if (_player != null)
+        {
+            finalAmount = Mathf.RoundToInt(_player.FarmGold(amount));
+        }
+
+        DataManager.Instance.AddGold(finalAmount);
         OnGoldChanged?.Invoke(totalGold); //골드 획득 사운드 등 이벤트
     }
     public void AddSkinShard(int amount)
     {
-        totalSkinShards += amount;
+        DataManager.Instance.Addfragments(amount);
         OnSkinShardChanged?.Invoke(totalSkinShards);
     }
     //스테이지 레벨
@@ -197,9 +212,6 @@ public class StageManager : Singleton<StageManager>
     public void AddKillCount()
     {
         _currentRewardCount++;
-        Debug.Log($"[데이터 체크] 현재 리스트 번호(Index): {_currentStageIndex} | " +
-               $"데이터 이름: {currentStageData.name} | " +
-               $"목표 수치: {currentStageData.rewardGoalCount}");
         if (_currentRewardCount >= currentStageData.rewardGoalCount)
         {
             GiveReward();

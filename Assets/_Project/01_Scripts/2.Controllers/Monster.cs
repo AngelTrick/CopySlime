@@ -25,7 +25,7 @@ public class Monster : MonoBehaviour
         currentHp = data.maxHp * statsMultiplier;
 
         //공통 데이터 적용 (골드 보상)
-        _currentGold = Mathf.RoundToInt(data.dropGold * rewardMultiplier);
+        _currentGold = Mathf.Max(1, Mathf.RoundToInt(data.dropGold * rewardMultiplier));
 
         SpawnModel();
     }

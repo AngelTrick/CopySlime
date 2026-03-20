@@ -133,13 +133,10 @@ public class SkinShard : MonoBehaviour
     }
     private void Collect()
     {
+
         if (DataManager.Instance != null)
         {
-            DataManager.Instance.AddSkinShard(amount);
-        }
-        if (StageManager.Instance != null)
-        {
-            StageManager.Instance.AddSkinShard(amount);
+            DataManager.Instance.Addfragments(amount);
         }
 
         if (PoolManager.Instance != null)

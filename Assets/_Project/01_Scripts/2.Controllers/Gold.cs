@@ -153,16 +153,13 @@ public class Gold : MonoBehaviour
     }
     private void Collect()
     {
-        if (DataManager.Instance != null)
+        if (StageManager.Instance != null)
         {
-            DataManager.Instance.AddGold(amount);
-        }
-        if (StageManager.Instance != null) 
-        { 
             StageManager.Instance.AddGold(amount);
         }
-        if (PoolManager.Instance != null) 
-        { 
+
+        if (PoolManager.Instance != null)
+        {
             PoolManager.Instance.Push(this.gameObject);
         }
     }
