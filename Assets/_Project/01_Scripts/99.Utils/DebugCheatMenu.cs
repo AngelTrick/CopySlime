@@ -78,7 +78,7 @@ public class DebugCheatMenu : MonoBehaviour
         GUILayout.Label("[스테이지 치트]", EditorStyles.boldLabel);
 
         // [테스트 로직] CurrentScene이 null이면 팀원의 개인 테스트 씨능로 간주하여 치트 허용
-        bool _isPlayableScene = (SceneManagerEx.Instance.CurrentScene != null) ||
+        bool _isPlayableScene = (SceneManagerEx.Instance.CurrentScene == null) ||
                                 (SceneManagerEx.Instance.CurrentScene.SceneType == Define.Scene.MainGame);
         if(GUILayout.Button("다음 스테이지로 강제 이동", GUILayout.Height(40)))
         {
