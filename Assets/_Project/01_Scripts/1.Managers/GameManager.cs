@@ -44,8 +44,9 @@ public class GameManager : Singleton<GameManager>
     private void InitializeGame()
     {
         Debug.Log("[GameManager] 초기화 진행 중...");
-
         DataManager.Instance.LoadGameData();    // 1. 게임 세이브 파일 로드
+
+        CalculateOfflineReward();             // 세이브 로드 끝난 직후 오프라인 보상 계산
         //SoundManager.Instance.LoadSetting();
         //UIManager.Instance.Init();
         Debug.Log("[GameManager] 게임 초기화 완료");
@@ -98,11 +99,7 @@ public class GameManager : Singleton<GameManager>
         else ChangeState(GameState.MenuOpened);
     }
 
-    //=============================================================
-    // (아래) 방치형 게임이 있어야 할 확장 구역(스켈레톤 으로 작성 후 채워 나갈 예정)
-    //=============================================================
-
-    // [추가 될 기능 3 : 오프라인 보상 및 백그라운드 처리
+    // [기능 3 : 오프라인 보상 및 백그라운드 처리]
     // 플레이어가 게임을 끄거나 홈 화면으로 나갈 시 처리 하는 부분
     private void OnApplicationPause(bool isPause)
     {
@@ -117,9 +114,54 @@ public class GameManager : Singleton<GameManager>
         {
             // 앱으로 다시 돌아옴 
             // TODO : 나갔던 시간 과 지금 시간 비교 해서 '오프라인 보상 팝업' 띄우기
+            CalculateOfflineReward();
             Debug.Log("[GameManager] 앱으로 복귀 , 오프라인 보상 계산 시작");
         }
     }
+
+    //[핵심 로직] 오프라인 보상 계산기
+    private void CalculateOfflineReward()
+    {
+        string _lastTimeStr = PlayerPrefs.GetString("LastLogoutTIme", "");
+
+        // 저장된 시간이 없으면 (게임 최초 실행 시) 그냥 넘어감
+        if (string.IsNullOrEmpty(_lastTimeStr)) return;
+
+        try
+        {
+            // 1. 저장된 시간과 지금 시간의 차이(TImeSpan)를 구합니다.
+            DateTime lastLogoutTIme = DateTime.Parse(_lastTimeStr);
+            TimeSpan timePassed = DateTime.Now - lastLogoutTIme;
+
+            int _minutesPassed = (int)timePassed.TotalMinutes;
+
+            // 2. 최소 1분 이상 방치 했들 때만 보상을 줍니다.
+            if(_minutesPassed >= 1)
+            {
+                // 최대 방치 시간 제한 (예: 최대 24시간 = 1440분 까지만 보상 누적)
+                if (_minutesPassed > 600) _minutesPassed = 600;
+
+                // 3. 분당 획득 골드 계산 (현재 임시 50골드 계산 , 나중에 스테이지든 플레이어 스탯 비례 계산 로직 변경)
+                int _rewardGold = _minutesPassed * 50;
+
+                Debug.Log($"[오픈 보상] {_minutesPassed}분 방치! {_rewardGold} 골드 획득");
+                DataManager.Instance.AddGold(_rewardGold);
+
+                // TODO : UIManager.Instance.ShowOfflineRewardPopup(minutesPassed, rewardGold)
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[GameManager] 시간 계산 오류: {e.Message}");
+        }
+
+        // 보상을 줬거나 계산이 끝났으면, 현재 시간을 다시 갱신 해줍니다.
+        DataManager.Instance.SaveLogoutTime();
+    }
+    //=============================================================
+    // (아래) 방치형 게임이 있어야 할 확장 구역(스켈레톤 으로 작성 후 채워 나갈 예정)
+    //=============================================================
+
 
     // [추가 될 기능 4 : 절전 모드 (방치형 필수)
     // 유저가 배터리를 아끼기 위해서 '절전 모드' 버튼 눌렀을 때 화면은 어둡게 만듭니다.

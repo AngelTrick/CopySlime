@@ -222,8 +222,10 @@ public class DataManager : Singleton<DataManager>
     // [ 추가 될 기능 3 : 오프라인 보상 계산을 위한 로그아웃 시간 저장
     public void SaveLogoutTime()
     {
-        // TODO : 현재 스마트폰의 기기 시간을 문자열로 변환하여 PlayerPrefs 에 저장
-        // PlayerPrefs.SetString("LaseLogoutTime" , DateTime.Now.ToString());
+        // 기기의 현재 시간을 문자열로 변환하여 로컬(PlayerPrefs)에 저장
+        PlayerPrefs.SetString("LastLogOutTIme", DateTime.Now.ToString());
+        PlayerPrefs.Save();
+        Debug.Log($"[DataManager] 로그아웃 시간 저장 완료: {DateTime.Now}");
     }
 
     // [ 추가 될 기능 4 : 보안 과 클라우드 저장]
