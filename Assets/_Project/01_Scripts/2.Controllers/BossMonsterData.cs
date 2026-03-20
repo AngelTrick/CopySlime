@@ -10,4 +10,8 @@ public class BossMonsterData : BaseMonsterData
 
     [Header("보스 처치 보상")]
     public Sprite unlockSkin; //해금스킨
+    public int dropShardCount = 1; //조각 개수
+    public GameObject skinShardPrefab;
+
+
 }

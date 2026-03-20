@@ -13,5 +13,6 @@ public class BaseMonsterData : ScriptableObject
     public float attackRange; //몬스터 거리
 
     [Header("공통 보상")]
-    public int dropGold; //보상골드
+    public int dropGold = 100; //보상골드
+    public GameObject goldPrefab;
 }

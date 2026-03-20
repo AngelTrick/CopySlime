@@ -15,10 +15,6 @@ public class Monster : MonoBehaviour
 
     //private bool _isBoss = false;
 
-    [Header("보상 드랍 설정")]
-    public GameObject goldPrefab;
-    public GameObject skinShardPrefab; //조각
-
     public void Init(BaseMonsterData newData, float statsMultiplier, float rewardMultiplier)
     {
         data = newData;
@@ -57,19 +53,26 @@ public class Monster : MonoBehaviour
     }
     private void DropRewards()
     {
-        if (goldPrefab != null)
+        if (data.goldPrefab != null)
         {
-            GameObject goldGo = PoolManager.Instance.Pop(goldPrefab, transform.position, Quaternion.identity);
+            GameObject goldGo = PoolManager.Instance.Pop(data.goldPrefab, transform.position, Quaternion.identity);
             Gold goldScript = goldGo.GetComponent<Gold>();
             if (goldScript != null)
             {
-                goldScript.Init(_currentGold, false);
+                goldScript.Init(_currentGold, data is BossMonsterData);
             }
         }
-        if (data is BossMonsterData && skinShardPrefab != null)
+        if (data is BossMonsterData bossData && bossData.skinShardPrefab != null)
         {
-            Vector3 shardPos = transform.position + Vector3.up * 0.5f;
-            GameObject shardGo = PoolManager.Instance.Pop(skinShardPrefab, shardPos, Quaternion.identity);
+                Vector3 shardPos = transform.position + Vector3.up * 0.5f;
+                GameObject shardGo = PoolManager.Instance.Pop(bossData.skinShardPrefab, shardPos, Quaternion.identity);
+
+                SkinShard shardScript = shardGo.GetComponent<SkinShard>();
+                if (shardScript != null) 
+                {
+                    shardScript.Init(bossData.dropShardCount, true);
+                }
+            
         }
     }
     private void Die()

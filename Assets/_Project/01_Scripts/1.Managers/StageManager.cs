@@ -9,6 +9,7 @@ public class StageManager : Singleton<StageManager>
     private int _currentRewardCount = 0; //킬게이지
 
     public int totalGold = 0; //플레이어가 현재 가진 총 골드
+    public int totalSkinShards = 0; //보유 조각 수
 
     [Header("스테이지 관리")]
     public StageData[] allStageDatas; //스테이지 데이터 리스트
@@ -26,6 +27,7 @@ public class StageManager : Singleton<StageManager>
     public GameObject treasureChestPrefab;
 
     public System.Action<int> OnGoldChanged;
+    public System.Action<int> OnSkinShardChanged;
 
     public float GetBossTimerProgress()
     {
@@ -106,7 +108,6 @@ public class StageManager : Singleton<StageManager>
             _currentBossTimer = _currentBossLimitTime;
 
             _isTimerRunning = true;
-            Debug.Log($"보스전 시작! 제한 시간: {currentStageData.stageBoss.monsterName}초");
         }
     }
     public void OnBossClear()
@@ -153,6 +154,11 @@ public class StageManager : Singleton<StageManager>
     {
         totalGold += amount;
         OnGoldChanged?.Invoke(totalGold); //골드 획득 사운드 등 이벤트
+    }
+    public void AddSkinShard(int amount)
+    {
+        totalSkinShards += amount;
+        OnSkinShardChanged?.Invoke(totalSkinShards);
     }
     //스테이지 레벨
     public int GetCurrentLevel()
