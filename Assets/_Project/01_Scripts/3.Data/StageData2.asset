@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: StageData2
   m_EditorClassIdentifier: 
   stageName: 
-  stageLevel: 1
   statsMultiplier: 1
   rewardMultiplier: 1
+  monsterGrowthRate: 1.1
   rewardGoalCount: 20
   baseRewardGold: 100
   fieldMonsters:
