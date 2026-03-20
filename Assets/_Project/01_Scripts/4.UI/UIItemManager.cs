@@ -7,7 +7,12 @@ public class UIItemManager : Singleton<UIItemManager>
     [SerializeField] private Transform content;
     [SerializeField] private TTItembase database;
     [SerializeField] private ItemSlot itemSlotPrefab;
+    [SerializeField] private MultipleButton multipleButton;
+
+
     //[SerializeField] private int itemCount = 20; // 더 좋은 방법을 생각
+
+    private List<ItemSlot> itemSlots = new List<ItemSlot>(); //슬롯 목록 저장용
 
     private void Start()
     {
@@ -28,8 +33,18 @@ public class UIItemManager : Singleton<UIItemManager>
         {
             ItemSlot slot = Instantiate(itemSlotPrefab, content);
             slot.SetItem(data);
+            itemSlots.Add(slot);
         }
-        
+        if (multipleButton != null)
+        {
+            multipleButton.OnMultiplierChanged += (multi) =>
+            {
+                foreach (ItemSlot slot in itemSlots)
+                {
+                    slot.SetMultiplier(multi);
+                }
+            };
+        }
     }
 
 }
