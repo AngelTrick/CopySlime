@@ -44,12 +44,18 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // LayerMask를 이용한 충돌 대상 검사 (비트 연산 활용)
+        // 1. LayerMask를 이용해 타겟 레이어(적, 상자 등)인지 1차 확인
         if (((1 << other.gameObject.layer) & _enemyLayer) != 0)
         {
-            Debug.Log($"[Projectile] 적 명중! 전달할 데미지: {_damage:F2}");
+            // 2. 충돌한 오브젝트가 IDamageable 인터페이스를 가지고 있는지 확인
+            IDamageable damageableTarget = other.GetComponent<IDamageable>();
 
-            // TODO: other.GetComponent<Enemy>()를 호출하여 데미지 전달 로직 작성
+            if (damageableTarget != null)
+            {
+                // 인터페이스를 통해 데미지 전달
+                damageableTarget.TakeDamage(_damage);
+                Debug.Log($"[Projectile] {other.name}에게 {_damage:F2} 데미지 전달 완료!");
+            }
 
             // 타격이 끝났으므로 자신을 창고(풀)로 반납
             PoolManager.Instance.Push(gameObject);
