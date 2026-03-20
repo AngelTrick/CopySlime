@@ -345,6 +345,7 @@ MonoBehaviour:
   stageController: {fileID: 657323708}
   currentStageData: {fileID: 11400000, guid: fb173fa35394bad4494fc9f9269600b5, type: 2}
   totalGold: 0
+  totalSkinShards: 0
   allStageDatas:
   - {fileID: 11400000, guid: fb173fa35394bad4494fc9f9269600b5, type: 2}
   - {fileID: 11400000, guid: d9444c78baf67d84ca2295fe75f24454, type: 2}

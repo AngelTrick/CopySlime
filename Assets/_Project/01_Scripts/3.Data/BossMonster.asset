@@ -17,5 +17,8 @@ MonoBehaviour:
   maxHp: 50
   attackRange: 2
   dropGold: 100
+  goldPrefab: {fileID: 8377179083550755068, guid: cb29c5263e5eced44b204f6cc10ee617, type: 3}
   bossTimeLimit: 10
   unlockSkin: {fileID: 0}
+  dropShardCount: 1
+  skinShardPrefab: {fileID: 1353277930413436205, guid: 717289c9ce6bb3c4dabda949f705948a, type: 3}
