@@ -79,7 +79,23 @@ public class StageManager : Singleton<StageManager>
         {
             currentStageData = allStageDatas[_currentStageIndex];
         }
-        SpawnNextWave(); //게임 시작 시 첫 소환
+        if (GameManager.Instance == null)
+        {
+            SpawnNextWave();
+        }
+        else
+        {
+            GameManager.Instance.OnStateChanged += HandleGameStateChanged;
+
+            if (GameManager.Instance.CurrentState == GameManager.GameState.StageFarming)
+            {
+                if (stageController != null && stageController.activeMonsters.Count == 0)
+                {
+                    SpawnNextWave();
+                }
+            }
+
+            }
     }
     void Update()
     {
@@ -94,6 +110,23 @@ public class StageManager : Singleton<StageManager>
         if (Input.GetKeyDown(KeyCode.F)) //테스트 용
         {
             OnBossChallengeFailed();
+        }
+    }
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnStateChanged -= HandleGameStateChanged;
+        }
+    }
+    private void HandleGameStateChanged(GameManager.GameState oldState, GameManager.GameState newState)
+    {
+        if (newState == GameManager.GameState.StageFarming)
+        {
+            if (stageController != null && stageController.activeMonsters.Count == 0 && !stageController.isBossLevel)
+            {
+                SpawnNextWave();
+            }
         }
     }
     public void ChallengeBoss()
