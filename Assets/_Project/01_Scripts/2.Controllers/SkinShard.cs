@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gold : MonoBehaviour
+public class SkinShard : MonoBehaviour
 {
-    [Header("골드 설정")]
-    public int amount = 10; //실제 골드 양
-    public float collectDistance = 0.5f; //플레이어가 획득하는 거리
-    public float magnetDistance = 6.0f;
-    public float moveSpeed = 10f; //플레이어에게 날아가는 속도
+    [Header("조각 설정")]
+    public int amount = 1; //실제 조각 개수
+    public float collectDistance = 0.5f; //플레이어 획득 거리
+    public float magnetDistance = 6.0f; //자석 활성화 거리
+    public float moveSpeed = 12f; //플레이어에게 날아가는 속도
 
     [Header("튕기기 설정")]
-    public float groundY = 0f; //바닥으로 인식할 Y 좌표
-    public float bounciness = 0.6f; //튕기는 탄성 (0~1 사이)
+    public float groundY = 0f; //바닥 Y 좌표
+    public float bounciness = 0.4f; // 탄성
     private int _bounceCount = 0;
-    public int maxBounce = 2; //최대 몇 번 튕길지
+    public int maxBounce = 1; //튕김 수
 
     [Header("튕기기 속도 조절")]
-    public float gravityScale = -20f; //중력을 기본값(-9.8)보다 훨씬 높게 설정
-    public float explosionForceUp = 12f; //위로 솟구치는 힘의 최댓값
-    public float explosionForceSide = 5f; //옆으로 퍼지는 힘의 최댓값
+    public float gravityScale = -20f; //중력
+    public float explosionForceUp = 10f; //위로 솟구치는 힘
+    public float explosionForceSide = 4f; //옆으로 퍼지는 힘
 
-    private Transform _playerTransform; //플레이어 위치
-    private bool _isCollecting = false; //플레이어에게 날아가는지 체크
+    private Transform _playerTransform;
+    private bool _isCollecting = false;
     private bool _canCollect = false;
     private Rigidbody _rb;
 
@@ -32,52 +32,41 @@ public class Gold : MonoBehaviour
         if (_rb != null) _rb.useGravity = false;
     }
 
-    public void Init(int goldAmount, bool useExplosion = false)
+    public void Init(int skinAmount, bool useExplosion = true)
     {
-        amount = goldAmount; //넘겨받은 금액
+        amount = skinAmount;
         _isCollecting = false;
         _canCollect = false;
-        _bounceCount = 0; //튕김 횟수 초기화
+        _bounceCount = 0;
 
         if (_rb != null)
         {
             _rb.isKinematic = false;
             _rb.useGravity = true;
-            _rb.drag = 0.3f; //공기 저항
+            _rb.drag = 0.5f;
             _rb.velocity = Vector3.zero;
             _rb.angularVelocity = Vector3.zero;
 
-            Vector3 pushForce;
+            Vector3 pushForce = new Vector3(Random.Range(-explosionForceSide, explosionForceSide),
+                Random.Range(explosionForceUp * 0.8f, explosionForceUp), 0f);
 
-            if (useExplosion) // 상자일 때만 실행!
-            {
-                pushForce = new Vector3(Random.Range(-explosionForceSide, explosionForceSide), 
-                    Random.Range(explosionForceUp * 0.8f, explosionForceUp),
-                    Random.Range(-1f, 1f));
-            }
-            else
-            {
-                pushForce = new Vector3(Random.Range(-2f, 2f), Random.Range(6f, 8f), 0f);
-            }
             _rb.AddForce(pushForce, ForceMode.Impulse);
         }
-        FindPlayer();
 
+        FindPlayer();
         CancelInvoke("EnableCollection");
         Invoke("EnableCollection", 0.7f);
     }
     private void FindPlayer()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            _playerTransform = player.transform;
-        }
+        if (player != null) _playerTransform = player.transform;
     }
     private void EnableCollection()
     {
         _canCollect = true;
     }
+
     void FixedUpdate()
     {
         if (!_isCollecting && _rb != null && !_rb.isKinematic)
@@ -87,14 +76,13 @@ public class Gold : MonoBehaviour
             HandleBouncing();
         }
     }
+
     void Update()
     {
-        if (_playerTransform == null)
-        {
-            FindPlayer();
-            return;
+        if (_playerTransform == null) 
+        { 
+            FindPlayer(); return;
         }
-
 
         if (!_isCollecting)
         {
@@ -102,35 +90,27 @@ public class Gold : MonoBehaviour
             {
                 transform.Translate(Vector3.left * 2.0f * Time.deltaTime, Space.World);
             }
-            
-        float distance = Vector3.Distance(transform.position, _playerTransform.position); //플레이어와 골드의 위치 계산
 
-            if (_canCollect && distance < magnetDistance)
-            {
-                StartCollecting();
-            }
+            float distance = Vector3.Distance(transform.position, _playerTransform.position);
+            if (_canCollect && distance < magnetDistance) StartCollecting();
         }
         else
         {
-            //플레이어에게 날아가기
             transform.position = Vector3.MoveTowards(transform.position, _playerTransform.position, moveSpeed * Time.deltaTime);
 
             if (Vector3.Distance(transform.position, _playerTransform.position) < collectDistance)
             {
                 Collect();
             }
-
-            }
         }
+    }
     private void HandleBouncing()
     {
-        if (_rb == null || _rb.isKinematic) return;
-
         if (transform.position.y <= groundY && _rb.velocity.y < 0)
         {
             if (_bounceCount < maxBounce)
             {
-                Vector3 vel = _rb.velocity;  //속도를 반전시키고 탄성 적용
+                Vector3 vel = _rb.velocity;
                 vel.y = -vel.y * bounciness;
                 _rb.velocity = vel;
                 _bounceCount++;
@@ -146,16 +126,17 @@ public class Gold : MonoBehaviour
     private void StartCollecting()
     {
         _isCollecting = true;
-        if (_rb != null)
-        {
+        if (_rb != null) 
+        { 
             _rb.isKinematic = true;
         }
     }
     private void Collect()
     {
-        if (StageManager.Instance != null)
+
+        if (DataManager.Instance != null)
         {
-            StageManager.Instance.AddGold(amount);
+            DataManager.Instance.Addfragments(amount);
         }
 
         if (PoolManager.Instance != null)

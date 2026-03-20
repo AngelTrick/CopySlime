@@ -168,7 +168,17 @@ public class Stage : MonoBehaviour
             currentDistance = monsterDistance;
         }
 
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player"); //플레이어 찾기 사거리 계산용
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        Transform playerTarget;
+
+        if (playerObj != null)
+        {
+            playerTarget = playerObj.transform;
+        }
+        else
+        {
+            playerTarget = null;
+        }
 
         while (true)
         {
@@ -176,9 +186,9 @@ public class Stage : MonoBehaviour
             {
                 GameObject firstTarget = activeMonsters[0];
 
-                if (firstTarget != null && playerObj != null)
+                if (firstTarget != null && playerTarget != null)
                 {
-                    float distance = Vector3.Distance(firstTarget.transform.position, playerObj.transform.position);
+                    float distance = Vector3.Distance(firstTarget.transform.position, playerTarget.position);
 
                     float targetRange = 2.0f; //기본값
 
