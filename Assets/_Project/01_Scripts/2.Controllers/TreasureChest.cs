@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TreasureChest : MonoBehaviour
+public class TreasureChest : MonoBehaviour, IDamageable
 {
     [Header("상자 설정")]
     public float maxHp = 50f; //상자의 체력
@@ -16,6 +16,9 @@ public class TreasureChest : MonoBehaviour
     public GameObject goldPrefab;
     public int goldCount = 10; //뿌려지는 동전 수
     private int _calculatedGoldPerPiece; //동전 1개당 금액
+
+    [Header("UI 설정")]
+    public GameObject damageTextPrefab;
 
     public void Init(int totalGoldAmount)
     {
@@ -72,6 +75,16 @@ public class TreasureChest : MonoBehaviour
     {
         if (_isDestroyed) return;
         _currentHp -= damage;
-        if (_currentHp <= 0) Explode();
+        if (damageTextPrefab != null)
+        {
+            GameObject textGo = PoolManager.Instance.Pop(damageTextPrefab, transform.position + Vector3.up * 1.2f, Quaternion.identity);
+
+            DamageText dmgText = textGo.GetOrAddComponent<DamageText>();
+            if (dmgText != null)
+            {
+                dmgText.Setup(damage, false);
+            }
+        }
+            if (_currentHp <= 0) Explode();
     }
 }
