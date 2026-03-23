@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 20
-  attackRange: 4
+  attackRange: 2
   goldPrefab: {fileID: 8377179083550755068, guid: cb29c5263e5eced44b204f6cc10ee617, type: 3}
   goldCount: 10
 --- !u!65 &6165450327120622365

@@ -17,6 +17,7 @@ public class Stage : MonoBehaviour
     [Header("몬스터 스폰 설정")]
     public float spawnOffset = 5.0f; //일반 몬스터 스폰 위치
     public float bossSpawnPos = 8.0f; //보스 몬스터 스폰 위치
+    public float spawnHeight = 0f; //몬스터 스폰 높이
 
     [Header("몬스터 프리팹")]
     public GameObject monsterBasePrefab;
@@ -66,15 +67,15 @@ public class Stage : MonoBehaviour
 
             if (isBossLevel) //보스 캐릭터 스폰 좌표 8.0
             {
-                spawnPos = new Vector3(bossSpawnPos, 0, 0);
+                spawnPos = new Vector3(bossSpawnPos, spawnHeight, 0);
             }
             else
             {
-                spawnPos = new Vector3(spawnOffset + (i * monsterDistance), 0, 0);
+                spawnPos = new Vector3(spawnOffset + (i * monsterDistance), spawnHeight, 0);
             }
 
             GameObject go = PoolManager.Instance.Pop(monsterBasePrefab, spawnPos, Quaternion.identity);
-
+            go.transform.localScale = Vector3.one * data.monsterScale;
             //몬스터의 능력치 초기화
             Monster monster = go.GetComponent<Monster>();
 
