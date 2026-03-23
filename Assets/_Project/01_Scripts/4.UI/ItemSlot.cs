@@ -15,22 +15,47 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
     [SerializeField] private Button upgradeButton;
 
     [SerializeField] private UIHoldButton holdButton;
+
     private TempItemData data;
+    private int multiplier = 1; // 기본 배수 x1
     public void SetItem(TempItemData data)
     {
         this.data = data;
         Refresh();
     }
-
+    public void SetMultiplier(int multi)
+    {
+        multiplier = multi;
+        Refresh();
+    }
+    private int GetTotalUpgradeCount() // 최대 레벨까지 남은 업그레이드 횟수 계산해서 반환하는 함수
+    {
+        int remnant = data.maxLevel - data.currentLevel;
+        return Mathf.Min(multiplier, remnant);
+    }
     private void Refresh()
     {
         itemIcon.sprite = data.icon;
         maxLv.text = $"<size=100%>{data.itemName}</size> " +
                      $"<size=60%>Max Lv.{data.maxLevel}</size>";
         currentLv.text = $"Lv.{data.currentLevel}";
-        increase.text = $"{data.GetCurrentValue()} -> {data.GetNextValue()}";
-        upgradeCost.text = data.IsMaxLevel() ? "MAX" : data.GetUpgradeCost().ToString();
-        upgradeButton.interactable = !data.IsMaxLevel(); // 최대 레벨이면 버튼 비활성화 or MAX표시 이미지로 교체
+
+        if (data.IsMaxLevel())
+        {
+            increase.text = $"{data.GetCurrentValue()}";
+            upgradeCost.text = "MAX";
+            upgradeButton.interactable = false;
+        }
+        else
+        {
+            int count = GetTotalUpgradeCount();
+            int totalCost = data.GetTotalCostLevel(count);
+            float nextValue = data.GetValueAfterLevel(count);
+
+            increase.text = $"{data.GetCurrentValue()} -> {nextValue}";
+            upgradeCost.text = totalCost.ToString();
+            upgradeButton.interactable = true;
+        }
     }
 
     public void OnClickUpgradeButton()
@@ -43,23 +68,19 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
             return;
         }
 
-        int cost = data.GetUpgradeCost(); ; // 업그레이드 비용
+        int count = GetTotalUpgradeCount(); // 총 업그레이드 비용
+        int totalCost = data.GetTotalCostLevel(count);
 
-        // SpendGold() 가 알아서 돈이 부족한지 검사하고, 충분하면 깎아준 뒤 true를 반환합니다!
-        if (DataManager.Instance.SpendGold(cost))
+        if (DataManager.Instance.SpendGold(totalCost)) // 21억 이상이면 데이터매니저 포함해서 long으로 교체
         {
-            Debug.Log("결제 성공! 스탯을 올려주세요.");
-
-            // TODO: Player.AttackPower 등 실제 스탯 상승 로직 실행
-            data.currentLevel++;
-            Refresh(); // 현재 슬롯 텍스트 갱신
+            data.currentLevel += count; //배수만큼 레벨업
+            Refresh();
         }
         else
         {
             Debug.Log("골드가 부족합니다!");
             UIManager.Instance.ShowWarning("Gold !!!!!!!!!!!!!!!!!!!!"); // 한글이 깨져서 일단  영어로 작성했습니다. 나중에 수정.
             holdButton.StopHold();// 홀드 코루틴 제어
-
         }
     }
 
