@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TempItemData : ScriptableObject  //임시 SO용 지우는거 생각하기 나중에 진짜 SO로 교체
 {
-    
+
     //public int currentValue;
     //public int nextValue;
     //public int upgradeCost;
@@ -35,18 +35,34 @@ public class TempItemData : ScriptableObject  //임시 SO용 지우는거 생각
     {
         return baseValue + (growthRate * (currentLevel + 1));
     }
+
     
-    public int GetUpgradeCost() // 레벨이 높은 거에 적용
+    public int GetUpgradeCostLevel(int level) // 특정 레벨에서의 비용 (n배수 계산용)
     {
-        int fineIncrement = 15 + (currentLevel / 3); // 나중에 숫자를 조정할수있는 변수 생각하기
-        if (currentLevel == 0)
+        int fineIncrement = 15 + (level / 3);  // 나중에 숫자를 설정하는 변수 생각하기
+        if (level == 0)
         {
             return baseCost;
         }
-
-        return baseCost + (16 * currentLevel) + fineIncrement;
+        return baseCost + (16 * level) + fineIncrement;
     }
 
+
+    public float GetValueAfterLevel(int count) // n레벨 후 밸류
+    {
+        return baseValue + (growthRate * (currentLevel + count));
+    }
+
+    // n회 업그레이드 총 비용
+    public int GetTotalCostLevel(int count) // 나중에 숫자(21억↑)가 커지면 long으로 대체 데이터매니저도 포함해서
+    {
+        int total = 0;
+        for (int i = 0; i < count; i++)
+        {
+            total += GetUpgradeCostLevel(currentLevel + i);
+        }
+        return total;
+    }
     public bool IsMaxLevel()
     {
         return currentLevel >= maxLevel;
