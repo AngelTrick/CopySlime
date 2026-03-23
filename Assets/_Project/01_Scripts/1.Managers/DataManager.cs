@@ -15,6 +15,7 @@ public class PlayerSaveData
 
     public int attackLevel = 1;     // 공격력 업그레이드 레벨 (기본 1렙)
 
+    public string lastLogoutTime = ""; // 오프라인 보상 계산을 위한 로그아웃 시간
     // 나중에 스킬(해금) 단계 에서 목록 추가 (확장성)
     // public List<int> unlockSkillDs = new List<int>(); << Ex
 }
@@ -36,6 +37,10 @@ public class DataManager : Singleton<DataManager>
 
     public int AttackLevel { get { return _saveData.attackLevel; } }
 
+    public string LastLogoutTime { get { return _saveData.lastLogoutTime; } }
+
+    //[치트 전용 방어막] 이번 실행에서 시간 조작 치트를 썼는지 기억하는 변수
+    private bool _isCheatTimeApplied = false;  
     // [ 2. 데이터 변경 알림 방송국]
     // 골드 나 조각이 바뀔 때마다 UI들에게 Ex) "화면 숫자 바꿔!" 라고 알리는 곳
 
@@ -219,13 +224,28 @@ public class DataManager : Singleton<DataManager>
      public int AttackStatLevel {get ; private set;}
     */
     
-    // [ 추가 될 기능 3 : 오프라인 보상 계산을 위한 로그아웃 시간 저장
+    // [ 추가 된기능 3 : 오프라인 보상 계산을 위한 로그아웃 시간 저장
     public void SaveLogoutTime()
     {
-        // 기기의 현재 시간을 문자열로 변환하여 로컬(PlayerPrefs)에 저장
-        PlayerPrefs.SetString("LastLogOutTIme", DateTime.Now.ToString());
-        PlayerPrefs.Save();
-        Debug.Log($"[DataManager] 로그아웃 시간 저장 완료: {DateTime.Now}");
+        if (_isCheatTimeApplied)
+        {
+            Debug.Log("[DataManager] 치트키로 조작된 시간이 유지되도록 현재 시간 덮어쓰기를 스킵합니다.");
+            return;
+        }
+
+        // PlayerPrefs 대신 _saveData 내부 변수에 저장
+        _saveData.lastLogoutTime = DateTime.Now.ToString();
+        // 시간을 기록했으니 안전하게 파일로 덮어 쓰기
+        SaveGameData();
+        Debug.Log($"[DataManager] 로그아웃 시간 저장 완료: {_saveData.lastLogoutTime}");
+    }
+
+    // [치트 전용] 팀원이 시간 치트키를 쓸 때 시간을 강제로 세팅해 주는 함수
+    public void SetLogoutTImeForCheat(string fakeTime)
+    {
+        _saveData.lastLogoutTime = fakeTime;
+        _isCheatTimeApplied = true; // "나 방금 치트 썼다! 라고 표식 남기기
+        SaveGameData();
     }
 
     // [ 추가 될 기능 4 : 보안 과 클라우드 저장]
