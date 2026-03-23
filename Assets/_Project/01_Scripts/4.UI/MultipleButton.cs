@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,10 @@ public class MultipleButton : MonoBehaviour
     [SerializeField] private Button[] buttons;
     [SerializeField] private int[] multipliers = { 1, 1, 10 }; // { 현재, x1, x10 }
 
+    [Header("현재 배수 표시용 텍스트")]
+    [SerializeField] private TextMeshProUGUI currentMultiplierText;
+
+    [Header("선택 색상, 기본 색상")]
     [SerializeField] private Color selectedColor = new Color(1.0f, 0.65f, 0.0f, 1.0f); // 슬레이어 느낌색상 선택
     [SerializeField] private Color normalColor = Color.white;
 
@@ -35,7 +40,10 @@ public class MultipleButton : MonoBehaviour
         {
             buttons[i].image.color = (i == index) ? selectedColor : normalColor;
         }
-
+        if (currentMultiplierText != null)
+        {
+            currentMultiplierText.text = $"x{currentMultiplier}";
+        }
         OnMultiplierChanged?.Invoke(currentMultiplier);
     }
 
