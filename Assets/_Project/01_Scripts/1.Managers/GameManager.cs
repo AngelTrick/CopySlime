@@ -122,7 +122,7 @@ public class GameManager : Singleton<GameManager>
     //[핵심 로직] 오프라인 보상 계산기
     private void CalculateOfflineReward()
     {
-        string _lastTimeStr = PlayerPrefs.GetString("LastLogoutTIme", "");
+        string _lastTimeStr = DataManager.Instance.LastLogoutTime;
 
         // 저장된 시간이 없으면 (게임 최초 실행 시) 그냥 넘어감
         if (string.IsNullOrEmpty(_lastTimeStr)) return;
@@ -144,7 +144,7 @@ public class GameManager : Singleton<GameManager>
                 // 3. 분당 획득 골드 계산 (현재 임시 50골드 계산 , 나중에 스테이지든 플레이어 스탯 비례 계산 로직 변경)
                 int _rewardGold = _minutesPassed * 50;
 
-                Debug.Log($"[오픈 보상] {_minutesPassed}분 방치! {_rewardGold} 골드 획득");
+                Debug.Log($"[오프라인 보상] {_minutesPassed}분 방치! {_rewardGold} 골드 획득");
                 DataManager.Instance.AddGold(_rewardGold);
 
                 // TODO : UIManager.Instance.ShowOfflineRewardPopup(minutesPassed, rewardGold)
@@ -156,7 +156,10 @@ public class GameManager : Singleton<GameManager>
         }
 
         // 보상을 줬거나 계산이 끝났으면, 현재 시간을 다시 갱신 해줍니다.
-        DataManager.Instance.SaveLogoutTime();
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.SaveLogoutTime();
+        }
     }
     //=============================================================
     // (아래) 방치형 게임이 있어야 할 확장 구역(스켈레톤 으로 작성 후 채워 나갈 예정)
@@ -175,7 +178,7 @@ public class GameManager : Singleton<GameManager>
     private void OnApplicationQuit()
     {
         //TODO : 게임이 꺼지기 직전에 마지막으로 데이터를 한번 더 꽉 묶어서 저장합니다.
-        DataManager.Instance?.SaveGameData();
+        DataManager.Instance?.SaveLogoutTime();
         Debug.Log("[GameManager] 게임 종료. 데이터 안전 저장 완료");
     }
 }

@@ -11,10 +11,10 @@ using UnityEngine;
 
 public class DebugCheatMenu : MonoBehaviour
 {
-#if UNITY_EDITOR || DEVLOPMENT_BUILD
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     private bool _isShow = false;
 
-    private Rect _windowRect = new Rect(20, 20, 300, 400);
+    private Rect _windowRect = new Rect(20, 20, 300, 550);
 
     private void Update()
     {
@@ -111,6 +111,52 @@ public class DebugCheatMenu : MonoBehaviour
             {
                 Debug.LogWarning("[Cheat] 메인 게임 씬에서만 작동하는 치트입니다.");
             }
+        }
+
+        GUILayout.Space(20);
+
+        //=====================================================================
+        // 오프라인 시간 조작 치트 및 실시간 확인
+        //=====================================================================
+        GUILayout.Label("[오프라인 시간 조작 및 확인]", EditorStyles.boldLabel);
+
+        //--- 실시간 오프라인 시간 확인 로직---
+        string _lastTimeStr = DataManager.Instance.LastLogoutTime;
+        if (!string.IsNullOrEmpty(_lastTimeStr))
+        {
+            try
+            {
+                System.DateTime lastLogoutTime = System.DateTime.Parse(_lastTimeStr);
+                System.TimeSpan timepassed = System.DateTime.Now - lastLogoutTime;
+
+                //OnGui가 매 프레임 실행 되므로 시간이 실시간으로 올라가는 것을 볼 수 있음
+                GUI.color = Color.cyan;
+                GUILayout.Label($" 누적 오프라인 시간 : {timepassed.TotalMinutes:F1}분 지남", EditorStyles.helpBox);
+                GUI.color = Color.white;
+            }
+            catch
+            {
+                GUILayout.Label(" 시간 데이터 오류", EditorStyles.helpBox);
+            }
+        }
+        else
+        {
+            GUILayout.Label("저장된 로그아웃 시간 없음", EditorStyles.helpBox); 
+        }
+        // ====================================================================
+
+        if(GUILayout.Button("마지막 접속을 1시간 전으로 세팅", GUILayout.Height(40)))
+        {
+            System.DateTime fakeTime = System.DateTime.Now.AddHours(-1);
+            // [수정됨] DataManager 통해 JSON 즉시 저장 26/03/22  
+            DataManager.Instance.SetLogoutTImeForCheat(fakeTime.ToString());
+            Debug.Log("[Cheat] 로그아웃 시간이 1시간 전으로 조작 되었습니다. 유니티 플레이를 껐다가 다시 켜보세요");
+        }
+        if (GUILayout.Button("마지막 접속을 24시간 전으로 세팅", GUILayout.Height(40)))
+        {
+            System.DateTime fakeTime = System.DateTime.Now.AddHours(-24);
+            DataManager.Instance.SetLogoutTImeForCheat(fakeTime.ToString());
+            Debug.Log("[Cheat] 로그아웃 시간이 24시간 전으로 조작 되었습니다. 유니티 플레이를 껐다가 다시 켜보세요");
         }
 
         GUILayout.Space(20);
