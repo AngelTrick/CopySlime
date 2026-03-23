@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2856246778949756140}
   - component: {fileID: 2280226561231865427}
   - component: {fileID: 5897190747812530543}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,7 +120,7 @@ GameObject:
   - component: {fileID: 4038465109770510585}
   - component: {fileID: 6165450327120622365}
   - component: {fileID: 8082937118333408111}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: TreasureChest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,6 @@ MonoBehaviour:
   attackRange: 4
   goldPrefab: {fileID: 8377179083550755068, guid: cb29c5263e5eced44b204f6cc10ee617, type: 3}
   goldCount: 10
-  goldAmountPerPiece: 100
 --- !u!65 &6165450327120622365
 BoxCollider:
   m_ObjectHideFlags: 0

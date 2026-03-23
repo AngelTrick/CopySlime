@@ -38,17 +38,6 @@ public class TreasureChest : MonoBehaviour
         _isDestroyed = false;
     }
     
-    public void TakeDamageH(float damage)
-    {
-        if (_isDestroyed) return;
-
-        _currentHp -= damage;
-
-        if (_currentHp <= 0)
-        {
-            Explode(); 
-        }
-    }
     private void Explode()
     {
         if (_isDestroyed) return;

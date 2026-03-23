@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 /* [JSON 데이터 클래스 정의]
  * 이 클래스 메모장(JSON) 에 썼다 지웠다 할 "내용물" 자체
@@ -16,6 +15,7 @@ public class PlayerSaveData
 
     public int attackLevel = 1;     // 공격력 업그레이드 레벨 (기본 1렙)
 
+    public string lastLogoutTime = ""; // 오프라인 보상 계산을 위한 로그아웃 시간
     // 나중에 스킬(해금) 단계 에서 목록 추가 (확장성)
     // public List<int> unlockSkillDs = new List<int>(); << Ex
 }
@@ -37,6 +37,10 @@ public class DataManager : Singleton<DataManager>
 
     public int AttackLevel { get { return _saveData.attackLevel; } }
 
+    public string LastLogoutTime { get { return _saveData.lastLogoutTime; } }
+
+    //[치트 전용 방어막] 이번 실행에서 시간 조작 치트를 썼는지 기억하는 변수
+    private bool _isCheatTimeApplied = false;  
     // [ 2. 데이터 변경 알림 방송국]
     // 골드 나 조각이 바뀔 때마다 UI들에게 Ex) "화면 숫자 바꿔!" 라고 알리는 곳
 
@@ -58,10 +62,56 @@ public class DataManager : Singleton<DataManager>
         if (File.Exists(path))
         {
             // 1. 파일이 있으면 텍스트를 불러 온다.
-            string jsonText = File.ReadAllText(path);
-            // 2. 읽어온 텍스트를 PlayerSaveData 객체로 조립
+            string fileText = File.ReadAllText(path);
+            string jsonText = "";
+
+            //[핵심 보안] 기기에 '암호화 버전을 한번 이라도 쓴 적 있는지' 낙인 확인
+            bool _isMigrated = PlayerPrefs.GetInt("IsSaveMigrated", 0) == 1;
+            bool _needForceSave = false;
+
+            try
+            {
+                //2. 먼저 Bsse64 복호화(디코딩)를 시도해 봅니다. (새로운 암호화 세이브용)
+                byte[] bytes = System.Convert.FromBase64String(fileText);
+                jsonText = System.Text.Encoding.UTF8.GetString(bytes);
+
+                if (!_isMigrated)
+                {
+                    PlayerPrefs.SetInt("IsSaveMigrated", 1);
+                    PlayerPrefs.Save();
+                }
+            }
+            catch (System.FormatException)
+            {
+                // 기존의 암호화 안 된 순정 JSON 파일 하위 호환용
+                if (!_isMigrated)
+                {
+                    // 낙인이 없는 진짜 기존 유저 (1회 한정 구제)
+                    Debug.LogWarning("[DataManager] 구버전(암호화 안 됨) 세이브 파일이 감지되어 정상 로드합니다.");
+                    jsonText = fileText;
+
+                    // 앞으로 다시는 평문을 허용하지 않도록 낙인을 찍음
+                    PlayerPrefs.SetInt("IsSaveMigrated", 1);
+                    PlayerPrefs.Save();
+                    _needForceSave=true; // 로드 완료 직후 즉시 안호화 해서 덮어씌울 예정
+                }
+                else
+                {
+                    //이미 낙인 찍힌 유저인데 암호화 안 된 평문이 들어 왔다 = 100% 해커
+                    Debug.Log("[보안 경고] 불법적인 세이브 파일 변호 (Downgrade Attack) 가 감지되었습니다! 데이터를 초기화 합니다.");
+                    ResetData();
+                    return; // 더 이상 데이터 로드를 진행하지 않고 함수를 강제 종료
+                }
+            }
+            // 2.읽어온 텍스트를 PlayerSaveData 객체로 조립
             _saveData = JsonUtility.FromJson<PlayerSaveData>(jsonText);
 
+            // 1회 한정 구버전 유저였다면 , 객체 조립 직후 바로 암호화 된 파일로 덮어씌움 (허점 완전 차단)
+            if (_needForceSave)
+            {
+                SaveGameData();
+                Debug.Log("[DataManager] 구버전 세이브 데이터를 암호화 파일로 강제 갱신 완료! ");
+            }
             Debug.Log($"[DataManager] JSON 로드 성공! 결로 : {path}");
         }
         else
@@ -79,13 +129,18 @@ public class DataManager : Singleton<DataManager>
     {
         Debug.Log("{DataManager] 유저 세이브 데이터를 저장합니다.");
 
-        // 1. _saveData 객체를 JSON 형태의 문자열(String)로 변환
-        // (true를 넣으면 메모장에서 열었을 때 사람이 읽기 편하게 줄바꿈 해줌)
-        string jsonText = JsonUtility.ToJson(_saveData, true);
+        // 1. _saveData 객체를 JSON 형태의 문자열(String)로 변환 (사람이 읽을 필요가 없으니 줄바꿈 false)
+        string jsonText = JsonUtility.ToJson(_saveData,false);
 
-        // 2. 기기의 안전한 경로에 덥어쓰기
+        // 2. JSON 문자열을 Base64 외계어로 암호화 (인코딩)
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jsonText);
+        string encryptedText = System.Convert.ToBase64String(bytes);
+
+        // 3. 기기의 안전한 경로에 암호화 된 텍스트 덮어쓰기
         string path = Application.persistentDataPath + "/SaveData.json";
-        File.WriteAllText(path, jsonText);
+        File.WriteAllText(path, encryptedText);
+
+        Debug.Log("[DataManager] 세이브 암호화 저장 완료");
     }
 
     //[ 3. 재화 획득 및 소모 로직]
@@ -169,11 +224,28 @@ public class DataManager : Singleton<DataManager>
      public int AttackStatLevel {get ; private set;}
     */
     
-    // [ 추가 될 기능 3 : 오프라인 보상 계산을 위한 로그아웃 시간 저장
+    // [ 추가 된기능 3 : 오프라인 보상 계산을 위한 로그아웃 시간 저장
     public void SaveLogoutTime()
     {
-        // TODO : 현재 스마트폰의 기기 시간을 문자열로 변환하여 PlayerPrefs 에 저장
-        // PlayerPrefs.SetString("LaseLogoutTime" , DateTime.Now.ToString());
+        if (_isCheatTimeApplied)
+        {
+            Debug.Log("[DataManager] 치트키로 조작된 시간이 유지되도록 현재 시간 덮어쓰기를 스킵합니다.");
+            return;
+        }
+
+        // PlayerPrefs 대신 _saveData 내부 변수에 저장
+        _saveData.lastLogoutTime = DateTime.Now.ToString();
+        // 시간을 기록했으니 안전하게 파일로 덮어 쓰기
+        SaveGameData();
+        Debug.Log($"[DataManager] 로그아웃 시간 저장 완료: {_saveData.lastLogoutTime}");
+    }
+
+    // [치트 전용] 팀원이 시간 치트키를 쓸 때 시간을 강제로 세팅해 주는 함수
+    public void SetLogoutTImeForCheat(string fakeTime)
+    {
+        _saveData.lastLogoutTime = fakeTime;
+        _isCheatTimeApplied = true; // "나 방금 치트 썼다! 라고 표식 남기기
+        SaveGameData();
     }
 
     // [ 추가 될 기능 4 : 보안 과 클라우드 저장]
