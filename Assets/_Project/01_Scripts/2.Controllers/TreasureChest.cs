@@ -17,6 +17,9 @@ public class TreasureChest : MonoBehaviour, IDamageable
     public int goldCount = 10; //뿌려지는 동전 수
     private int _calculatedGoldPerPiece; //동전 1개당 금액
 
+    [Header("UI 설정")]
+    public GameObject damageTextPrefab;
+
     public void Init(int totalGoldAmount)
     {
         _isDestroyed = false;
@@ -72,6 +75,16 @@ public class TreasureChest : MonoBehaviour, IDamageable
     {
         if (_isDestroyed) return;
         _currentHp -= damage;
-        if (_currentHp <= 0) Explode();
+        if (damageTextPrefab != null)
+        {
+            GameObject textGo = PoolManager.Instance.Pop(damageTextPrefab, transform.position + Vector3.up * 1.2f, Quaternion.identity);
+
+            DamageText dmgText = textGo.GetOrAddComponent<DamageText>();
+            if (dmgText != null)
+            {
+                dmgText.Setup(damage, false);
+            }
+        }
+            if (_currentHp <= 0) Explode();
     }
 }

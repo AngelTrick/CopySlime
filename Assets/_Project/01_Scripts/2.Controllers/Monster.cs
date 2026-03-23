@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour , IDamageable
 {
+    [Header("UI 설정")]
+    public GameObject damageTextPrefab;
 
     public BaseMonsterData data;
 
@@ -46,7 +48,20 @@ public class Monster : MonoBehaviour , IDamageable
 
         currentHp -= damage;
 
-        if (currentHp <= 0)
+        if (damageTextPrefab != null)
+        {
+            GameObject textGo = PoolManager.Instance.Pop(damageTextPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
+
+            DamageText dmgText = textGo.GetOrAddComponent<DamageText>();
+
+            if (dmgText != null)
+            {
+                dmgText.Setup(damage, false);
+            }
+
+        }
+
+            if (currentHp <= 0)
         {
             Die();
         }
