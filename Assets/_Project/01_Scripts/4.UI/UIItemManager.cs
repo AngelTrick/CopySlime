@@ -37,6 +37,10 @@ public class UIItemManager : Singleton<UIItemManager>
         }
         if (multipleButton != null)
         {
+            foreach (ItemSlot slot in itemSlots)
+            {
+                slot.SetMultiplier(multipleButton.GetMultiplier());
+            }
             multipleButton.OnMultiplierChanged += (multi) =>
             {
                 foreach (ItemSlot slot in itemSlots)

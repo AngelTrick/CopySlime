@@ -17,7 +17,7 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
     [SerializeField] private UIHoldButton holdButton;
 
     private TempItemData data;
-    private int multiplier; // 현재 배수 확인용 변수
+    private int multiplier = 1; // 기본 배수 x1
     public void SetItem(TempItemData data)
     {
         this.data = data;
