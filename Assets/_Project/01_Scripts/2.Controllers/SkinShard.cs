@@ -39,6 +39,11 @@ public class SkinShard : MonoBehaviour
         _canCollect = false;
         _bounceCount = 0;
 
+        if (StageManager.Instance != null && StageManager.Instance.stageController != null)
+        {
+            groundY = StageManager.Instance.stageController.spawnHeight;
+        }
+
         if (_rb != null)
         {
             _rb.isKinematic = false;
