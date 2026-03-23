@@ -13,13 +13,33 @@ public class UIStage : MonoBehaviour
     void Start()
     {
         stageBar.fillAmount = 0f;
-        UpdateButtonState();
+        // [수정된 부분] 보스 버튼은 언제든 누를 수 있어야 하므로 상시 활성화!
+        if (bossButton != null)
+        {
+            bossButton.interactable = true;
+
+            // 코드로 안전하게 버튼 클릭 이벤트 연결
+            // 인스펙터에서 일일이 연결 안 해도 알아서 아래 함수가 실행됩니다!
+            bossButton.onClick.AddListener(OnClickBossButton);
+        }
+    }
+    public void OnClickBossButton()
+    {
+        // StageManager에게 보스 소환 명령 내리기
+        if (StageManager.Instance != null)
+        {
+            StageManager.Instance.ChallengeBoss();
+            Debug.Log("[UIStage] 보스 소환 명령 전달 완료! 보스전이 시작됩니다.");
+
+            // (참고) 사운드 매니저 연동 시 아래 주석 해제하시면 됩니다!
+            // SoundManager.Instance.PlaySFX(클릭사운드);
+        }
     }
     public void OnMonsterKilled()
     {
         if (isWait)
         {
-            Debug.Log("카운트가 다참");
+            Debug.Log("카운트가 다참"); // 반복보상으로 교체
             return;
         }
         currentCount++;
@@ -32,13 +52,12 @@ public class UIStage : MonoBehaviour
             OnBarCompleted();
         }
     }
-    
+
     public void ResetBar()
     {
         currentCount = 0;
         isWait = false;
         stageBar.fillAmount = 0f;
-        UpdateButtonState();
     }
 
     public void UpdateFillBar()
@@ -51,37 +70,8 @@ public class UIStage : MonoBehaviour
     public void OnBarCompleted()
     {
         isWait = true;
-        UpdateButtonState();
-        Debug.Log("특정 몬스터"); // 나중에 뭘넣는지 얘기 보스활성화 or 다른거
+        Debug.Log("100%"); // 게이지 반복 보상용으로 사용
     }
-    void UpdateButtonState()
-    {
-        //bossButton.gameObject.SetActive(isWait); // 비활성화
-        bossButton.interactable = isWait; // 반투명
-    }
-    /* //특정몬스터를 소환시키고 버튼은 그냥 활성화 일 때 or 다른거 구상일때
-    public void OnBarCompleted()
-    {
-        isWait = true;
-        SpecialMonster();
-        Debug.Log("특정 몬스터"); // 나중에 뭘넣는지 얘기 보스활성화 or 다른거
-    }
-    public void SpecialMonster()
-    {
-        StartCoroutine(FillBar());
-    }
-    IEnumerator FillBar()
-    {
-        yield return new WaitForSeconds(2f);
-        ResetBar();
-    }
-    public void ResetBar()
-    {
-        isWait = false;
-        currentCount = 0;
-        stageBar.fillAmount = 0f;
-    }
-    */
 
 
     void Update()
@@ -91,4 +81,5 @@ public class UIStage : MonoBehaviour
             OnMonsterKilled();
         }
     }
+
 }
