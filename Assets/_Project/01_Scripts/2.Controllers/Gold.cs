@@ -18,8 +18,8 @@ public class Gold : MonoBehaviour
 
     [Header("튕기기 속도 조절")]
     public float gravityScale = -20f; //중력을 기본값(-9.8)보다 훨씬 높게 설정
-    public float explosionForceUp = 12f; //위로 솟구치는 힘의 최댓값
-    public float explosionForceSide = 5f; //옆으로 퍼지는 힘의 최댓값
+    public float explosionForceUp = 8f; //위로 솟구치는 힘의 최댓값
+    public float explosionForceSide = 3f; //옆으로 퍼지는 힘의 최댓값
 
     private Transform _playerTransform; //플레이어 위치
     private bool _isCollecting = false; //플레이어에게 날아가는지 체크
@@ -38,6 +38,11 @@ public class Gold : MonoBehaviour
         _isCollecting = false;
         _canCollect = false;
         _bounceCount = 0; //튕김 횟수 초기화
+
+        if (StageManager.Instance != null && StageManager.Instance.stageController != null)
+        {
+            groundY = StageManager.Instance.stageController.spawnHeight;
+        }
 
         if (_rb != null)
         {

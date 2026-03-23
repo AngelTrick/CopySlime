@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TreasureChest : MonoBehaviour
+public class TreasureChest : MonoBehaviour, IDamageable
 {
     [Header("상자 설정")]
     public float maxHp = 50f; //상자의 체력

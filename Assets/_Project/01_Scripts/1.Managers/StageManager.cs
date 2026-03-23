@@ -87,7 +87,7 @@ public class StageManager : Singleton<StageManager>
         {
             GameManager.Instance.OnStateChanged += HandleGameStateChanged;
 
-            if (GameManager.Instance.CurrentState == GameManager.GameState.StageFarming)
+            if (GameManager.Instance.CurrentState == GameManager.GameState.StageFarming|| GameManager.Instance.CurrentState == GameManager.GameState.Boot)
             {
                 if (stageController != null && stageController.activeMonsters.Count == 0)
                 {
@@ -264,9 +264,11 @@ public class StageManager : Singleton<StageManager>
 
             int finalChestGold = Mathf.RoundToInt(currentStageData.baseRewardGold * currentStageData.rewardMultiplier * exponentialMultiplier);
 
-            Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, 0f, 0f);
+            Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, stageController.spawnHeight, 0f);
 
             GameObject chestGo = PoolManager.Instance.Pop(treasureChestPrefab, spawnPos, Quaternion.identity);
+
+            chestGo.transform.localScale = Vector3.one * 1.5f; //상자 크기 조절
 
             TreasureChest chestScript = chestGo.GetComponent<TreasureChest>();
             if (chestScript != null)
