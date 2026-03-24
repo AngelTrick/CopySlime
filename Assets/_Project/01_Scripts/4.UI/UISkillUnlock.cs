@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class UISkillUnlock : MonoBehaviour 
 {
-    public List<UISkill> skills; 
+    public List<UISkill> skills; // 나중에 프리팹화해서 자동추가까지 생각하기
     public int currentLevel = 1;
-
     void Start()
     {
         UpdateSlots();
@@ -26,7 +25,6 @@ public class UISkillUnlock : MonoBehaviour
             slot.SetLock(!unlocked);
         }
     }
-
     
     void Update()
     {
