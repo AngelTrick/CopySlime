@@ -46,8 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07dad871b3f68e1448b77c5ab8bae00e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageTextPrefab: {fileID: 6436029651263477474, guid: 47a0aade7522e94488290d745db3cbf1, type: 3}
   data: {fileID: 11400000, guid: 25846b84fece3544db9033568b5961da, type: 2}
-  goldPrefab: {fileID: 8377179083550755068, guid: cb29c5263e5eced44b204f6cc10ee617, type: 3}
+  currentHp: 0
 --- !u!65 &5696646909222131062
 BoxCollider:
   m_ObjectHideFlags: 0
