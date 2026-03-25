@@ -24,7 +24,7 @@ public class Stage : MonoBehaviour
 
     [Header("이동 및 배경 설정")]
     public Transform[] backgrounds; //루핑할 배경들
-    public float backgroundWidth = 20f; //배경 가로 길이
+    public float backgroundWidth = 40f; //배경 가로 길이
     public float movingDuration = 0.5f; //몬스터 처치 후 이동 시간
 
     [Header("보스전 전용 설정")]
@@ -34,18 +34,22 @@ public class Stage : MonoBehaviour
 
     public void StartNewWave(BaseMonsterData data)
     {
-        if (data is BossMonsterData) //보스 데이터인지 체크
+        if (data is BossMonsterData)
         {
             isBossLevel = true;
         }
         else
         {
             isBossLevel = false;
-        } 
+        }
+
         SpawnMonsterGroup(data);
 
-        StopAllCoroutines();
-        StartCoroutine(MoveWorldRoutine());
+        if (!isMoving)
+        {
+            StopAllCoroutines();
+            StartCoroutine(MoveWorldRoutine());
+        }
     }
 
     private void SpawnMonsterGroup(BaseMonsterData data)
@@ -146,11 +150,11 @@ public class Stage : MonoBehaviour
             activeMonsters.Remove(killedMonster);
         }
 
-        if (isMoving) return;
-
-        //맨 앞의 몬스터가 죽으면 다음 몬스터를 위해 배경과 남은 몬스터를 밀어줌
-        StopAllCoroutines();
-        StartCoroutine(MoveWorldRoutine());
+        if (!isMoving && activeMonsters.Count > 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(MoveWorldRoutine());
+        }
     }
 
     IEnumerator MoveWorldRoutine()
@@ -181,31 +185,27 @@ public class Stage : MonoBehaviour
             playerTarget = null;
         }
 
-        while (true)
+        while (activeMonsters.Count > 0)
         {
-            if (activeMonsters.Count > 0)
+            GameObject firstTarget = activeMonsters[0];
+
+            if (firstTarget != null && playerTarget != null)
             {
-                GameObject firstTarget = activeMonsters[0];
+                float distance = Vector3.Distance(firstTarget.transform.position, playerTarget.position);
+                float targetRange = 2.0f;
 
-                if (firstTarget != null && playerTarget != null)
+                if (firstTarget.TryGetComponent<Monster>(out var m))
                 {
-                    float distance = Vector3.Distance(firstTarget.transform.position, playerTarget.position);
+                    targetRange = m.data.attackRange;
+                }
+                else if (firstTarget.TryGetComponent<TreasureChest>(out var t))
+                {
+                    targetRange = t.attackRange;
+                }
 
-                    float targetRange = 2.0f; //기본값
-
-                    if (firstTarget.TryGetComponent<Monster>(out var m))
-                    {
-                        targetRange = m.data.attackRange;
-                    }
-                    else if (firstTarget.TryGetComponent<TreasureChest>(out var t))
-                    {
-                        targetRange = t.attackRange;
-                    }
-
-                    if (distance <= targetRange)
-                    {
-                        break;
-                    }
+                if (distance <= targetRange)
+                {
+                    break;
                 }
             }
             else
@@ -221,19 +221,19 @@ public class Stage : MonoBehaviour
             }
             else
             {
-                speed = 2.0f; 
+                speed = 2.0f;
             }
-            
+
             Vector3 step = Vector3.left * speed * Time.deltaTime;
 
-            MoveAndLoopBackgrounds(step); //배경 이동 및 루핑 체크
+            MoveAndLoopBackgrounds(step);
 
-            foreach (GameObject m in activeMonsters) //남은 몬스터들도 함께 이동
+            foreach (GameObject m in activeMonsters)
             {
                 if (m != null) m.transform.Translate(step);
             }
 
-            elapsed += Time.deltaTime; 
+            elapsed += Time.deltaTime;
             yield return null;
         }
 
