@@ -2,25 +2,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TreasureChest : MonoBehaviour
+public class TreasureChest : MonoBehaviour, IDamageable
 {
     [Header("상자 설정")]
-    public float maxHp = 50f; //상자의 체력
+    public float maxHp = 50f;
     private float _currentHp;
     private bool _isDestroyed = false;
 
-    [Header("이동 설정")]
-    public float attackRange = 2.0f; //플레이어와 거리
-
     [Header("보상 설정")]
     public GameObject goldPrefab;
-    public int goldCount = 10; //뿌려지는 동전 수
-    private int _calculatedGoldPerPiece; //동전 1개당 금액
+    public int goldCount = 10;
+    private int _calculatedGoldPerPiece;
 
-    public void Init(int totalGoldAmount)
+    [Header("이동 및 사거리 설정")]
+    public float attackRange = 2.0f;
+
+    [Header("UI 설정")]
+    public GameObject damageTextPrefab;
+
+    private SpriteRenderer _sr;
+
+    void Awake()
+    {
+        _sr = GetComponent<SpriteRenderer>();
+    }
+
+    public void Init(TreasureData data, int totalGoldAmount)
     {
         _isDestroyed = false;
-        _currentHp = maxHp;
+
+        this.maxHp = data.maxHp;
+        this._currentHp = maxHp;
+        this.goldCount = data.goldCount;
+
+        transform.localScale = Vector3.one * data.chestScale;
+
         gameObject.SetActive(true);
 
         if (goldCount > 0)
@@ -72,6 +88,16 @@ public class TreasureChest : MonoBehaviour
     {
         if (_isDestroyed) return;
         _currentHp -= damage;
-        if (_currentHp <= 0) Explode();
+        if (damageTextPrefab != null)
+        {
+            GameObject textGo = PoolManager.Instance.Pop(damageTextPrefab, transform.position + Vector3.up * 1.2f, Quaternion.identity);
+
+            DamageText dmgText = textGo.GetOrAddComponent<DamageText>();
+            if (dmgText != null)
+            {
+                dmgText.Setup(damage, false);
+            }
+        }
+            if (_currentHp <= 0) Explode();
     }
 }

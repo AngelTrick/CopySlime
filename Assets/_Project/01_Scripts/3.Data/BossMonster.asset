@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: BossMonster
   m_EditorClassIdentifier: 
   monsterName: 
-  modelPrefab: {fileID: 5799408786953190753, guid: 5825951d94f542243a3f9a70414c6ab4, type: 3}
+  modelPrefab: {fileID: 866829735663616562, guid: 1e126f96ebcf4245a3328353992d46f6, type: 3}
+  monsterScale: 2
   maxHp: 50
   attackRange: 2
   dropGold: 100
