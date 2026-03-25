@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-
+     
 public class GameManager : Singleton<GameManager>
 {
     // [1. 게임 상태 정의]
@@ -15,7 +15,8 @@ public class GameManager : Singleton<GameManager>
 
     // [2. 현재 상태 변수]
     //외부에서 public get 으로 읽기만 하고, 내부에서 private set  을 통해 수정 가능
-    public GameState CurrentState { get; private set; } = GameState.Boot;
+    public GameState CurrentState { get; private set; } = GameState.Boot; 
+    public bool IsSleepMode { get; private set; } = false;
 
     // [3. 상태 변경 이벤트]
     // 상태 바뀔 때 UI 나 StageManager 가 감지 가능 하도록 이벤트 선언
@@ -170,16 +171,36 @@ public class GameManager : Singleton<GameManager>
     // 유저가 배터리를 아끼기 위해서 '절전 모드' 버튼 눌렀을 때 화면은 어둡게 만듭니다.
     public void ToggleSleepMode(bool isEnable)
     {
-        // TODO : UIManager를 통해 검은색 반 투명 패널을 뛰우거나 프레임 30으로 낮추는 로직
-    }
+        IsSleepMode = isEnable;
 
-    // [추가 될 기능 5 : 안전한 게임 종료]
-    // 유저가 게임을 완전히 껐을 때 호출
-    private void OnApplicationQuit()
-    {
-        //TODO : 게임이 꺼지기 직전에 마지막으로 데이터를 한번 더 꽉 묶어서 저장합니다.
-        DataManager.Instance?.SaveLogoutTime();
-        Debug.Log("[GameManager] 게임 종료. 데이터 안전 저장 완료");
+        if (IsSleepMode)
+        {
+            // 1 . 프레임 드랍 : 연산량을 줄여서 배터리 소모를 극적으로 낮춤
+            Application.targetFrameRate = 30;
+
+            // 2 . 화면 어둡게 만들기
+            // TODO: UIManager.Instance.ShowSleepModePanel(true);
+
+            Debug.Log("[GameManager] 절전 모드 ON: 프레임 30 하락 , 배터리 절약 모드 진입");
+        }
+        else
+        {
+            // 1. 프레임 원상 복구
+            Application.targetFrameRate = 60;
+
+            // 2. 화면 원래대로 복구
+            // TODO: UIManager.Instance.ShowSleepModePanel(false);
+
+            Debug.Log("[GameManager] 절전 모드 OFF: 게임 정상 속도 복귀");
+        }
     }
+     // [추가 될 기능 5 : 안전한 게임 종료]
+     // 유저가 게임을 완전히 껐을 때 호출
+     private void OnApplicationQuit()
+     {
+         //TODO : 게임이 꺼지기 직전에 마지막으로 데이터를 한번 더 꽉 묶어서 저장합니다.
+         DataManager.Instance?.SaveLogoutTime();
+         Debug.Log("[GameManager] 게임 종료. 데이터 안전 저장 완료");
+     }
 }
 
