@@ -253,7 +253,7 @@ public class StageManager : Singleton<StageManager>
     }
     private void GiveReward()
     {
-        if (treasureChestPrefab != null)
+        if (treasureChestPrefab != null && currentStageData.stageTreasure != null)
         {
             CancelInvoke("SpawnNextWave");
 
@@ -266,7 +266,7 @@ public class StageManager : Singleton<StageManager>
 
             Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, stageController.spawnHeight, 0f);
 
-            GameObject chestGo = PoolManager.Instance.Pop(treasureChestPrefab, spawnPos, Quaternion.identity);
+            GameObject chestGo = PoolManager.Instance.Pop(currentStageData.stageTreasure.chestPrefab, spawnPos, Quaternion.identity);
 
             chestGo.transform.localScale = Vector3.one * 1.5f; //상자 크기 조절
 
@@ -274,7 +274,7 @@ public class StageManager : Singleton<StageManager>
             if (chestScript != null)
             {
                 //계산된 최종 골드를 상자에 주입
-                chestScript.Init(finalChestGold);
+                chestScript.Init(currentStageData.stageTreasure, finalChestGold);
             }
 
             stageController.activeMonsters.Add(chestGo);
