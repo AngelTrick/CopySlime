@@ -23,8 +23,27 @@ public class SoundManager : Singleton<SoundManager>
         base.Awake();                   // 씬 전환 시 파괴되지 않도록 뼈대 유지 (Singleton 구조)
 
         InitSoundPlayers();
-    }
 
+        LoadVolumeSettings();           // 켜질 때 볼륨 불러오기
+    }
+    /// <summary>
+    /// 기기에서 볼륨 세팅 불러오기
+    /// </summary>
+    public void LoadVolumeSettings()
+    {
+        // 저장된 값이 없으면 기본값 1.0f(100%) 사용
+        _bgmVolume = PlayerPrefs.GetFloat("BGM_Volume",1.0f);
+        _sfxVolume = PlayerPrefs.GetFloat("SFX_Volume",1.0f);
+
+        // 불러온 볼륨을 실제 플레이어들에게 바로 적용
+        if (_bgmPlayer != null) _bgmPlayer.volume = _bgmVolume;
+        foreach(var sfx in _sfxPlayers)
+        {
+            if (sfx != null) sfx.volume = _sfxVolume;
+        }
+
+        Debug.Log($"[SoundManager] 사운드 설정 로드 완료 (BGM : {_bgmVolume}, SFX : {_sfxVolume}");
+    }
     /// <summary>
     /// 게임 시작 시 필요한 AudioSource들을 미리 메모리에 올려두는(캐싱) 초기화 로직
     /// </summary
@@ -119,6 +138,8 @@ public class SoundManager : Singleton<SoundManager>
             _bgmVolume = volume;
 
             if (_bgmPlayer != null) _bgmPlayer.volume = _bgmVolume;
+
+            PlayerPrefs.SetFloat("BGM_Volume", _bgmVolume);
         }
         else if(type == Define.Sound.Effect)
         {
@@ -127,6 +148,9 @@ public class SoundManager : Singleton<SoundManager>
             {
                 if (sfx != null) sfx.volume = _sfxVolume;
             }
+
+            PlayerPrefs.SetFloat("SFX_Volume", _sfxVolume);
         }
+        PlayerPrefs.Save();
     }
 }
