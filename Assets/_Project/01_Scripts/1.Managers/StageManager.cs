@@ -39,6 +39,9 @@ public class StageManager : Singleton<StageManager>
     [Header("보물 상자 설정")]
     public GameObject treasureChestPrefab;
 
+    [Header("UI 연결")]
+    public UIStage uiStage;
+
     public System.Action<int> OnGoldChanged;
     public System.Action<int> OnSkinShardChanged;
 
@@ -245,10 +248,18 @@ public class StageManager : Singleton<StageManager>
     public void AddKillCount()
     {
         _currentRewardCount++;
+
+        if (uiStage != null)
+        {
+            uiStage.UpdateFillBar();
+        }
+
         if (_currentRewardCount >= currentStageData.rewardGoalCount)
         {
             GiveReward();
             _currentRewardCount = 0; //게이지 초기화
+
+            if (uiStage != null) uiStage.ResetBar();
         }
     }
     private void GiveReward()
@@ -281,7 +292,6 @@ public class StageManager : Singleton<StageManager>
 
             if (stageController != null)
             {
-                //혹시 돌아가고 있을지 모를 루틴을 안전하게 끄고 다시 시작합니다.
                 stageController.StopAllCoroutines();
                 stageController.StartCoroutine("MoveWorldRoutine");
             }
