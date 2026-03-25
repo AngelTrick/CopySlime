@@ -12,12 +12,13 @@ public class PlayerSaveData
     public int gold = 0;            // 현재 골드
     public int copyFragments = 0;   // 카피 조각 
     public int currentStage = 1;    // 현재 스테이지
+    public string lastLogoutTime = ""; // 오프라인 보상 계산을 위한 로그아웃 시간
 
     public int attackLevel = 1;     // 공격력 업그레이드 레벨 (기본 1렙)
-
-    public string lastLogoutTime = ""; // 오프라인 보상 계산을 위한 로그아웃 시간
-    // 나중에 스킬(해금) 단계 에서 목록 추가 (확장성)
-    // public List<int> unlockSkillDs = new List<int>(); << Ex
+    public int critDamageLevel = 1; // 치명타계수 업그레이드 레벨 (기본 1렙)
+    public int critRateLevel = 1;   // 치명타 확률 업그레이드 레벨 (기본 1렙)
+    public int luckLevel = 1;       // 추가 골드 업그레이드 레벨 (기본 1렙)
+    public int attackSpeedLevel = 1;// 공격속도 업그레이드 레벨 (기본 1렙)
 }
 
 
@@ -34,10 +35,12 @@ public class DataManager : Singleton<DataManager>
     public int Gold { get { return _saveData.gold; } }
     public int CopyFragments { get { return _saveData.copyFragments; } }
     public int CurrentStage { get { return _saveData.currentStage; } }
-
-    public int AttackLevel { get { return _saveData.attackLevel; } }
-
     public string LastLogoutTime { get { return _saveData.lastLogoutTime; } }
+    public int AttackLevel { get { return _saveData.attackLevel; } } 
+    public int CritDamageLevel { get { return _saveData.critDamageLevel; } }
+    public int CritRateLevel { get { return _saveData.critRateLevel; } }
+    public int LuckLevel { get { return _saveData.luckLevel; } }
+    public int AttackSpeedLevel { get { return _saveData.attackSpeedLevel; } }
 
     //[치트 전용 방어막] 이번 실행에서 시간 조작 치트를 썼는지 기억하는 변수
     private bool _isCheatTimeApplied = false;  
@@ -177,13 +180,19 @@ public class DataManager : Singleton<DataManager>
         SaveGameData();
     }
 
-    public void UpgradeAttackLevel()
+    public void UpgradeStatLevel(string statType, int addLevelCount)
     {
-        _saveData.attackLevel++;
-
-        SaveGameData();
-
-        OnDataChanged?.Invoke();
+        switch (statType)
+        {
+            case "공격력": _saveData.attackLevel += addLevelCount; break;
+            case "치명타 데미지": _saveData.critDamageLevel += addLevelCount; break;
+            case "치명타 확률": _saveData.critRateLevel += addLevelCount; break;
+            case "운": _saveData.luckLevel += addLevelCount; break;
+            case "공격 속도": _saveData.attackLevel += addLevelCount; break;
+            default: Debug.LogWarning($"[DataManager] 알 수 없는 스탯: {statType}"); return;
+        }
+        SaveGameData();     //변경사항 즉시 JSON에 안전하게 저장
+        OnDataChanged?.Invoke(); // "데이터 바뀌었다!" 하고 전파 (UI와 플레이어에게 알림)
     }
 
     // JSON 데이터 초기화 함수
