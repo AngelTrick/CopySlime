@@ -191,4 +191,36 @@ public class SkillManager : Singleton<SkillManager>
 
         return true;
     }
+
+    // 에디터 씬 뷰에서 스킬들의 사거리를 시각적으로 확인하기 위한 기즈모
+    private void OnDrawGizmos()
+    {
+        // 플레이어가 없거나 게임 실행 전(에디터 상태)일 때는 플레이어를 직접 찾아줌
+        PlayerController playerTarget = _player;
+        if (playerTarget == null)
+        {
+            playerTarget = FindObjectOfType<PlayerController>();
+            if (playerTarget == null) return;
+        }
+
+        // 1. 기본 공격 사거리 그리기 (노란색 선)
+        if (_basicAttackData != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(playerTarget.transform.position, _basicAttackData.SkillRange);
+        }
+
+        // 2. 장착된 오토 스킬들의 사거리 그리기 (청록색 선)
+        if (playerTarget.EquippedSkills != null)
+        {
+            Gizmos.color = Color.cyan;
+            foreach (SkillData skill in playerTarget.EquippedSkills)
+            {
+                if (skill != null)
+                {
+                    Gizmos.DrawWireSphere(playerTarget.transform.position, skill.SkillRange);
+                }
+            }
+        }
+    }
 }
