@@ -32,7 +32,7 @@ public class Gold : MonoBehaviour
         if (_rb != null) _rb.useGravity = false;
     }
 
-    public void Init(double goldAmount, double useExplosion = false)
+    public void Init(double goldAmount, bool useExplosion = false)
     {
         amount = goldAmount; //넘겨받은 금액
         _isCollecting = false;
