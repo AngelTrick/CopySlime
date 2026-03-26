@@ -6,7 +6,7 @@ public class TreasureChest : MonoBehaviour, IDamageable
 {
     [Header("상자 설정")]
     public double maxHp = 50f;
-    private flodoubleat _currentHp;
+    private double _currentHp;
     private bool _isDestroyed = false;
 
     [Header("보상 설정")]
