@@ -188,7 +188,7 @@ public class DataManager : Singleton<DataManager>
             case "치명타 데미지": _saveData.critDamageLevel += addLevelCount; break;
             case "치명타 확률": _saveData.critRateLevel += addLevelCount; break;
             case "운": _saveData.luckLevel += addLevelCount; break;
-            case "공격 속도": _saveData.attackLevel += addLevelCount; break;
+            case "공격 속도": _saveData.attackSpeedLevel += addLevelCount; break;
             default: Debug.LogWarning($"[DataManager] 알 수 없는 스탯: {statType}"); return;
         }
         SaveGameData();     //변경사항 즉시 JSON에 안전하게 저장
