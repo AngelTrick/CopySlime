@@ -40,9 +40,10 @@ public class UIGold : MonoBehaviour
         if (DataManager.Instance == null) return;
 
         // DataManager의 실제 골드 데이터를 가져와서 포맷팅
-        goldText.text = $"Gold: {FormatNumber(DataManager.Instance.Gold)}";
+        //goldText.text = $"Gold: {FormatNumber(DataManager.Instance.Gold)}";
+        goldText.text = $"Gold: {DataManager.Instance.Gold.ToIdleCurrencyString()}";
     }
-
+    /*
     private string FormatNumber(float number)
     {
         string[] suffixes = { "", "K", "M", "B", "T" };
@@ -57,4 +58,5 @@ public class UIGold : MonoBehaviour
         // 소수점 둘째 자리까지 표시 (예: 1.25K)
         return $"{number:F2}{suffixes[suffixIndex]}";
     }
+    */
 }
