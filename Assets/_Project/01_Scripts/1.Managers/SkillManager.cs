@@ -137,8 +137,8 @@ public class SkillManager : Singleton<SkillManager>
         {
             if (CastSkill(_basicAttackData))
             {
-                double speedMultiplier = 100f / Mathf.Max(1f, _player.attackSpeed);
-                _basicAttackTimer = _basicAttackData.Cooldown * speedMultiplier;
+                double speedMultiplier = 100.0 / System.Math.Max(1.0, _player.attackSpeed);
+                _basicAttackTimer = (float)(_basicAttackData.Cooldown * speedMultiplier);
             }
         }
     }
