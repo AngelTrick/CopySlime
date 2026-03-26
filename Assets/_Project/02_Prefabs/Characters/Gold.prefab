@@ -132,7 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   amount: 10
   collectDistance: 1
-  magnetDistance: 6
+  magnetDistance: 10
   moveSpeed: 4
   groundY: 0
   bounciness: 1

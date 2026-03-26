@@ -9,7 +9,7 @@ public class StageManager : Singleton<StageManager>
     public StageData currentStageData;
     private int _currentRewardCount = 0; //킬게이지
 
-    public int totalGold //플레이어가 현재 가진 총 골드
+    public double totalGold //플레이어가 현재 가진 총 골드
     {
         get
         {
@@ -42,7 +42,7 @@ public class StageManager : Singleton<StageManager>
     [Header("UI 연결")]
     public UIStage uiStage;
 
-    public System.Action<int> OnGoldChanged;
+    public System.Action<double> OnGoldChanged;
     public System.Action<int> OnSkinShardChanged;
 
     private PlayerController _player;
@@ -194,13 +194,13 @@ public class StageManager : Singleton<StageManager>
         stageController.ReturnToField();
         SpawnNextWave();
     }
-    public void AddGold(int amount) //골드 획득 부분
+    public void AddGold(double amount) //골드 획득 부분
     {
-        int finalAmount = amount;
+        double finalAmount = amount;
 
         if (_player != null)
         {
-            finalAmount = Mathf.RoundToInt(_player.FarmGold(amount));
+            finalAmount = _player.FarmGold(amount);
         }
 
         DataManager.Instance.AddGold(finalAmount);
@@ -271,9 +271,9 @@ public class StageManager : Singleton<StageManager>
             int actualLevel = GetCurrentLevel();
 
             float growth = currentStageData.monsterGrowthRate;
-            float exponentialMultiplier = Mathf.Pow(growth, actualLevel - 1);
+            double exponentialMultiplier = System.Math.Pow((double)growth, actualLevel - 1);
 
-            int finalChestGold = Mathf.RoundToInt(currentStageData.baseRewardGold * currentStageData.rewardMultiplier * exponentialMultiplier);
+            double finalChestGold = (double)currentStageData.baseRewardGold * (double)currentStageData.rewardMultiplier * exponentialMultiplier;
 
             Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, stageController.spawnHeight, 0f);
 
@@ -321,6 +321,7 @@ public class StageManager : Singleton<StageManager>
         {
             if (stageController.activeMonsters.Count > 0) return;
 
+            CancelInvoke("SpawnNextWave");
             Invoke("SpawnNextWave", 1.5f); //보스전 중이 아니라면 무조건 다음 웨이브 소환 (무한 반복)
         }
     }

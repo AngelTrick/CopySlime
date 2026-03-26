@@ -99,12 +99,12 @@ public class Stage : MonoBehaviour
                 }
 
                 //현제 스테이지 성장률
-                float growth = sData.monsterGrowthRate;
+                double growth = sData.monsterGrowthRate;
 
-                float exponentialMultiplier = Mathf.Pow(growth, actualStageNum - 1);
+                double exponentialMultiplier = System.Math.Pow(growth, actualStageNum - 1);
 
-                float finalStatsMul = sData.statsMultiplier * exponentialMultiplier;
-                float finalRewardMul = sData.rewardMultiplier * exponentialMultiplier;
+                double finalStatsMul = (double)sData.statsMultiplier * exponentialMultiplier;
+                double finalRewardMul = (double)sData.rewardMultiplier * exponentialMultiplier;
 
                 monster.Init(data, finalStatsMul, finalRewardMul);
             }
@@ -150,7 +150,25 @@ public class Stage : MonoBehaviour
             activeMonsters.Remove(killedMonster);
         }
 
-        if (!isMoving && activeMonsters.Count > 0)
+        if (activeMonsters.Count == 0)
+        {
+            isMoving = false; 
+            StopAllCoroutines();
+
+            if (StageManager.Instance != null)
+            {
+                if (isBossLevel)
+                {
+                    StageManager.Instance.OnBossClear();
+                }
+                else
+                {
+                    // [핵심] 상자나 일반 몬스터 처치 후 다음 웨이브 호출
+                    StageManager.Instance.OnWaveCompleted();
+                }
+            }
+        }
+        else if (!isMoving)
         {
             StopAllCoroutines();
             StartCoroutine(MoveWorldRoutine());
