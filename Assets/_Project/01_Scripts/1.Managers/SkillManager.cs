@@ -3,12 +3,15 @@ using UnityEngine;
 
 public class SkillManager : Singleton<SkillManager>
 {
-    [Header("스킬 설정")]
+    [Header("Skill Settings")]
     [SerializeField] private LayerMask _enemyLayer;
 
-    [Header("일반공격 설정")]
+    [Header("Basic Attack Settings")]
     [Tooltip("일반 공격으로 사용할 스킬 데이터 (SO)")]
     [SerializeField] private SkillData _basicAttackData;
+
+    // 오토 모드 상태 변수 (기본값은 true로 설정하여 시작 시 자동 사냥)
+    private bool _isAutoMode = true;
 
     private Dictionary<string, float> _cooldownTimers = new Dictionary<string, float>();
     private float _basicAttackTimer = 0f;
@@ -20,12 +23,24 @@ public class SkillManager : Singleton<SkillManager>
     {
         base.Awake();
 
+        // 룰 준수: 최초 기동 시에만 Find 계열 함수를 사용하여 캐싱 (성능 최적화)
         _player = FindObjectOfType<PlayerController>();
+
         if (_player != null)
         {
-            // 플레이어 캐싱 성공 시 애니메이터도 함께 가져옴
-            _playerAnimator = _player.GetComponent<Animator>();
+            _playerAnimator = _player.GetComponentInChildren<Animator>();
         }
+        else
+        {
+            Debug.LogWarning("[SkillManager] PlayerController를 찾을 수 없습니다.");
+        }
+    }
+
+    // UI 버튼에서 오토 모드를 켜고 끌 때 호출할 외부 접근용 함수
+    public void ToggleAutoMode(bool isOn)
+    {
+        _isAutoMode = isOn;
+        Debug.Log($"[SkillManager] 자동 스킬 발사 모드: {_isAutoMode}");
     }
 
     private void Update()
@@ -34,10 +49,16 @@ public class SkillManager : Singleton<SkillManager>
 
         UpdateCooldowns();
 
-        // 1. 장착된 스킬 중 쿨타임이 찬 것이 있는지 먼저 확인하고 발사
-        bool isSkillCasted = TryCastSkills();
+        bool isSkillCasted = false;
 
-        // 2. 만약 이번 프레임에 스킬을 쓰지 않았다면, 일반 공격 발사 시도
+        // 오토 모드가 켜져 있을 때만 장착된 스킬의 쿨타임을 검사하고 자동 발사
+        if (_isAutoMode)
+        {
+            isSkillCasted = TryCastAutoSkills();
+        }
+
+        // 스킬이 발사되지 않은 프레임이면서 평타 데이터가 있다면 평타 발사 시도
+        // (방치형 특성상 평타는 수동 모드라도 쿨타임마다 계속 나감)
         if (!isSkillCasted && _basicAttackData != null)
         {
             TryCastBasicAttack();
@@ -46,7 +67,6 @@ public class SkillManager : Singleton<SkillManager>
 
     private void UpdateCooldowns()
     {
-        // 1. 장착 스킬 쿨타임 감소
         foreach (SkillData skill in _player.EquippedSkills)
         {
             if (skill == null) continue;
@@ -62,15 +82,13 @@ public class SkillManager : Singleton<SkillManager>
             }
         }
 
-        // 2. 일반 공격 쿨타임 감소
         if (_basicAttackTimer > 0)
         {
             _basicAttackTimer -= Time.deltaTime;
         }
     }
 
-    // 스킬 발사 성공 여부를 bool로 반환하도록 변경 (일반 공격과 우선순위를 나누기 위함)
-    private bool TryCastSkills()
+    private bool TryCastAutoSkills()
     {
         if (_player.EquippedSkills.Count == 0) return false;
 
@@ -80,7 +98,6 @@ public class SkillManager : Singleton<SkillManager>
 
             if (_cooldownTimers[skill.SkillId] <= 0)
             {
-                // 캐스팅에 성공했다면 쿨타임을 채우고 true 반환
                 if (CastSkill(skill))
                 {
                     _cooldownTimers[skill.SkillId] = skill.Cooldown;
@@ -91,40 +108,58 @@ public class SkillManager : Singleton<SkillManager>
         return false;
     }
 
+    // UI 스킬 슬롯 터치를 통한 수동 스킬 발사 함수
+    public void CastSkillManually(int slotIndex)
+    {
+        // 인덱스 방어 코드: 슬롯 범위를 벗어난 터치 무시
+        if (_player == null || slotIndex < 0 || slotIndex >= _player.EquippedSkills.Count) return;
+
+        SkillData skillToCast = _player.EquippedSkills[slotIndex];
+        if (skillToCast == null) return;
+
+        // 쿨타임 검사 (수동으로 눌러도 쿨타임 중이면 발사 불가)
+        if (_cooldownTimers.ContainsKey(skillToCast.SkillId) && _cooldownTimers[skillToCast.SkillId] > 0)
+        {
+            Debug.Log($"[SkillManager] {skillToCast.SkillName} 스킬은 아직 쿨타임 중입니다.");
+            return;
+        }
+
+        // 발사 시도 및 쿨타임 초기화
+        if (CastSkill(skillToCast))
+        {
+            _cooldownTimers[skillToCast.SkillId] = skillToCast.Cooldown;
+        }
+    }
+
     private void TryCastBasicAttack()
     {
         if (_basicAttackTimer <= 0)
         {
             if (CastSkill(_basicAttackData))
             {
-                // 플레이어의 공격 속도(attackSpeed) 스탯을 반영하여 쿨타임 계산
-                // 예: attackSpeed가 100이면 Cooldown 그대로, 200이면 절반으로 줄어듦
-                float speedMultiplier = 100f / Mathf.Max(1f, _player.attackSpeed);
+                double speedMultiplier = 100f / Mathf.Max(1f, _player.attackSpeed);
                 _basicAttackTimer = _basicAttackData.Cooldown * speedMultiplier;
             }
         }
     }
 
-    // [핵심] 3요소(이펙트, 사운드, 애니메이션)가 동시에 터지는 실제 발동 로직
     private bool CastSkill(SkillData skill)
     {
+        // Tag 대신 LayerMask를 이용한 검출 방식 유지
         List<Transform> targets = skill.FindTargets(_player.transform.position, _enemyLayer);
 
         if (targets.Count == 0) return false;
 
-        // 1. 애니메이션 재생
         if (_playerAnimator != null && !string.IsNullOrEmpty(skill.AnimTriggerName))
         {
             _playerAnimator.SetTrigger(skill.AnimTriggerName);
         }
 
-        // 2. 사운드 재생 (피치 랜덤화 true)
         if (skill.CastSound != null)
         {
             SoundManager.Instance.PlaySFX(skill.CastSound, true);
         }
 
-        // 3. 이펙트(투사체) 소환
         if (skill.EffectPrefab != null)
         {
             foreach (Transform target in targets)
@@ -132,33 +167,28 @@ public class SkillManager : Singleton<SkillManager>
                 Vector3 spawnPosition;
                 Vector3 fireDirection;
 
-                // SpawnType에 따른 위치 및 방향 분기 처리
                 if (skill.SpawnType == SpawnPositionType.Target)
                 {
-                    // 적 위치 기준 소환 (예: 낙뢰)
                     spawnPosition = target.position + skill.SpawnOffset;
                     fireDirection = Vector3.down;
                 }
                 else
                 {
-                    // 플레이어 위치 기준 소환 (예: 검기, 파이어볼)
                     spawnPosition = _player.transform.position + skill.SpawnOffset;
-                    fireDirection = _player.transform.right; 
+                    fireDirection = _player.transform.right;
                 }
 
-                // 계산된 위치에 PoolManager를 통해 생성
                 GameObject effect = PoolManager.Instance.Pop(skill.EffectPrefab, spawnPosition, Quaternion.identity);
                 Projectile projectile = effect.GetComponent<Projectile>();
 
                 if (projectile != null)
                 {
-                    // 데미지 계산 및 방향(Vector3) 기반 Init 호출
-                    float finalDamage = _player.attackPower * skill.DamageMultiplier;
+                    double finalDamage = _player.attackPower * skill.DamageMultiplier;
                     projectile.Init(fireDirection, finalDamage);
                 }
             }
         }
 
-        return true; // 발사 성공
+        return true;
     }
 }
