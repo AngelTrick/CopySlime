@@ -15,14 +15,14 @@ public class DamageText : MonoBehaviour
     public float moveDistance = 1.5f;   // 위로 올라갈 총 거리 (속도 대신 거리로 직관적 변경)
     public float destroyTime = 0.8f;    // 화면에 머무는 시간 (연출 시간) 
 
-    public void Setup(double damage, bool isCrit = false)
+    public void Setup(float damage, bool isCrit = false)
     {
         // 폴링 재사용 시 꼬임 방지를 위해 현재 오브젝트의 모든 트윈 강제 종료
         transform.DOKill();
         _textMesh.DOKill();
 
         // 1. 데미지 텍스트 세팅
-        _textMesh.text = damage.ToIdleCurrencyString();
+        _textMesh.text = damage.ToString("N0");
 
         // 위치 살짝 랜덤 (여러 개 겹치지 않도록 퍼트림)
         transform.position += new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0f, 0.5f), 0f);
