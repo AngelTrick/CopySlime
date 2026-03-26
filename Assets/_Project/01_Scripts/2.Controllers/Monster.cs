@@ -9,25 +9,33 @@ public class Monster : MonoBehaviour , IDamageable
 
     public BaseMonsterData data;
 
-    public float currentHp;
-    private int _currentGold;
+    public double currentHp;
+    private double _currentGold;
     private bool _isDead = false;
 
     private Transform _target; //테스트용 타겟
 
     //private bool _isBoss = false;
 
-    public void Init(BaseMonsterData newData, float statsMultiplier, float rewardMultiplier)
+    public void Init(BaseMonsterData newData, double statsMultiplier, double rewardMultiplier)
     {
         data = newData;
         _isDead = false;
         gameObject.SetActive(true);
 
         //공통 데이터 적용 (체력)
-        currentHp = data.maxHp * statsMultiplier;
+        currentHp = (double)data.maxHp * statsMultiplier;
 
         //공통 데이터 적용 (골드 보상)
-        _currentGold = Mathf.Max(1, Mathf.RoundToInt(data.dropGold * rewardMultiplier));
+        double calculatedGold = (double)data.dropGold * rewardMultiplier;
+        if (calculatedGold < 1.0)
+        {
+            _currentGold = 1.0;
+        }
+        else
+        {
+            _currentGold = calculatedGold;
+        }
 
         SpawnModel();
     }
@@ -42,7 +50,7 @@ public class Monster : MonoBehaviour , IDamageable
         }
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(double damage)
     {
         if (_isDead) return;
 

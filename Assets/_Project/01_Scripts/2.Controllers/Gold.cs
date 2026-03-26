@@ -5,7 +5,7 @@ using UnityEngine;
 public class Gold : MonoBehaviour
 {
     [Header("골드 설정")]
-    public int amount = 10; //실제 골드 양
+    public double amount = 10; //실제 골드 양
     public float collectDistance = 0.5f; //플레이어가 획득하는 거리
     public float magnetDistance = 6.0f;
     public float moveSpeed = 10f; //플레이어에게 날아가는 속도
@@ -32,7 +32,7 @@ public class Gold : MonoBehaviour
         if (_rb != null) _rb.useGravity = false;
     }
 
-    public void Init(int goldAmount, bool useExplosion = false)
+    public void Init(double goldAmount, double useExplosion = false)
     {
         amount = goldAmount; //넘겨받은 금액
         _isCollecting = false;
