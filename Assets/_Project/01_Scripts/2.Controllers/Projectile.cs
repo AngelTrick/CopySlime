@@ -15,14 +15,14 @@ public class Projectile : MonoBehaviour
 
     // SkillManager로부터 전달받을 내부 데이터
     private Vector3 _direction;
-    private float _damage;
+    private double _damage;
     private float _timer;
 
-    public void Init(Vector3 direction, float damage)
+    public void Init(Vector3 direction, double damage)
     {
         _direction = direction.normalized;
         _damage = damage;
-        _timer = 0f; // 풀에서 꺼내질 때마다 타이머 초기화
+        _timer = 0f; // 풀에서 꺼낼 때마다 타이머 초기화
     }
 
     private void Update()

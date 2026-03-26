@@ -57,9 +57,18 @@ public class SkillData : ScriptableObject
     [SerializeField] private int _maxTargetCount;
     [SerializeField] private int _hitCountPerTarget;
 
-    [Header("아이콘 및 프리팹")]
+    [Header("아이콘과 스킬 비주얼 관련")]
     [SerializeField] private Sprite _skillIcon;
     [SerializeField] private GameObject _effectPrefab;
+
+    [Tooltip("이 스킬을 사용할 때 재생할 플레이어의 애니메이션 트리거 이름")]
+    [SerializeField] private string _animTriggerName = "Attack";
+
+    [Tooltip("스킬 발동 시 재생할 타격음/효과음")]
+    [SerializeField] private AudioClip _castSound;
+
+
+
 
     public string SkillId => _skillId;
     public string SkillName => _skillName;
@@ -74,6 +83,8 @@ public class SkillData : ScriptableObject
     public int HitCountPerTarget => _hitCountPerTarget;
     public Sprite SkillIcon => _skillIcon;
     public GameObject EffectPrefab => _effectPrefab;
+    public string AnimTriggerName => _animTriggerName;
+    public AudioClip CastSound => _castSound;
     public SpawnPositionType SpawnType => _spawnType;
     public Vector3 SpawnOffset => _spawnOffset;
 
