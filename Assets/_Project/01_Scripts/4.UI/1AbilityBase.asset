@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6299521ca0f99f14993a19051e1f4756, type: 3}
-  m_Name: 12TEST
+  m_Name: 1AbilityBase
   m_EditorClassIdentifier: 
   items:
-  - {fileID: 11400000, guid: adf2c14c28446d147aad7f5c3376eca3, type: 2}
-  - {fileID: 11400000, guid: cca6d399ffcf5eb4ba50ecbd996a0163, type: 2}
-  - {fileID: 11400000, guid: ac62de805fbb6114486baaccbc3a3b15, type: 2}
-  - {fileID: 11400000, guid: 02ea59c7673bccb45ba204ad7be2add4, type: 2}
+  - {fileID: 11400000, guid: 24c783e2586d58241a45392aa5b47a7f, type: 2}
+  - {fileID: 11400000, guid: 0f5f5cb7116d56749ba2c15e062659d6, type: 2}
+  - {fileID: 11400000, guid: 4dcfc8e971a15e34db53ebdc4e2ea6e0, type: 2}
+  - {fileID: 11400000, guid: 40a9fe17b4935b54483ac2af7dfd13e0, type: 2}
+  - {fileID: 11400000, guid: 47169b5730ca5ce4fa21ecf4e8f3b183, type: 2}
