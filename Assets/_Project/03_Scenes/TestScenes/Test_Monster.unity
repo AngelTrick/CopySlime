@@ -467,6 +467,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f24a9c9a6612e1845b79dc8b79875f3c, type: 2}
   stagesPerTheme: 20
   treasureChestPrefab: {fileID: 8793641479586315572, guid: 95c9ec7e4e9ea524a88a9e6bf2d0f537, type: 3}
+  uiStage: {fileID: 1470259253}
 --- !u!4 &371708547
 Transform:
   m_ObjectHideFlags: 0
@@ -1624,6 +1625,17 @@ Transform:
   - {fileID: 1232189904}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1470259253 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5119546451960600716, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
+  m_PrefabInstance: {fileID: 1209236416}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d59a2daa689172c478a7d691a8b2365e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1624330031
 GameObject:
   m_ObjectHideFlags: 0
