@@ -53,7 +53,7 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
         else
         {
             int count = GetTotalUpgradeCount();
-            int totalCost = data.GetTotalCostLevel(count);
+            double totalCost = data.GetTotalCostLevel(count);
             float nextValue = data.GetValueAfterLevel(count);
 
             increase.text = $"{data.GetCurrentValue()} -> {nextValue}";
