@@ -42,17 +42,21 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    // Projectile.cs 내부의 트리거 충돌 함수
     private void OnTriggerEnter(Collider other)
     {
-        // 1. LayerMask를 이용해 타겟 레이어(적, 상자 등)인지 1차 확인
+        
+        Debug.Log($"[디버그] 투사체가 무언가와 물리적으로 닿았습니다: {other.gameObject.name}");
+
         if (((1 << other.gameObject.layer) & _enemyLayer) != 0)
+            // 1. LayerMask를 이용해 타겟 레이어(적)인지 확인
+            if (((1 << other.gameObject.layer) & _enemyLayer) != 0)
         {
-            // 2. 충돌한 오브젝트가 IDamageable 인터페이스를 가지고 있는지 확인
-            IDamageable damageableTarget = other.GetComponent<IDamageable>();
+            // 2. 부딪힌 게 자식 껍데기더라도, 부모 계층으로 올라가서 IDamageable을 찾아냄!
+            IDamageable damageableTarget = other.GetComponentInParent<IDamageable>();
 
             if (damageableTarget != null)
             {
-                // 인터페이스를 통해 데미지 전달
                 damageableTarget.TakeDamage(_damage);
                 Debug.Log($"[Projectile] {other.name}에게 {_damage:F2} 데미지 전달 완료!");
             }
@@ -60,5 +64,31 @@ public class Projectile : MonoBehaviour
             // 타격이 끝났으므로 자신을 창고(풀)로 반납
             PoolManager.Instance.Push(gameObject);
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Collider col = GetComponent<Collider>();
+        if (col == null) return;
+
+        // 눈에 확 띄도록 선 색상을 빨간색으로 설정
+        Gizmos.color = Color.red;
+
+        // 오브젝트의 회전값(Rotation)과 크기(Scale)를 기즈모에 정확히 반영하기 위한 매트릭스 설정
+        Matrix4x4 oldMatrix = Gizmos.matrix;
+        Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
+
+        // 콜라이더 종류에 맞춰 와이어프레임(선) 그리기
+        if (col is BoxCollider box)
+        {
+            Gizmos.DrawWireCube(box.center, box.size);
+        }
+        else if (col is SphereCollider sphere)
+        {
+            Gizmos.DrawWireSphere(sphere.center, sphere.radius);
+        }
+
+        // 매트릭스 원상 복구
+        Gizmos.matrix = oldMatrix;
     }
 }

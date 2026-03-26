@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Monster : MonoBehaviour , IDamageable
+public class Monster : MonoBehaviour, IDamageable
 {
     [Header("UI 설정")]
     public GameObject damageTextPrefab;
@@ -69,7 +69,7 @@ public class Monster : MonoBehaviour , IDamageable
 
         }
 
-            if (currentHp <= 0)
+        if (currentHp <= 0)
         {
             Die();
         }
@@ -87,15 +87,15 @@ public class Monster : MonoBehaviour , IDamageable
         }
         if (data is BossMonsterData bossData && bossData.skinShardPrefab != null)
         {
-                Vector3 shardPos = transform.position + Vector3.up * 0.5f;
-                GameObject shardGo = PoolManager.Instance.Pop(bossData.skinShardPrefab, shardPos, Quaternion.identity);
+            Vector3 shardPos = transform.position + Vector3.up * 0.5f;
+            GameObject shardGo = PoolManager.Instance.Pop(bossData.skinShardPrefab, shardPos, Quaternion.identity);
 
-                SkinShard shardScript = shardGo.GetComponent<SkinShard>();
-                if (shardScript != null) 
-                {
-                    shardScript.Init(bossData.dropShardCount, true);
-                }
-            
+            SkinShard shardScript = shardGo.GetComponent<SkinShard>();
+            if (shardScript != null)
+            {
+                shardScript.Init(bossData.dropShardCount, true);
+            }
+
         }
     }
     private void Die()
