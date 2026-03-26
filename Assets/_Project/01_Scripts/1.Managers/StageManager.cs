@@ -200,7 +200,8 @@ public class StageManager : Singleton<StageManager>
 
         if (_player != null)
         {
-            finalAmount = _player.FarmGold(amount);
+            finalAmount = (double)_player.FarmGold((float)amount); //플레이어 컨트롤러 골드 더블 수정 전 사용
+            //finalAmount = _player.FarmGold(amount);
         }
 
         DataManager.Instance.AddGold(finalAmount);
@@ -270,7 +271,7 @@ public class StageManager : Singleton<StageManager>
 
             int actualLevel = GetCurrentLevel();
 
-            float growth = currentStageData.monsterGrowthRate;
+            double growth = currentStageData.monsterGrowthRate;
             double exponentialMultiplier = System.Math.Pow((double)growth, actualLevel - 1);
 
             double finalChestGold = (double)currentStageData.baseRewardGold * (double)currentStageData.rewardMultiplier * exponentialMultiplier;
