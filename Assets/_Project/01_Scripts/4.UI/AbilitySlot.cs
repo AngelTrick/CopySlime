@@ -90,11 +90,39 @@ public class AbilitySlot : MonoBehaviour, ISlot
             holdButton.StopHold();// 홀드 코루틴 제어
         }
     }
+
+    public void ExpandMaxLevel(int amount) // 확인용
+    {
+        data.maxLevel += amount; 
+        Refresh(); 
+    }
+    public void ExpandCurrentLevel(int amount) // 확인용
+    {
+        data.currentLevel += amount;
+        Refresh();
+    }
+    public void ResetCurrentLevel(int amount) // 확인용
+    {
+        data.currentLevel = amount;
+        Refresh();
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            SetItem(data);
+            ExpandMaxLevel(1);
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            ExpandMaxLevel(-1);
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            ExpandCurrentLevel(30);
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            ResetCurrentLevel(0);
         }
     }
 
