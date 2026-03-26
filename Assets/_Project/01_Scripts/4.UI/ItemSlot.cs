@@ -18,6 +18,8 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
 
     private TempItemData data;
     private int multiplier = 1; // 기본 배수 x1
+
+
     public void SetItem(TempItemData data)
     {
         this.data = data;
@@ -33,8 +35,10 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
         int remnant = data.maxLevel - data.currentLevel;
         return Mathf.Min(multiplier, remnant);
     }
-    private void Refresh()
+    public void Refresh()
     {
+        if (data == null) return;
+
         itemIcon.sprite = data.icon;
         maxLv.text = $"<size=100%>{data.itemName}</size> " +
                      $"<size=60%>Max Lv.{data.maxLevel}</size>";
@@ -69,11 +73,12 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
         }
 
         int count = GetTotalUpgradeCount(); // 총 업그레이드 비용
-        int totalCost = data.GetTotalCostLevel(count);
+        double totalCost = data.GetTotalCostLevel(count);
 
         if (DataManager.Instance.SpendGold(totalCost)) // 21억 이상이면 데이터매니저 포함해서 long으로 교체
         {
-            data.currentLevel += count; //배수만큼 레벨업
+            //data.currentLevel += count; //배수만큼 레벨업
+            DataManager.Instance.UpgradeStatLevel(data.itemName, count);
             Refresh();
         }
         else
@@ -83,7 +88,13 @@ public class ItemSlot : MonoBehaviour  // 메인 SO들어오면 변수들 애기
             holdButton.StopHold();// 홀드 코루틴 제어
         }
     }
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            SetItem(data);
+        }
+    }
 
 
 }

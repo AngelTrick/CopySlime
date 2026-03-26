@@ -4,5 +4,5 @@
 public interface IDamageable
 {
     // 데미지를 받는 함수
-    void TakeDamage(float damage);
+    void TakeDamage(double damage);
 }
