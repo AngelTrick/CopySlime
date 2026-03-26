@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a6ea64a5cbf0564285192882c5caa95, type: 3}
-  m_Name: NormalAttack
+  m_Name: BasicAttack
   m_EditorClassIdentifier: 
-  _skillId: NormalAttack01
-  _skillName: NormalAttack
+  _skillId: BasicAttack01
+  _skillName: BasicAttack
   _skillGrade: 0
   _skillType: 0
   _spawnType: 0
-  _spawnOffset: {x: 0, y: 0, z: 0}
+  _spawnOffset: {x: 2, y: 0.5, z: 0}
   _cooldown: 100
   _duration: 0
   _damageMultiplier: 0
-  _skillRange: 1
+  _skillRange: 2
   _targetType: 0
   _maxTargetCount: 1
   _hitCountPerTarget: 1
   _skillIcon: {fileID: 0}
-  _effectPrefab: {fileID: 0}
-  _animTriggerName: Attack
-  _castSound: {fileID: 0}
+  _effectPrefab: {fileID: 6099668813757474649, guid: f2af4c6c29abffe458dea8f63dca5935, type: 3}
+  _animTriggerName: AttackSlash
+  _castSound: {fileID: 8300000, guid: b9c81472d4a029542afc56078f887561, type: 3}
