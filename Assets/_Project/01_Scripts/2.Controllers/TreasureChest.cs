@@ -5,14 +5,14 @@ using UnityEngine;
 public class TreasureChest : MonoBehaviour, IDamageable
 {
     [Header("상자 설정")]
-    public float maxHp = 50f;
-    private float _currentHp;
+    public double maxHp = 50f;
+    private flodoubleat _currentHp;
     private bool _isDestroyed = false;
 
     [Header("보상 설정")]
     public GameObject goldPrefab;
     public int goldCount = 10;
-    private int _calculatedGoldPerPiece;
+    private double _calculatedGoldPerPiece;
 
     [Header("이동 및 사거리 설정")]
     public float attackRange = 2.0f;
@@ -27,11 +27,11 @@ public class TreasureChest : MonoBehaviour, IDamageable
         _sr = GetComponent<SpriteRenderer>();
     }
 
-    public void Init(TreasureData data, int totalGoldAmount)
+    public void Init(TreasureData data, double totalGoldAmount)
     {
         _isDestroyed = false;
 
-        this.maxHp = data.maxHp;
+        this.maxHp = (double)data.maxHp;
         this._currentHp = maxHp;
         this.goldCount = data.goldCount;
 
@@ -41,7 +41,7 @@ public class TreasureChest : MonoBehaviour, IDamageable
 
         if (goldCount > 0)
         {
-            _calculatedGoldPerPiece = totalGoldAmount / goldCount;
+            _calculatedGoldPerPiece = totalGoldAmount / (double)goldCount;
         }
         else
         {
@@ -84,7 +84,7 @@ public class TreasureChest : MonoBehaviour, IDamageable
 
         gameObject.SetActive(false);
     }
-    public void TakeDamage(float damage) 
+    public void TakeDamage(double damage) 
     {
         if (_isDestroyed) return;
         _currentHp -= damage;

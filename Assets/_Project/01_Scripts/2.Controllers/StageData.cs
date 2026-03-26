@@ -10,15 +10,15 @@ public class StageData : ScriptableObject
     //public int stageLevel; //스테이지 번호
 
     [Header("난이도 및 보상 배율")]
-    public float statsMultiplier = 1.0f; //몬스터 체력(1.0 = 100%)
-    public float rewardMultiplier = 1.0f; //골드 보상 비율
+    public double statsMultiplier = 1.0f; //몬스터 체력(1.0 = 100%)
+    public double rewardMultiplier = 1.0f; //골드 보상 비율
 
     [Header("지수 성장 설정")]
-    public float monsterGrowthRate = 1.1f; //기본값 10%
+    public double monsterGrowthRate = 1.1f; //기본값 10%
 
     [Header("반복 보상 설정")]
     public int rewardGoalCount = 20; //20마리 잡으면 보상 지급
-    public int baseRewardGold = 100; //기본 골드 양
+    public double baseRewardGold = 100; //기본 골드 양
 
     [Header("보상 오브젝트 설정")]
     public TreasureData stageTreasure;
