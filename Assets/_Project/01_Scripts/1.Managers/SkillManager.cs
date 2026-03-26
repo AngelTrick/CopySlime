@@ -22,17 +22,22 @@ public class SkillManager : Singleton<SkillManager>
     protected override void Awake()
     {
         base.Awake();
+        // 기존에 있던 _player = FindObjectOfType<PlayerController>(); 삭제!
+        // 여기서 억지로 찾지 않고 플레이어의 전입신고를 기다립니다.
+    }
 
-        // 룰 준수: 최초 기동 시에만 Find 계열 함수를 사용하여 캐싱 (성능 최적화)
-        _player = FindObjectOfType<PlayerController>();
+    public void RegisterPlayer(PlayerController playerController)
+    {
+        _player = playerController;
 
         if (_player != null)
         {
             _playerAnimator = _player.GetComponentInChildren<Animator>();
+            Debug.Log("[SkillManager] Main 씬의 플레이어 캐싱 완료!");
         }
         else
         {
-            Debug.LogWarning("[SkillManager] PlayerController를 찾을 수 없습니다.");
+            Debug.LogError("[SkillManager] 전달받은 플레이어 데이터가 null입니다.");
         }
     }
 
