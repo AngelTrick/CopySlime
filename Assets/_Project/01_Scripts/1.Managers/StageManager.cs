@@ -321,6 +321,7 @@ public class StageManager : Singleton<StageManager>
         {
             if (stageController.activeMonsters.Count > 0) return;
 
+            CancelInvoke("SpawnNextWave");
             Invoke("SpawnNextWave", 1.5f); //보스전 중이 아니라면 무조건 다음 웨이브 소환 (무한 반복)
         }
     }
