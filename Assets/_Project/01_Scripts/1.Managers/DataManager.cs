@@ -9,7 +9,7 @@ using UnityEngine;
 [Serializable]
 public class PlayerSaveData
 {
-    public int gold = 0;            // 현재 골드
+    public double gold = 0;            // 현재 골드
     public int copyFragments = 0;   // 카피 조각 
     public int currentStage = 1;    // 현재 스테이지
     public string lastLogoutTime = ""; // 오프라인 보상 계산을 위한 로그아웃 시간
@@ -32,7 +32,7 @@ public class DataManager : Singleton<DataManager>
     private PlayerSaveData _saveData = new PlayerSaveData();
     
     // 외부에서 접근을 할 수 있도록 연결
-    public int Gold { get { return _saveData.gold; } }
+    public double Gold { get { return _saveData.gold; } }
     public int CopyFragments { get { return _saveData.copyFragments; } }
     public int CurrentStage { get { return _saveData.currentStage; } }
     public string LastLogoutTime { get { return _saveData.lastLogoutTime; } }
@@ -147,14 +147,14 @@ public class DataManager : Singleton<DataManager>
     }
 
     //[ 3. 재화 획득 및 소모 로직]
-    public void AddGold(int amount)
+    public void AddGold(double amount)
     {
         _saveData.gold += amount;
         OnDataChanged?.Invoke(); // 돈의 증가로 UI 에게 알림
     }
     
     // 소모 로직에서 bool 값으로 반환 하여 UI에서 성공 여부 체크 쉽도록 위함
-    public bool SpendGold(int amount)
+    public bool SpendGold(double amount)
     {
         if(_saveData.gold >= amount)
         {
