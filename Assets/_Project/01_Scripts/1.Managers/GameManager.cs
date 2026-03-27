@@ -45,7 +45,7 @@ public class GameManager : Singleton<GameManager>
     private void InitializeGame()
     {
         Debug.Log("[GameManager] 초기화 진행 중...");
-        DataManager.Instance.LoadGameData();    // 1. 게임 세이브 파일 로드
+        //DataManager.Instance.LoadGameData();    // 1. 게임 세이브 파일 로드
 
         CalculateOfflineReward();             // 세이브 로드 끝난 직후 오프라인 보상 계산
         //SoundManager.Instance.LoadSetting();
