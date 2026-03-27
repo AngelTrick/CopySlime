@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Monster : MonoBehaviour , IDamageable
+public class Monster : MonoBehaviour, IDamageable
 {
     [Header("UI 설정")]
     public GameObject damageTextPrefab;
@@ -48,6 +48,15 @@ public class Monster : MonoBehaviour , IDamageable
         {
             Instantiate(data.modelPrefab, transform);
         }
+        if (data != null && data.modelPrefab != null)
+        {
+            // 규칙 준수: Instantiate 대신 PoolManager.Pop을 사용하여 모델 소환
+            GameObject model = PoolManager.Instance.Pop(data.modelPrefab, transform.position, transform.rotation);
+
+            model.transform.SetParent(this.transform);
+            model.transform.localPosition = Vector3.zero;
+            model.transform.localRotation = Quaternion.identity;
+        }
     }
 
     public void TakeDamage(double damage)
@@ -69,7 +78,7 @@ public class Monster : MonoBehaviour , IDamageable
 
         }
 
-            if (currentHp <= 0)
+        if (currentHp <= 0)
         {
             Die();
         }
@@ -87,15 +96,15 @@ public class Monster : MonoBehaviour , IDamageable
         }
         if (data is BossMonsterData bossData && bossData.skinShardPrefab != null)
         {
-                Vector3 shardPos = transform.position + Vector3.up * 0.5f;
-                GameObject shardGo = PoolManager.Instance.Pop(bossData.skinShardPrefab, shardPos, Quaternion.identity);
+            Vector3 shardPos = transform.position + Vector3.up * 0.5f;
+            GameObject shardGo = PoolManager.Instance.Pop(bossData.skinShardPrefab, shardPos, Quaternion.identity);
 
-                SkinShard shardScript = shardGo.GetComponent<SkinShard>();
-                if (shardScript != null) 
-                {
-                    shardScript.Init(bossData.dropShardCount, true);
-                }
-            
+            SkinShard shardScript = shardGo.GetComponent<SkinShard>();
+            if (shardScript != null)
+            {
+                shardScript.Init(bossData.dropShardCount, true);
+            }
+
         }
     }
     private void Die()
@@ -119,6 +128,5 @@ public class Monster : MonoBehaviour , IDamageable
             PoolManager.Instance.Push(this.gameObject);
         }
 
-        gameObject.SetActive(false);
     }
 }

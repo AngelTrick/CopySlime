@@ -22,17 +22,22 @@ public class SkillManager : Singleton<SkillManager>
     protected override void Awake()
     {
         base.Awake();
+        // 기존에 있던 _player = FindObjectOfType<PlayerController>(); 삭제!
+        // 여기서 억지로 찾지 않고 플레이어의 전입신고를 기다립니다.
+    }
 
-        // 룰 준수: 최초 기동 시에만 Find 계열 함수를 사용하여 캐싱 (성능 최적화)
-        _player = FindObjectOfType<PlayerController>();
+    public void RegisterPlayer(PlayerController playerController)
+    {
+        _player = playerController;
 
         if (_player != null)
         {
             _playerAnimator = _player.GetComponentInChildren<Animator>();
+            Debug.Log("[SkillManager] Main 씬의 플레이어 캐싱 완료!");
         }
         else
         {
-            Debug.LogWarning("[SkillManager] PlayerController를 찾을 수 없습니다.");
+            Debug.LogError("[SkillManager] 전달받은 플레이어 데이터가 null입니다.");
         }
     }
 
@@ -190,5 +195,37 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         return true;
+    }
+
+    // 에디터 씬 뷰에서 스킬들의 사거리를 시각적으로 확인하기 위한 기즈모
+    private void OnDrawGizmos()
+    {
+        // 플레이어가 없거나 게임 실행 전(에디터 상태)일 때는 플레이어를 직접 찾아줌
+        PlayerController playerTarget = _player;
+        if (playerTarget == null)
+        {
+            playerTarget = FindObjectOfType<PlayerController>();
+            if (playerTarget == null) return;
+        }
+
+        // 1. 기본 공격 사거리 그리기 (노란색 선)
+        if (_basicAttackData != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(playerTarget.transform.position, _basicAttackData.SkillRange);
+        }
+
+        // 2. 장착된 오토 스킬들의 사거리 그리기 (청록색 선)
+        if (playerTarget.EquippedSkills != null)
+        {
+            Gizmos.color = Color.cyan;
+            foreach (SkillData skill in playerTarget.EquippedSkills)
+            {
+                if (skill != null)
+                {
+                    Gizmos.DrawWireSphere(playerTarget.transform.position, skill.SkillRange);
+                }
+            }
+        }
     }
 }
