@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들 애기진행 조율해서 집어 넣기
+public class AbilitySlot : MonoBehaviour, ISlot
 {
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI maxLv;
@@ -18,7 +17,6 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
 
     private TempItemData data;
     private int multiplier = 1; // 기본 배수 x1
-
 
 
     public void SetItem(TempItemData data)
@@ -45,8 +43,7 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
         if (data == null) return;
 
         itemIcon.sprite = data.icon;
-        maxLv.text = $"<size=100%>{data.itemName}</size> " +
-                     $"<size=60%>Max Lv.{data.maxLevel}</size>";
+        maxLv.text = $"<size=100%>{data.itemName}</size> ";
         currentLv.text = $"Lv.{data.currentLevel}";
 
         if (data.IsMaxLevel())
@@ -93,14 +90,15 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
             holdButton.StopHold();// 홀드 코루틴 제어
         }
     }
+
     public void ExpandMaxLevel(int amount) // 확인용
     {
-        data.maxLevel += amount;
-        Refresh();
+        data.maxLevel += amount; 
+        Refresh(); 
     }
     public void ExpandCurrentLevel(int amount) // 확인용
     {
-        data.currentLevel += amount; // or data.currentLevel = amount;
+        data.currentLevel += amount;
         Refresh();
     }
     public void ResetCurrentLevel(int amount) // 확인용
@@ -127,6 +125,5 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
             ResetCurrentLevel(0);
         }
     }
-
 
 }

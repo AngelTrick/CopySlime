@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 292183631}
   - component: {fileID: 292183634}
   - component: {fileID: 292183630}
+  - component: {fileID: 292183635}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Untagged
@@ -157,7 +158,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -242,7 +243,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageTextPrefab: {fileID: 0}
   data: {fileID: 11400000, guid: 25846b84fece3544db9033568b5961da, type: 2}
-  currentHp: 20
+  currentHp: 50
+--- !u!54 &292183635
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292183629}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &433611522 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3515466877260466299, guid: c45ba7c574ed946429f543a7c9522c3d, type: 3}
@@ -281,6 +309,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character_12
       objectReference: {fileID: 0}
+    - target: {fileID: 3515466877260466299, guid: c45ba7c574ed946429f543a7c9522c3d, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 3958786333820514687, guid: c45ba7c574ed946429f543a7c9522c3d, type: 3}
       propertyPath: m_LocalScale.x
       value: 2.5815
@@ -303,7 +335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6899011891874335902, guid: c45ba7c574ed946429f543a7c9522c3d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.64
+      value: -1.83
       objectReference: {fileID: 0}
     - target: {fileID: 6899011891874335902, guid: c45ba7c574ed946429f543a7c9522c3d, type: 3}
       propertyPath: m_LocalPosition.y
