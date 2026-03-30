@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0957c58b222196d4a9d6ab55b6f83255, type: 3}
-  m_Name: TMain1
+  m_Name: Ability_CRR
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 3ac73d7c1b497434183006d18af9c0af, type: 3}
-  itemName: "\uACF5\uACA9\uB825"
-  maxLevel: 100
+  itemName: "\uCE58\uBA85\uD0C0 \uD655\uB960"
+  maxLevel: 2147483647
   currentLevel: 0
-  baseValue: 2
+  baseValue: 1
   growthRate: 2
-  baseCost: 10
-  costGrowthRate: 1.2
+  baseCost: 500
+  costGrowthRate: 0

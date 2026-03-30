@@ -46,7 +46,12 @@ public class MultipleButton : MonoBehaviour
         }
         OnMultiplierChanged?.Invoke(currentMultiplier);
     }
-
+    /*
+    void OnEnable() // 처음 활성화될 때 기본값으로 설정 필요하다면사용
+    {
+        OnMultipleButtonClick(0);
+    }
+    */
     public int GetMultiplier()
     {
         return currentMultiplier;

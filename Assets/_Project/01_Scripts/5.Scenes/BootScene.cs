@@ -21,7 +21,7 @@ public class BootScene : BaseScene
 
     private IEnumerator LoadTitleScene()
     {
-        yield return null;
+        yield return new WaitForSeconds(1.5f);
 
         Debug.Log("[BootScene] 부팅 완료! 타이틀 씬으로 이동합니다!");
 

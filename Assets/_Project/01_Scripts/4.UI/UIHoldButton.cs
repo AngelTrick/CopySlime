@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,13 +13,14 @@ public class UIHoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     private ItemSlot slot;
     private Coroutine holdCO;
 
-    private void Awake() // 임시 나중에 이벤트나 다른걸로 생각
+    private Action onHoldClick; 
+    public void Init(Action onHoldClickAction)
     {
-        slot = GetComponentInParent<ItemSlot>();
+        onHoldClick = onHoldClickAction;
     }
     public void OnPointerDown(PointerEventData eventData)
     {
-        slot.OnClickUpgradeButton();
+        onHoldClick?.Invoke();
         holdCO = StartCoroutine(HoldUpgrade());
     }
 
@@ -37,7 +39,7 @@ public class UIHoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
         while (true)
         {
-            slot.OnClickUpgradeButton();
+            onHoldClick?.Invoke();
             yield return new WaitForSeconds(holdInterval);
         }
     }
