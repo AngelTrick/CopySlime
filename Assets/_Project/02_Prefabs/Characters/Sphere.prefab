@@ -137,6 +137,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 866829734583457878, guid: 1e126f96ebcf4245a3328353992d46f6, type: 3}
+      propertyPath: m_SpriteHash
+      value: 288431053
+      objectReference: {fileID: 0}
+    - target: {fileID: 866829734583457880, guid: 1e126f96ebcf4245a3328353992d46f6, type: 3}
+      propertyPath: m_FlipX
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 866829735663616562, guid: 1e126f96ebcf4245a3328353992d46f6, type: 3}
       propertyPath: m_Name
       value: BlueDragon
@@ -203,6 +211,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1286297387509708340, guid: 1e126f96ebcf4245a3328353992d46f6, type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1286297387509708343, guid: 1e126f96ebcf4245a3328353992d46f6, type: 3}
+      propertyPath: m_GravityScale
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

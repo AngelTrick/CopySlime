@@ -42,12 +42,11 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void SpawnModel()
     {
-        foreach (Transform child in transform) { Destroy(child.gameObject); }
-
-        if (data != null && data.modelPrefab != null)
+        foreach (Transform child in transform)
         {
-            Instantiate(data.modelPrefab, transform);
+            Destroy(child.gameObject);
         }
+
         if (data != null && data.modelPrefab != null)
         {
             // 규칙 준수: Instantiate 대신 PoolManager.Pop을 사용하여 모델 소환
