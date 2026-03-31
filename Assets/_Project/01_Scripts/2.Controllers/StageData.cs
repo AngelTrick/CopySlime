@@ -26,4 +26,7 @@ public class StageData : ScriptableObject
     [Header("등장 몬스터")]
     public NormalMonsterData[] fieldMonsters; //필드 무한 루프용 몬스터들
     public BossMonsterData stageBoss; //버튼 눌렀을 때 나올 보스
+
+    [Header("배경 설정")]
+    public GameObject backgroundPrefab;
 }
