@@ -63,23 +63,33 @@ public class StageManager : Singleton<StageManager>
     protected override void Awake()
     {
         base.Awake();
+        InitializeInitialStage();
+    }
+    private void InitializeInitialStage()
+    {
+        if (allStageDatas == null || allStageDatas.Length == 0) return;
+
+        if (DataManager.Instance != null)
+        {
+            int actualLevel = DataManager.Instance.CurrentStage;
+            _currentStageIndex = ((actualLevel - 1) / stagesPerTheme) % allStageDatas.Length;
+        }
+        else
+        {
+            _currentStageIndex = 0;
+        }
+
+        currentStageData = allStageDatas[_currentStageIndex];
+
+        if (stageController != null && currentStageData.backgroundPrefab != null)
+        {
+            stageController.ChangeStageBackground(currentStageData.backgroundPrefab);
+        }
     }
     void Start()
     {
         _player = FindObjectOfType<PlayerController>();
 
-        if (DataManager.Instance != null && allStageDatas.Length > 0)
-        {
-            int actualLevel = DataManager.Instance.CurrentStage;
-            _currentStageIndex = (actualLevel - 1) / stagesPerTheme;
-
-            _currentStageIndex = _currentStageIndex % allStageDatas.Length;
-            currentStageData = allStageDatas[_currentStageIndex];
-        }
-        else if (allStageDatas.Length > 0)
-        {
-            currentStageData = allStageDatas[_currentStageIndex];
-        }
         if (GameManager.Instance == null)
         {
             SpawnNextWave();
@@ -88,7 +98,7 @@ public class StageManager : Singleton<StageManager>
         {
             GameManager.Instance.OnStateChanged += HandleGameStateChanged;
 
-            if (GameManager.Instance.CurrentState == GameManager.GameState.StageFarming|| GameManager.Instance.CurrentState == GameManager.GameState.Boot)
+            if (GameManager.Instance.CurrentState == GameManager.GameState.StageFarming || GameManager.Instance.CurrentState == GameManager.GameState.Boot)
             {
                 if (stageController != null && stageController.activeMonsters.Count == 0)
                 {
@@ -96,7 +106,7 @@ public class StageManager : Singleton<StageManager>
                 }
             }
 
-            }
+        }
     }
     void Update()
     {
@@ -130,14 +140,10 @@ public class StageManager : Singleton<StageManager>
             }
         }
     }
-    public void ChallengeBoss()
+    public void ClearCurrentMonsters()
     {
-        if (stageController.isBossLevel) return;
-
-        if (currentStageData != null && currentStageData.stageBoss != null)
+        if (stageController != null && stageController.activeMonsters != null)
         {
-            CancelInvoke("SpawnNextWave");
-
             foreach (GameObject m in stageController.activeMonsters)
             {
                 if (m != null)
@@ -149,6 +155,17 @@ public class StageManager : Singleton<StageManager>
                 }
             }
             stageController.activeMonsters.Clear();
+        }
+    }
+    public void ChallengeBoss()
+    {
+        if (stageController.isBossLevel) return;
+
+        if (currentStageData != null && currentStageData.stageBoss != null)
+        {
+            CancelInvoke("SpawnNextWave");
+
+            ClearCurrentMonsters();
 
             stageController.EnterBossMap();
 
@@ -179,15 +196,17 @@ public class StageManager : Singleton<StageManager>
 
         int actualLevel = GetCurrentLevel();
 
-        int zoneIndex = (actualLevel - 1) / stagesPerTheme; //스테이지 간격
+        _currentStageIndex = ((actualLevel - 1) / stagesPerTheme) % allStageDatas.Length;
+        currentStageData = allStageDatas[_currentStageIndex];
 
-        if (allStageDatas.Length > 0)
+        _currentRewardCount = 0;
+
+        if (stageController != null && currentStageData.backgroundPrefab != null)
         {
-            _currentStageIndex = zoneIndex % allStageDatas.Length;
-            currentStageData = allStageDatas[_currentStageIndex];
+            stageController.ChangeStageBackground(currentStageData.backgroundPrefab);
         }
 
-        _currentRewardCount = 0; //게이지 초기화
+        ClearCurrentMonsters();
 
         stageController.ReturnToField();
         SpawnNextWave();
@@ -267,10 +286,12 @@ public class StageManager : Singleton<StageManager>
         {
             CancelInvoke("SpawnNextWave");
 
+            ClearCurrentMonsters();
+
             int actualLevel = GetCurrentLevel();
 
             double growth = currentStageData.monsterGrowthRate;
-            double exponentialMultiplier = System.Math.Pow((double)growth, actualLevel - 1);
+            double exponentialMultiplier = System.Math.Pow(growth, actualLevel - 1);
 
             double finalChestGold = (double)currentStageData.baseRewardGold * (double)currentStageData.rewardMultiplier * exponentialMultiplier;
 
@@ -302,11 +323,7 @@ public class StageManager : Singleton<StageManager>
         {
             _isTimerRunning = false;
 
-            foreach (GameObject m in stageController.activeMonsters) //소환된 보스 몬스터 제거
-            {
-                if (m != null) PoolManager.Instance.Push(m);
-            }
-            stageController.activeMonsters.Clear();
+            ClearCurrentMonsters();
 
             stageController.ReturnToField(); //스테이지 상태 복구
 
