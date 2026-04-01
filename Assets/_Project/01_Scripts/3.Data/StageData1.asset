@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dc9e4548fbeb014c8c0aa4f762e9cc3, type: 3}
   m_Name: StageData1
   m_EditorClassIdentifier: 
-  stageName: aaa
+  stageName: "\uC124\uC6D0"
+  stageLevel: 0
   statsMultiplier: 1
   rewardMultiplier: 1
   monsterGrowthRate: 1.1
