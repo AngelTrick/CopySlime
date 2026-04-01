@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -89,7 +89,16 @@ public class PlayerController : MonoBehaviour
     /// 게임 시작 시 초기화
     /// </summary>
     void Start()
-    {
+    { 
+        
+        //  [변경] 
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterPlayer(this);
+        }
+
+
+
         // DataManager에서 데이터가 바뀔 때마다 스탯 갱신 연결
         if (DataManager.Instance != null)
             DataManager.Instance.OnDataChanged += UpdateStatsFromData;
@@ -101,18 +110,18 @@ public class PlayerController : MonoBehaviour
         characterName = "용사";
         skillSlots = 3;          // 스킬 슬롯 3개
 
-        // SkillManager가 존재한다면 나 자신(this)을 등록 (Find 함수 완벽 대체)
-        if (SkillManager.Instance != null)
-        {
-            SkillManager.Instance.RegisterPlayer(this);
-        }
-        else
-        {
-            Debug.LogWarning("[Player] SkillManager가 아직 준비되지 않았습니다.");
-        }
-
         // UI 갱신 이벤트 호출
         NotifyUI();
+
+    }
+
+    //  [추가] 
+    private void OnDestroy()
+    {
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.OnDataChanged -= UpdateStatsFromData;
+        }
     }
 
     /// <summary>

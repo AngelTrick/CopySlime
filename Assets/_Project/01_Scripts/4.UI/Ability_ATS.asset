@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0957c58b222196d4a9d6ab55b6f83255, type: 3}
   m_Name: Ability_ATS
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 3ac73d7c1b497434183006d18af9c0af, type: 3}
+  icon: {fileID: -7879951240019241349, guid: 552b8619970b7e34caa25caad058097e, type: 3}
   itemName: "\uACF5\uACA9 \uC18D\uB3C4"
   maxLevel: 2147483647
-  currentLevel: 0
-  baseValue: 1
+  currentLevel: 1
+  formulaType: 0
+  baseValue: 20
   growthRate: 2
+  expMultiplier: 5
   baseCost: 500
-  costGrowthRate: 0

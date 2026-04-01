@@ -18,10 +18,14 @@ public class GameManager : Singleton<GameManager>
     public GameState CurrentState { get; private set; } = GameState.Boot; 
     public bool IsSleepMode { get; private set; } = false;
 
+    public PlayerController CurrentPlayer { get; private set; }
+
     // [3. 상태 변경 이벤트]
     // 상태 바뀔 때 UI 나 StageManager 가 감지 가능 하도록 이벤트 선언
     //<이전 상태, 지금 상태>
     public event Action<GameState, GameState> OnStateChanged;
+
+    public event Action<PlayerController> OnPlayerConnected;
 
     protected override void Awake()
     {
@@ -38,6 +42,14 @@ public class GameManager : Singleton<GameManager>
         // Start 에서 바로 파밍 시작 X , 초기화 (Boot) 후 실행
         ChangeState(GameState.Boot);
         InitializeGame();
+    }
+
+    public void RegisterPlayer(PlayerController player)
+    {
+        CurrentPlayer = player;
+        Debug.Log("[GameManager] 플레이어가 무대에 도착하여 등록되었습니다.");
+
+        OnPlayerConnected?.Invoke(player);
     }
 
     // [추가 될 기능 2 : 매니저 초기화 순서 제거 (Bootstrapping)
