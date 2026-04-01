@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SkillManager : Singleton<SkillManager>
@@ -39,7 +40,7 @@ public class SkillManager : Singleton<SkillManager>
         }
     }
 
-    // 메모리 누수를 방지하기 위한 이벤트 구독 해지 (필수)
+    // 메모리 누수를 방지하기 위한 이벤트 구독 해지
     private void OnDestroy()
     {
         if (GameManager.Instance != null)
@@ -69,7 +70,6 @@ public class SkillManager : Singleton<SkillManager>
 
     private void Update()
     {
-        // GameManager를 매 프레임 호출하지 않고, 내 전역 변수만 체크하여 성능 최적화
         if (_player == null) return;
 
         UpdateCooldowns();
@@ -171,10 +171,10 @@ public class SkillManager : Singleton<SkillManager>
 
     private bool CastSkill(SkillData skill)
     {
-        // Tag 대신 LayerMask를 이용한 검출 방식 유지
-        List<Transform> targets = skill.FindTargets(_player.transform.position, _enemyLayer);
+        // Transform 리스트 대신 Vector3(좌표) 리스트를 받아오도록 변경
+        List<Vector3> spawnPositions = skill.GetSpawnPositions(_player.transform.position, _enemyLayer);
 
-        if (targets.Count == 0) return false;
+        if (spawnPositions.Count == 0) return false;
 
         if (_playerAnimator != null && !string.IsNullOrEmpty(skill.AnimTriggerName))
         {
@@ -188,34 +188,50 @@ public class SkillManager : Singleton<SkillManager>
 
         if (skill.EffectPrefab != null)
         {
-            foreach (Transform target in targets)
-            {
-                Vector3 spawnPosition;
-                Vector3 fireDirection;
-
-                if (skill.SpawnType == SpawnPositionType.Target)
-                {
-                    spawnPosition = target.position + skill.SpawnOffset;
-                    fireDirection = Vector3.down;
-                }
-                else
-                {
-                    spawnPosition = _player.transform.position + skill.SpawnOffset;
-                    fireDirection = _player.transform.right;
-                }
-
-                GameObject effect = PoolManager.Instance.Pop(skill.EffectPrefab, spawnPosition, Quaternion.identity);
-                Projectile projectile = effect.GetComponent<Projectile>();
-
-                if (projectile != null)
-                {
-                    double finalDamage = _player.attackPower * skill.DamageMultiplier;
-                    projectile.Init(fireDirection, finalDamage);
-                }
-            }
+            // 한꺼번에 소환하지 않고 코루틴을 돌려 좌표들에 순차적으로 발사
+            StartCoroutine(SpawnSkillEffectsRoutine(skill, spawnPositions));
         }
 
         return true;
+    }
+
+    // 좌표(Vector3)를 받아 처리하도록 변경된 순차 발사 코루틴 함수
+    private IEnumerator SpawnSkillEffectsRoutine(SkillData skill, List<Vector3> spawnPositions)
+    {
+        float delay = skill.Duration > 0 ? skill.Duration / spawnPositions.Count : 0f;
+        WaitForSeconds wait = delay > 0 ? new WaitForSeconds(delay) : null;
+
+        foreach (Vector3 targetPos in spawnPositions)
+        {
+            Vector3 spawnPosition;
+            Vector3 fireDirection;
+
+            if (skill.SpawnType == SpawnPositionType.Target)
+            {
+                // SkillData에서 오프셋 연산이 끝난 좌표를 그대로 사용
+                spawnPosition = targetPos;
+                fireDirection = Vector3.down;
+            }
+            else
+            {
+                spawnPosition = _player.transform.position + skill.SpawnOffset;
+                fireDirection = _player.transform.right;
+            }
+
+            GameObject effect = PoolManager.Instance.Pop(skill.EffectPrefab, spawnPosition, Quaternion.identity);
+            Projectile projectile = effect.GetComponent<Projectile>();
+
+            if (projectile != null)
+            {
+                double finalDamage = _player.attackPower * skill.DamageMultiplier;
+
+                // 데이터에서 직접 관통 여부(IsPiercing)를 읽어와서 투사체에 주입
+                projectile.Init(fireDirection, finalDamage, skill.IsPiercing);
+            }
+
+            // 계산된 시간만큼 대기한 후 다음 이펙트를 소환
+            if (wait != null) yield return wait;
+        }
     }
 
     // 에디터 환경에서만 동작하도록 전처리기를 추가하여 빌드 성능 최적화
