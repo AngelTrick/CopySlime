@@ -29,7 +29,7 @@ public class SkillManager : Singleton<SkillManager>
         // GameManager의 플레이어 연결 이벤트를 구독
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnPlayerConnected += InitPlayer;
+            GameManager.Instance.OnPlayerSpawned += InitPlayer;
 
             // 만약 SkillManager가 늦게 켜져서 이미 플레이어가 등록되어 있다면 즉시 초기화
             if (GameManager.Instance.CurrentPlayer != null)
@@ -44,7 +44,7 @@ public class SkillManager : Singleton<SkillManager>
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnPlayerConnected -= InitPlayer;
+            GameManager.Instance.OnPlayerSpawned -= InitPlayer;
         }
     }
 
