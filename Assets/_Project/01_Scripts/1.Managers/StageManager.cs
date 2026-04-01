@@ -140,14 +140,10 @@ public class StageManager : Singleton<StageManager>
             }
         }
     }
-    public void ChallengeBoss()
+    public void ClearCurrentMonsters()
     {
-        if (stageController.isBossLevel) return;
-
-        if (currentStageData != null && currentStageData.stageBoss != null)
+        if (stageController != null && stageController.activeMonsters != null)
         {
-            CancelInvoke("SpawnNextWave");
-
             foreach (GameObject m in stageController.activeMonsters)
             {
                 if (m != null)
@@ -159,6 +155,17 @@ public class StageManager : Singleton<StageManager>
                 }
             }
             stageController.activeMonsters.Clear();
+        }
+    }
+    public void ChallengeBoss()
+    {
+        if (stageController.isBossLevel) return;
+
+        if (currentStageData != null && currentStageData.stageBoss != null)
+        {
+            CancelInvoke("SpawnNextWave");
+
+            ClearCurrentMonsters();
 
             stageController.EnterBossMap();
 
@@ -198,6 +205,8 @@ public class StageManager : Singleton<StageManager>
         {
             stageController.ChangeStageBackground(currentStageData.backgroundPrefab);
         }
+
+        ClearCurrentMonsters();
 
         stageController.ReturnToField();
         SpawnNextWave();
@@ -277,6 +286,8 @@ public class StageManager : Singleton<StageManager>
         {
             CancelInvoke("SpawnNextWave");
 
+            ClearCurrentMonsters();
+
             int actualLevel = GetCurrentLevel();
 
             double growth = currentStageData.monsterGrowthRate;
@@ -312,11 +323,7 @@ public class StageManager : Singleton<StageManager>
         {
             _isTimerRunning = false;
 
-            foreach (GameObject m in stageController.activeMonsters) //소환된 보스 몬스터 제거
-            {
-                if (m != null) PoolManager.Instance.Push(m);
-            }
-            stageController.activeMonsters.Clear();
+            ClearCurrentMonsters();
 
             stageController.ReturnToField(); //스테이지 상태 복구
 
