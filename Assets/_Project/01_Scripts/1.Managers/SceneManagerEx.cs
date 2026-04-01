@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -37,7 +38,15 @@ public class SceneManagerEx : Singleton<SceneManagerEx>
 
     private IEnumerator LoadSceneRoutine(Define.Scene type)
     {
-        // TODO : 이 부분에 "로딩 중 ...." UI 패널 키기
+        // 1. Resources 폴더에서 로딩 UI 프리팹 꺼내서 띄우기
+        GameObject loadingPrefab = Resources.Load<GameObject>("UI/UILoading");
+        GameObject loadingUI = null;
+
+        if(loadingPrefab != null)
+        {
+            loadingUI = Instantiate(loadingPrefab);
+            DontDestroyOnLoad(loadingUI); // 씬이 넘어가는 중에도 파괴되지 않게 보호!
+        }
 
         string sceneName =  GetSceneName(type);
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
@@ -49,11 +58,14 @@ public class SceneManagerEx : Singleton<SceneManagerEx>
         {
             if(op.progress >= 0.9f)
             {
+                //로딩이 너무 빠르면 로딩창을 볼 새도 없이 넘어가므로 0.5초 딜레이
+                yield return new WaitForSeconds(1.5f);
                 op.allowSceneActivation = true;
             }
             yield return null;
         }
+        // 2. 씬 이동이 완전히 끝나면 로딩창 파괴!
+        if (loadingUI != null) Destroy(loadingUI); 
     }
 
-    // TODO : "로딩 중 ... " UI 패널 끄기
 }

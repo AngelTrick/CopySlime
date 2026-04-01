@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -89,7 +89,16 @@ public class PlayerController : MonoBehaviour
     /// 게임 시작 시 초기화
     /// </summary>
     void Start()
-    {
+    { 
+        
+        //  [변경] 
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterPlayer(this);
+        }
+
+
+
         // DataManager에서 데이터가 바뀔 때마다 스탯 갱신 연결
         if (DataManager.Instance != null)
             DataManager.Instance.OnDataChanged += UpdateStatsFromData;
@@ -103,6 +112,16 @@ public class PlayerController : MonoBehaviour
 
         // UI 갱신 이벤트 호출
         NotifyUI();
+
+    }
+
+    //  [추가] 
+    private void OnDestroy()
+    {
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.OnDataChanged -= UpdateStatsFromData;
+        }
     }
 
     /// <summary>

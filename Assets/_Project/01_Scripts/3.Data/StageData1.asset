@@ -22,3 +22,4 @@ MonoBehaviour:
   fieldMonsters:
   - {fileID: 11400000, guid: 25846b84fece3544db9033568b5961da, type: 2}
   stageBoss: {fileID: 11400000, guid: e93302af3ebc74f4e9e3fb946f066ded, type: 2}
+  backgroundPrefab: {fileID: 3782820560431525993, guid: a70ae1502cce10b499c55c801d0c1581, type: 3}

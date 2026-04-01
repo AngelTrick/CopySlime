@@ -23,15 +23,39 @@ public class Stage : MonoBehaviour
     public GameObject monsterBasePrefab;
 
     [Header("이동 및 배경 설정")]
-    public Transform[] backgrounds; //루핑할 배경들
+    public List<Transform> backgrounds = new List<Transform>(); //루핑할 배경들
     public float backgroundWidth = 40f; //배경 가로 길이
     public float movingDuration = 0.5f; //몬스터 처치 후 이동 시간
 
+    [Header("배경 관리 설정")]
+    public Transform backgroundParent;
+    private GameObject _currentBackgroundObj;
+
     [Header("보스전 전용 설정")]
-    public Sprite bossBackgroundSprite; //보스 맵 배경 이미지
-    private Sprite _originalFieldSprite; //원래 필드 배경 이미지
     public bool isBossLevel = false; //현재 보스전 상태인지 확인
 
+    public void ChangeStageBackground(GameObject bgPrefab)
+    {
+        if (bgPrefab == null)
+        {
+            return;
+        }
+
+        if (_currentBackgroundObj != null)
+        {
+            Destroy(_currentBackgroundObj);
+        }
+
+        _currentBackgroundObj = Instantiate(bgPrefab, backgroundParent);
+        _currentBackgroundObj.transform.localPosition = Vector3.zero;
+
+        backgrounds.Clear();
+
+        foreach (Transform child in _currentBackgroundObj.transform)
+        {
+            backgrounds.Add(child);
+        }
+    }
     public void StartNewWave(BaseMonsterData data)
     {
         if (data is BossMonsterData)
@@ -116,32 +140,11 @@ public class Stage : MonoBehaviour
     {
         StopAllCoroutines(); //현재 진행 중인 배경 이동이 있다면 멈춤
         isMoving = false;
-
-        foreach (Transform bg in backgrounds)
-        {
-            SpriteRenderer sr = bg.GetComponent<SpriteRenderer>();
-            if (sr != null && bossBackgroundSprite != null)
-            {
-                //현재의 일반 필드 이미지를 저장
-                if (_originalFieldSprite == null) _originalFieldSprite = sr.sprite;
-
-                //배경 이미지를 보스 맵용으로 교체
-                sr.sprite = bossBackgroundSprite;
-            }
-        }
+        isBossLevel = true;
     }
     public void ReturnToField()
     {
         isBossLevel = false; //보스전 상태 해제
-        foreach (Transform bg in backgrounds)
-        {
-            SpriteRenderer sr = bg.GetComponent<SpriteRenderer>();
-            if (sr != null && _originalFieldSprite != null)
-            {
-                //저장해뒀던 원래 필드 이미지로 복구
-                sr.sprite = _originalFieldSprite;
-            }
-        }
     }
     public void OnMonsterKilled(GameObject killedMonster)
     {
@@ -277,11 +280,13 @@ public class Stage : MonoBehaviour
     {
         foreach (Transform bg in backgrounds)
         {
+            if (bg == null) continue;
+
             bg.Translate(step);
 
             if (bg.position.x <= -backgroundWidth) //화면 왼쪽 끝에 도달하면 오른쪽 끝으로 이동
             {
-                bg.position += new Vector3(backgroundWidth * backgrounds.Length, 0, 0);
+                bg.position += new Vector3(backgroundWidth * backgrounds.Count, 0, 0);
             }
         }
     }

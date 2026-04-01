@@ -1777,6 +1777,37 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1834224622
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1834224623}
+  m_Layer: 0
+  m_Name: Background_Anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1834224623
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834224622}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2005210941
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,12 +1978,24 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1366857777683166577, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: backgroundParent
+      value: 
+      objectReference: {fileID: 1834224623}
+    - target: {fileID: 1366857777683166577, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: backgrounds.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2916939905538290035, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
       propertyPath: m_Name
       value: StageSystem
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7951343391599525859, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+    - {fileID: 1432430103088415989, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+    - {fileID: 5894269484728522523, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+    - {fileID: -4284361835143460679, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
@@ -1966,6 +2009,7 @@ SceneRoots:
   - {fileID: 1624330035}
   - {fileID: 1821981635}
   - {fileID: 1204460967}
+  - {fileID: 1834224623}
   - {fileID: 1209236416}
   - {fileID: 369799203}
   - {fileID: 1478548786451121044}
