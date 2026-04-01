@@ -22,22 +22,41 @@ public class SkillManager : Singleton<SkillManager>
     protected override void Awake()
     {
         base.Awake();
-        // 기존에 있던 _player = FindObjectOfType<PlayerController>(); 삭제!
-        // 여기서 억지로 찾지 않고 플레이어의 전입신고를 기다립니다.
     }
 
-    public void RegisterPlayer(PlayerController playerController)
+    private void Start()
+    {
+        // GameManager의 플레이어 연결 이벤트를 구독
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnPlayerSpawned += InitPlayer;
+
+            // 만약 SkillManager가 늦게 켜져서 이미 플레이어가 등록되어 있다면 즉시 초기화
+            if (GameManager.Instance.CurrentPlayer != null)
+            {
+                InitPlayer(GameManager.Instance.CurrentPlayer);
+            }
+        }
+    }
+
+    // 메모리 누수를 방지하기 위한 이벤트 구독 해지 (필수)
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnPlayerSpawned -= InitPlayer;
+        }
+    }
+
+    // GameManager로부터 플레이어 정보를 전달받는 함수
+    private void InitPlayer(PlayerController playerController)
     {
         _player = playerController;
 
         if (_player != null)
         {
             _playerAnimator = _player.GetComponentInChildren<Animator>();
-            Debug.Log("[SkillManager] Main 씬의 플레이어 캐싱 완료!");
-        }
-        else
-        {
-            Debug.LogError("[SkillManager] 전달받은 플레이어 데이터가 null입니다.");
+            Debug.Log("[SkillManager] GameManager로부터 플레이어 정보 수신 완료!");
         }
     }
 
@@ -50,6 +69,7 @@ public class SkillManager : Singleton<SkillManager>
 
     private void Update()
     {
+        // GameManager를 매 프레임 호출하지 않고, 내 전역 변수만 체크하여 성능 최적화
         if (_player == null) return;
 
         UpdateCooldowns();
@@ -70,6 +90,7 @@ public class SkillManager : Singleton<SkillManager>
         }
     }
 
+    // 불필요한 매개변수를 제거하고 전역 변수 _player를 사용하도록 수정
     private void UpdateCooldowns()
     {
         foreach (SkillData skill in _player.EquippedSkills)
@@ -197,6 +218,8 @@ public class SkillManager : Singleton<SkillManager>
         return true;
     }
 
+    // 에디터 환경에서만 동작하도록 전처리기를 추가하여 빌드 성능 최적화
+#if UNITY_EDITOR
     // 에디터 씬 뷰에서 스킬들의 사거리를 시각적으로 확인하기 위한 기즈모
     private void OnDrawGizmos()
     {
@@ -216,7 +239,7 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         // 2. 장착된 오토 스킬들의 사거리 그리기 (청록색 선)
-        if (playerTarget.EquippedSkills != null)
+        if (playerTarget != null && playerTarget.EquippedSkills != null)
         {
             Gizmos.color = Color.cyan;
             foreach (SkillData skill in playerTarget.EquippedSkills)
@@ -228,4 +251,5 @@ public class SkillManager : Singleton<SkillManager>
             }
         }
     }
+#endif
 }
