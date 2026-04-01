@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0957c58b222196d4a9d6ab55b6f83255, type: 3}
   m_Name: Ability_CRR
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 3ac73d7c1b497434183006d18af9c0af, type: 3}
+  icon: {fileID: -703457753271872456, guid: 77d82a29247f7bf46a2f106c2700953f, type: 3}
   itemName: "\uCE58\uBA85\uD0C0 \uD655\uB960"
   maxLevel: 2147483647
-  currentLevel: 0
-  baseValue: 1
-  growthRate: 2
+  currentLevel: 1
+  formulaType: 0
+  baseValue: 25
+  growthRate: 0.1
+  expMultiplier: 5
   baseCost: 500
-  costGrowthRate: 0
