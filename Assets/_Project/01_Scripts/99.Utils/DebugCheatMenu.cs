@@ -225,7 +225,7 @@ public class DebugCheatMenu : MonoBehaviour
 
         // 실제 계산된 스탯과, DataManager에 저장된 레벨을 매칭해 보여줍니다.
 
-        GUILayout.Label($"공격력 : <color=#facc15>{player.attackPower.ToIdleCurrencyString()}</color> <color=#9ca3af>(Lv.{DataManager.Instance.AttackLevel})</color>",statStyle);
+        GUILayout.Label($"공격력 : <color=#facc15>{player.attackPower.ToSmartCurrency()}</color> <color=#9ca3af>(Lv.{DataManager.Instance.AttackLevel})</color>",statStyle);
         GUILayout.Label($"치명타 확률 : <color=#facc15>{player.critRate:F1}%</color> <color=#9ca3af>(Lv.{DataManager.Instance.CritRateLevel})</color>", statStyle);
         GUILayout.Label($"치명타 데미지 : <color=#facc15>{player.critDamage:F1}%</color> <color=#9ca3af>(Lv.{DataManager.Instance.CritDamageLevel})</color>", statStyle);
         GUILayout.Label($"공격 속도 : <color=#facc15>{player.attackSpeed:F1}%</color> <color=#9ca3af>(Lv.{DataManager.Instance.AttackSpeedLevel})</color>", statStyle);

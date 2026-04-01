@@ -41,7 +41,7 @@ public class UIGold : MonoBehaviour
 
         // DataManager의 실제 골드 데이터를 가져와서 포맷팅
         //goldText.text = $"Gold: {FormatNumber(DataManager.Instance.Gold)}";
-        goldText.text = $"Gold: {DataManager.Instance.Gold.ToIdleCurrencyString()}";
+        goldText.text = $"Gold: {DataManager.Instance.Gold.ToSmartCurrency()}";
     }
     /*
     private string FormatNumber(float number)
