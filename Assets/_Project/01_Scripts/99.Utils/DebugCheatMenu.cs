@@ -14,7 +14,11 @@ public class DebugCheatMenu : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     private bool _isShow = false;
 
-    private Rect _windowRect = new Rect(20, 20, 300, 550);
+    private Rect _windowRect = new Rect(20, 20, 320, 600);
+
+    // 페이지 구분을 위한 변수
+    private int _currentTab = 0;
+    private string[] _tabNames = { "치트 기능", "플레이어 스탯" };
 
     private void Update()
     {
@@ -41,18 +45,37 @@ public class DebugCheatMenu : MonoBehaviour
             GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(scale, scale, 1));
         }
 
-        _windowRect = GUILayout.Window(999, _windowRect, DrawCheetMenu, "개발자 전용 치트 콘솔");
+        _windowRect = GUILayout.Window(999, _windowRect, DrawCheatMenu, "개발자 전용 치트 콘솔");
     }
-
-
-    private void DrawCheetMenu(int windowID)
+    private void DrawCheatMenu(int windowID)
     {
         GUILayout.Space(10);
+
+        // 상단 탭(페이지) 버튼 생성
+        _currentTab = GUILayout.Toolbar(_currentTab, _tabNames, GUILayout.Height(35));
+        GUILayout.Space(15);
+
+        // 탭 번호에 따라 다른 화면을 그려줍니다.
+        if(_currentTab == 0)
+        {
+            DrawCheatTab(); // 1페이지 : 기존 치트 기능
+        }
+        if(_currentTab == 1)
+        {
+            DrawStatTab(); // 2페이지 : 스탯 표 
+        }
+        // 창을 마우스로 드래그해서 움직일 수 있도록 도와줌
+        GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+    } 
+    /// <summary>
+    /// [페이지 1] 치트 기능들
+    /// </summary>
+    private void DrawCheatTab()
+    {
         GUILayout.Label("여기는 팀원들을 위한 공간");
         GUILayout.Label($"현재 스테이지 : {DataManager.Instance.CurrentStage}");
         GUILayout.Label($"현재 골드 : {DataManager.Instance.Gold}");
         GUILayout.Space(10);
-
 
         //=====================================================================
         // 재화 관련 치트
@@ -172,10 +195,55 @@ public class DebugCheatMenu : MonoBehaviour
             Debug.LogWarning("[Cheat] 모든 데이터가 삭제 되고 화면이 0으로 갱신 됩니다.");
         }
         GUI.color = Color.white; // 색상 원상 복구
+    }
+    private void DrawStatTab()
+    {
+        PlayerController player = null;
+        if(GameManager.Instance != null)
+        {
+            player = GameManager.Instance.CurrentPlayer;
+        }
 
-        // 창을 마우스로 드래그해서 움직일 수 있도록 도와줌
-        GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        // 못 찾았다면 에러 메시지 출력
+        if(player == null)
+        {
+            GUILayout.Space(20);
+            GUILayout.Label("메인 게임 씬이 아닙니다. \n 플레이어를 찾을 수 없습니다.", EditorStyles.helpBox);
+            return;
+        }
 
+        //스탯 표시용 GUI 스타일 꾸미기
+        GUIStyle statStyle = new GUIStyle(GUI.skin.label);
+        statStyle.fontSize = 13;
+        statStyle.richText = true;      // 색생 태그 사용 허용
+
+        GUILayout.Label("<b>[현재 플레이어 스탯 & 레벨 현향]</b>", statStyle);
+        GUILayout.Space(5);
+
+        // 보기 좋게 박스 안에 가두기
+        GUILayout.BeginVertical("box");
+
+        // 실제 계산된 스탯과, DataManager에 저장된 레벨을 매칭해 보여줍니다.
+
+        GUILayout.Label($"공격력 : <color=#facc15{player.attackPower.ToIdleCurrencyString()}</color> <color=#9ca3af>(Lv.{DataManager.Instance.AttackLevel})</color>",statStyle);
+        GUILayout.Label($"치명타 확률 : <color=#facc15{player.critRate:F1}%</color> <color=#9ca3af>(Lv.{DataManager.Instance.CritRateLevel})</color>", statStyle);
+        GUILayout.Label($"치명타 데미지 : <color=#facc15{player.critDamage:F1}%</color> <color=#9ca3af>(Lv.{DataManager.Instance.CritDamageLevel})</color>", statStyle);
+        GUILayout.Label($"공격 속도 : <color=#facc15{player.attackSpeed:F1}%</color> <color=#9ca3af>(Lv.{DataManager.Instance.AttackSpeedLevel})</color>", statStyle);
+        GUILayout.Label($"골드 획득 운 : <color=#facc15{player.luck:F1}%</color> <color=#9ca3af>(Lv.{DataManager.Instance.AttackLevel})</color>", statStyle);
+
+        GUILayout.EndVertical();
+
+        GUILayout.Space(20);
+
+        // 스탯 동기화 버튼
+        if(GUILayout.Button("현재 레벨 기반 스탯 재계산", GUILayout.Height(40)))
+        {
+            player.UpdateStatsFromData();
+            Debug.Log("[Cheat] 플레이어 스탯 수동 갱신 완료");
+        }
+
+        GUILayout.Space(10);
+        GUILayout.Label("<color=#9ca3af> * 위 스탯은 공식이 적용된 실제 최종 수치입니다.</color>", statStyle);
     }
 #endif
 }
