@@ -6,10 +6,12 @@ public class Monster : MonoBehaviour, IDamageable
 {
     [Header("UI 설정")]
     public GameObject damageTextPrefab;
+    public MonsterHPBar hpBar;
 
     public BaseMonsterData data;
 
     public double currentHp;
+    private double _maxHp;
     private double _currentGold;
     private bool _isDead = false;
 
@@ -24,7 +26,14 @@ public class Monster : MonoBehaviour, IDamageable
         gameObject.SetActive(true);
 
         //공통 데이터 적용 (체력)
-        currentHp = (double)data.maxHp * statsMultiplier;
+        _maxHp = (double)data.maxHp * statsMultiplier;
+        currentHp = _maxHp;
+
+        if (hpBar != null)
+        {
+            hpBar.transform.localPosition = new Vector3(0, (float)newData.hpBarOffset, 0);
+            hpBar.UpdateHP(currentHp, _maxHp);
+        }
 
         //공통 데이터 적용 (골드 보상)
         double calculatedGold = (double)data.dropGold * rewardMultiplier;
@@ -44,6 +53,10 @@ public class Monster : MonoBehaviour, IDamageable
     {
         foreach (Transform child in transform)
         {
+            if (child.name.Contains("Canvas") || child.GetComponent<MonsterHPBar>() != null || child.GetComponentInChildren<Canvas>() != null)
+            { 
+                continue; 
+            }
             Destroy(child.gameObject);
         }
 
@@ -63,6 +76,11 @@ public class Monster : MonoBehaviour, IDamageable
         if (_isDead) return;
 
         currentHp -= damage;
+
+        if (hpBar != null)
+        {
+            hpBar.UpdateHP(currentHp, _maxHp);
+        }
 
         if (damageTextPrefab != null)
         {

@@ -21,6 +21,9 @@ public class SkinShard : MonoBehaviour
     public float explosionForceUp = 10f; //위로 솟구치는 힘
     public float explosionForceSide = 4f; //옆으로 퍼지는 힘
 
+    [Header("레이어 설정")]
+    public LayerMask playerLayer;
+
     private Transform _playerTransform;
     private bool _isCollecting = false;
     private bool _canCollect = false;
@@ -38,6 +41,7 @@ public class SkinShard : MonoBehaviour
         _isCollecting = false;
         _canCollect = false;
         _bounceCount = 0;
+        _playerTransform = null;
 
         if (StageManager.Instance != null && StageManager.Instance.stageController != null)
         {
@@ -58,14 +62,8 @@ public class SkinShard : MonoBehaviour
             _rb.AddForce(pushForce, ForceMode.Impulse);
         }
 
-        FindPlayer();
         CancelInvoke("EnableCollection");
         Invoke("EnableCollection", 0.7f);
-    }
-    private void FindPlayer()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null) _playerTransform = player.transform;
     }
     private void EnableCollection()
     {
@@ -85,8 +83,25 @@ public class SkinShard : MonoBehaviour
     void Update()
     {
         if (_playerTransform == null) 
-        { 
-            FindPlayer(); return;
+        {
+            int finalMask;
+
+            if (playerLayer.value == 0)
+            {
+                finalMask = 1 << LayerMask.NameToLayer("Player");
+            }
+            else
+            {
+                finalMask = playerLayer.value;
+            }
+
+                Collider[] cols = Physics.OverlapSphere(Vector3.zero, 500f, finalMask);
+
+            if (cols.Length > 0)
+            {
+                _playerTransform = cols[0].transform;
+            }
+            return;
         }
 
         if (!_isCollecting)

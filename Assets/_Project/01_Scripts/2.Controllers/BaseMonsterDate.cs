@@ -18,4 +18,7 @@ public class BaseMonsterData : ScriptableObject
     [Header("공통 보상")]
     public double dropGold = 100; //보상골드
     public GameObject goldPrefab;
+
+    [Header("UI 설정")]
+    public float hpBarOffset = 2.0f;
 }
