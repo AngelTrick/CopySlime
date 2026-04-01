@@ -25,6 +25,8 @@ public class GameManager : Singleton<GameManager>
     //<이전 상태, 지금 상태>
     public event Action<GameState, GameState> OnStateChanged;
 
+    public event Action<PlayerController> OnPlayerConnected;
+
     protected override void Awake()
     {
         base.Awake();
@@ -46,6 +48,8 @@ public class GameManager : Singleton<GameManager>
     {
         CurrentPlayer = player;
         Debug.Log("[GameManager] 플레이어가 무대에 도착하여 등록되었습니다.");
+
+        OnPlayerConnected?.Invoke(player);
     }
 
     // [추가 될 기능 2 : 매니저 초기화 순서 제거 (Bootstrapping)
