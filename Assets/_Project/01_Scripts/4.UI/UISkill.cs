@@ -82,7 +82,7 @@ public class UISkill : MonoBehaviour
         cooldownImage.fillAmount = 0f;
         cooldownImage.color = new Color(cooldownImage.color.r,
                                 cooldownImage.color.g,
-                                cooldownImage.color.b, 0.4f);
+                                cooldownImage.color.b, 0.8f);
         if (cooldownText != null) cooldownText.gameObject.SetActive(true);
     }
     public void StartCooldownPair()
@@ -95,7 +95,7 @@ public class UISkill : MonoBehaviour
             cooldownImage.fillAmount = 0f;
             cooldownImage.color = new Color(cooldownImage.color.r,
                                 cooldownImage.color.g,
-                                cooldownImage.color.b, 0.4f);
+                                cooldownImage.color.b, 0.8f);
             if (cooldownText != null) cooldownText.gameObject.SetActive(true);
         }
     }

@@ -116,6 +116,10 @@ public class AbilitySlot : MonoBehaviour, ISlot
         {
             ExpandMaxLevel(-1);
         }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            ExpandCurrentLevel(-1);
+        }
         if (Input.GetKeyDown(KeyCode.K))
         {
             ExpandCurrentLevel(30);
