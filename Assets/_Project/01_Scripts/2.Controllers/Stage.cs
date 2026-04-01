@@ -34,6 +34,9 @@ public class Stage : MonoBehaviour
     [Header("보스전 전용 설정")]
     public bool isBossLevel = false; //현재 보스전 상태인지 확인
 
+    [Header("플레이어 탐색 설정")]
+    public LayerMask playerLayer;
+
     public void ChangeStageBackground(GameObject bgPrefab)
     {
         if (bgPrefab == null)
@@ -180,6 +183,7 @@ public class Stage : MonoBehaviour
 
     IEnumerator MoveWorldRoutine()
     {
+        if (isMoving) yield break;
         isMoving = true;
         float elapsed = 0f;
 
@@ -194,18 +198,40 @@ public class Stage : MonoBehaviour
             currentDistance = monsterDistance;
         }
 
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        Transform playerTarget;
+        Transform playerTarget = null;
+        float searchTimeout = 1f;
 
-        if (playerObj != null)
+        while (playerTarget == null && searchTimeout > 0)
         {
-            playerTarget = playerObj.transform;
-        }
-        else
-        {
-            playerTarget = null;
+            int finalMask;
+
+            if (playerLayer.value == 0)
+            {
+                finalMask = 1 << LayerMask.NameToLayer("Player");
+            }
+            else
+            {
+                finalMask = playerLayer.value;
+            }
+
+            Collider[] playerColliders = Physics.OverlapSphere(Vector3.zero, 2000f, finalMask);
+
+            if (playerColliders.Length > 0)
+            {
+                playerTarget = playerColliders[0].transform;
+            }
+            else
+            {
+                searchTimeout -= Time.deltaTime;
+                yield return null; 
+            }
         }
 
+        if (playerTarget == null)
+        {
+            isMoving = false;
+            yield break;
+        }
         while (activeMonsters.Count > 0)
         {
             GameObject firstTarget = activeMonsters[0];
