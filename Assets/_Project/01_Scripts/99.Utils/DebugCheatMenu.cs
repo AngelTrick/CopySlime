@@ -191,7 +191,7 @@ public class DebugCheatMenu : MonoBehaviour
             {
                 // 강제로 120분 방치. 6000골드 획득한 것 처럼 UI만 띄움
                 UIManager.Instance.ShowOfflineReward(120, 6000);
-                Debug.Log("[Cheat] UI 오프라인 강제 호울 완료");
+                Debug.Log("[Cheat] UI 오프라인 강제 호출 완료");
             }
             else
             {

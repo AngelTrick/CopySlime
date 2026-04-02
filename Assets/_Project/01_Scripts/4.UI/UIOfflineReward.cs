@@ -20,7 +20,13 @@ public class UIOfflineReward : MonoBehaviour
         //확인 버튼을 누르면 팝업창 닫는 이벤트를 자동으로 연결합니다.
         if(_confirmButton != null)
         {
-            _confirmButton.onClick.AddListener(ClosePopup);
+            _confirmButton.onClick.RemoveAllListeners();
+            _confirmButton.onClick.AddListener(OnClickConfirmButton);
+        }
+        else
+        {
+            // 이 로그가 뜬다면 100% 인스펙터 문제
+            Debug.LogError("[UIOfflineReward] 확인 버튼(_confirmButton)이 인스펙터에 연결되지 않았습니다.");
         }
     }
     /// <summary>
@@ -50,16 +56,26 @@ public class UIOfflineReward : MonoBehaviour
 
         //3. 골드 표시
         _rewardText.text = $"획득 골드\n<size=150%><color=#FFD700>+{gold.ToSmartCurrency()}</color></size>";
+
+        Debug.Log($"[UIOfflineReward] 팝업 오픈! 대기 중인 골드 : {_pendingGold}");
     }
 
-    private void ClosePopup()
+    public void OnClickConfirmButton()
     {
-        // 창을 닫을 때(수령 버튼을 눌렀을 때) 실제 재화 DataManger에 지급합니다.
-        if(_pendingGold > 0 && DataManager.Instance != null)
-        {
-            DataManager.Instance.AddGold(_pendingGold);
-            Debug.Log($"[UIOfflineReward] 유저가 확인 버트튼 클릭! 보상 {_pendingGold} 골드 지급 완료");
+        Debug.Log($"[UIOfflineReward] 확인 버튼 클릭됨! 처리할 골드 : {_pendingGold}");
 
+        // 창을 닫을 때(수령 버튼을 눌렀을 때) 실제 재화 DataManger에 지급합니다.
+        if(_pendingGold > 0 )
+        {
+            if(DataManager.Instance != null)
+            {
+                DataManager.Instance.AddGold(_pendingGold);
+                Debug.Log($"[UIOfflineReward] 유저가 확인 버트튼 클릭! 보상 {_pendingGold} 골드 지급 완료");
+            }
+            else
+            {
+                Debug.LogError("[UIOfflineReward] DataManager가 존재 하지 않아 지급 실패");
+            }
             // 중복 수령 방지를 위해 0으로 초기화
             _pendingGold = 0;
         }
