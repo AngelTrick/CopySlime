@@ -43,6 +43,9 @@ public class StageManager : Singleton<StageManager>
     [Header("UI 제어")]
     public GameObject stageUIObject;
 
+    [Header("보스 UI 연결")]
+    public BossBattleUI uiBossBattle;
+
     public System.Action<double> OnGoldChanged;
     public System.Action<int> OnSkinShardChanged;
 
@@ -176,10 +179,22 @@ public class StageManager : Singleton<StageManager>
 
             stageController.StartNewWave(currentStageData.stageBoss);
 
+            Invoke("SafeOpenUI", 0.1f);
+
+
             _currentBossLimitTime = currentStageData.stageBoss.bossTimeLimit;
             _currentBossTimer = _currentBossLimitTime;
 
             _isTimerRunning = true;
+        }
+    }
+    private void SafeOpenUI()
+    {
+        if (uiBossBattle != null && stageController.activeMonsters.Count > 0)
+        {
+            Monster bossScript = stageController.activeMonsters[0].GetComponent<Monster>();
+            string title = $"STAGE {GetCurrentLevel()} {currentStageData.stageName}";
+            uiBossBattle.Open(bossScript, title);
         }
     }
     private void RestoreStageUI()
@@ -189,6 +204,7 @@ public class StageManager : Singleton<StageManager>
     public void OnBossClear()
     {
         _isTimerRunning = false;
+        if (uiBossBattle != null) uiBossBattle.Close();
         StartCoroutine(WaitAndGoToNextStage(2.0f));
     }
     private IEnumerator WaitAndGoToNextStage(float delay)
@@ -232,8 +248,11 @@ public class StageManager : Singleton<StageManager>
             //finalAmount = _player.FarmGold(amount);
         }
 
-        DataManager.Instance.AddGold(finalAmount);
-        OnGoldChanged?.Invoke(totalGold); //골드 획득 사운드 등 이벤트
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.AddGold(finalAmount);
+            OnGoldChanged?.Invoke(totalGold);
+        }
     }
     public void AddSkinShard(int amount)
     {
@@ -333,6 +352,8 @@ public class StageManager : Singleton<StageManager>
         if (stageController.isBossLevel)
         {
             _isTimerRunning = false;
+
+            if (uiBossBattle != null) uiBossBattle.Close();
 
             RestoreStageUI();
 

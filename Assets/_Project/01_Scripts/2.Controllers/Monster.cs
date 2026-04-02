@@ -15,9 +15,7 @@ public class Monster : MonoBehaviour, IDamageable
     private double _currentGold;
     private bool _isDead = false;
 
-    private Transform _target; //테스트용 타겟
-
-    //private bool _isBoss = false;
+    public System.Action<double, double> OnHpChanged;
 
     public void Init(BaseMonsterData newData, double statsMultiplier, double rewardMultiplier)
     {
@@ -34,6 +32,8 @@ public class Monster : MonoBehaviour, IDamageable
             hpBar.transform.localPosition = new Vector3(0, (float)newData.hpBarOffset, 0);
             hpBar.UpdateHP(currentHp, _maxHp);
         }
+
+        OnHpChanged?.Invoke(currentHp, _maxHp);
 
         //공통 데이터 적용 (골드 보상)
         double calculatedGold = (double)data.dropGold * rewardMultiplier;
@@ -70,7 +70,10 @@ public class Monster : MonoBehaviour, IDamageable
             model.transform.localRotation = Quaternion.identity;
         }
     }
-
+    public double GetMaxHp()
+    {
+        return _maxHp;
+    }
     public void TakeDamage(double damage)
     {
         if (_isDead) return;
@@ -81,6 +84,8 @@ public class Monster : MonoBehaviour, IDamageable
         {
             hpBar.UpdateHP(currentHp, _maxHp);
         }
+
+        OnHpChanged?.Invoke(currentHp, _maxHp);
 
         if (damageTextPrefab != null)
         {

@@ -122,6 +122,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &29609546 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1086688917601877325, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+  m_PrefabInstance: {fileID: 1478548786451121044}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &369799203
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -316,6 +327,17 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &727262628 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2317170311747765347, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+  m_PrefabInstance: {fileID: 1478548786451121044}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1107103360
 GameObject:
   m_ObjectHideFlags: 0
@@ -1418,37 +1440,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!1 &1834224622
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!114 &1735537374 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3597920083355165019, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+  m_PrefabInstance: {fileID: 1478548786451121044}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1834224623}
-  m_Layer: 0
-  m_Name: Background_Anchor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1834224623
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d77ef5b8bf6114e8a1e392d0e362cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1834224623 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 4672293383053205859, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+  m_PrefabInstance: {fileID: 1478548786451121044}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1834224622}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2005210941
 GameObject:
   m_ObjectHideFlags: 0
@@ -1580,6 +1587,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1470259253}
     - target: {fileID: 302437295448880420, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: uiBossBattle
+      value: 
+      objectReference: {fileID: 1735537374}
+    - target: {fileID: 302437295448880420, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
       propertyPath: stageUIObject
       value: 
       objectReference: {fileID: 1319210084}
@@ -1635,6 +1646,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageSystem
       objectReference: {fileID: 0}
+    - target: {fileID: 3597920083355165019, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: hpFill
+      value: 
+      objectReference: {fileID: 29609546}
+    - target: {fileID: 3597920083355165019, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: timerFill
+      value: 
+      objectReference: {fileID: 727262628}
+    - target: {fileID: 4397851071578711333, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996909776430100855, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415895293978563485, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6655604518443147677, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8485543469040151720, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 700
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 7951343391599525859, guid: a8637417abfb7f54dbde89ce5ab2076c, type: 3}
@@ -1653,7 +1692,6 @@ SceneRoots:
   - {fileID: 1107103362}
   - {fileID: 1624330035}
   - {fileID: 1204460967}
-  - {fileID: 1834224623}
   - {fileID: 1209236416}
   - {fileID: 369799203}
   - {fileID: 1478548786451121044}
