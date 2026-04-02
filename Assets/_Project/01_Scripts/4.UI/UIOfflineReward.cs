@@ -12,6 +12,9 @@ public class UIOfflineReward : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _rewardText;       // 획득 골드 표시 텍스트
     [SerializeField] private Button _confirmButton;             // 확인(수령) 버튼
 
+    // 팝업에 떠 있는 동안 지급 대기 중인 골드량을 기억할 변수
+    private double _pendingGold = 0;
+
     private void Awake()
     {
         //확인 버튼을 누르면 팝업창 닫는 이벤트를 자동으로 연결합니다.
@@ -30,6 +33,8 @@ public class UIOfflineReward : MonoBehaviour
         // 1. 팝업창 켜기
         gameObject.SetActive(true);
 
+        // 유저가 버튼을 누를 때 줄 수 있도록 골드을 저장해 둡니다.
+        _pendingGold = gold;
         // 2. 시간 표기 (예: 130분 -> 2시간 10분 형태로 변환해서 예쁘게 표기)
         int hours = minutes / 60;
         int mins = minutes % 60;
@@ -49,6 +54,16 @@ public class UIOfflineReward : MonoBehaviour
 
     private void ClosePopup()
     {
+        // 창을 닫을 때(수령 버튼을 눌렀을 때) 실제 재화 DataManger에 지급합니다.
+        if(_pendingGold > 0 && DataManager.Instance != null)
+        {
+            DataManager.Instance.AddGold(_pendingGold);
+            Debug.Log($"[UIOfflineReward] 유저가 확인 버트튼 클릭! 보상 {_pendingGold} 골드 지급 완료");
+
+            // 중복 수령 방지를 위해 0으로 초기화
+            _pendingGold = 0;
+        }
+
         //팝업창 끄기
         gameObject.SetActive(false);
     }

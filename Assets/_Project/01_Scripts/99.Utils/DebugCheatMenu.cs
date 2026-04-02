@@ -14,7 +14,7 @@ public class DebugCheatMenu : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     private bool _isShow = false;
 
-    private Rect _windowRect = new Rect(20, 20, 320, 600);
+    private Rect _windowRect = new Rect(20, 20, 320, 650);
 
     // 페이지 구분을 위한 변수
     private int _currentTab = 0;
@@ -181,6 +181,24 @@ public class DebugCheatMenu : MonoBehaviour
             DataManager.Instance.SetLogoutTImeForCheat(fakeTime.ToString());
             Debug.Log("[Cheat] 로그아웃 시간이 24시간 전으로 조작 되었습니다. 유니티 플레이를 껐다가 다시 켜보세요");
         }
+
+        // UI팀원 연동 확인용 다이렉트 버튼
+        GUILayout.Space(5);
+        GUI.color = Color.green;
+        if(GUILayout.Button("UI 팝업 즉시 강제 띄우기 (테스트용)", GUILayout.Height(40)))
+        {
+            if(UIManager.Instance != null)
+            {
+                // 강제로 120분 방치. 6000골드 획득한 것 처럼 UI만 띄움
+                UIManager.Instance.ShowOfflineReward(120, 6000);
+                Debug.Log("[Cheat] UI 오프라인 강제 호울 완료");
+            }
+            else
+            {
+                Debug.LogWarning("[Cheat] UIManger가 없습니다.");
+            }
+        }
+        GUI.color = Color.white;
 
         GUILayout.Space(20);
 
