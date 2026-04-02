@@ -4,30 +4,33 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // UI에서 스탯이 변경되었음을 알리기 위한 이벤트
-    // 다른 스크립트(UI 매니저 등)가 이 이벤트를 구독하면 스탯 변경 시 자동으로 UI 갱신 가능
+    // [이벤트] 스탯 변경을 알리기 위한 이벤트
+    // 다른 스크립트(UI 매니저 등)가 이 이벤트를 구독하면,
+    // 플레이어 스탯이 갱신될 때 자동으로 UI를 업데이트할 수 있음
     public event System.Action OnStatsChanged;
 
     [Header("기본 스탯")]
-    public string characterName;                     // 캐릭터 이름
+    public string characterName;                     // 캐릭터 이름 (AuthManager 또는 기본값으로 설정)
     public double attackPower { get; private set; }  // 공격력 (외부에서 읽기만 가능, 내부에서만 수정)
-    public double critDamage { get; private set; }   // 치명타 데미지 배율 (%) → 100%면 2배
-    public double critRate { get; private set; }     // 치명타 확률 (%) → 25%면 1/4 확률로 치명타
-    public double luck { get; private set; }         // 운 → 추가 골드 획득 확률/양에 영향
+    public double critDamage { get; private set; }   // 치명타 데미지 배율 (%) → 100%면 2배 데미지
+    public double critRate { get; private set; }     // 치명타 확률 (%) → 25%면 1/4 확률로 치명타 발생
+    public double luck { get; private set; }         // 운 → 추가 골드 획득량/확률에 영향
     public double attackSpeed { get; private set; }  // 공격 속도 증가율 (%)
     public int skillSlots { get; private set; }      // 장착 가능한 스킬 슬롯 수
 
     [Header("장착된 스킬 (SO 드래그 앤 드롭)")]
     [SerializeField] private List<SkillData> equippedSkills = new List<SkillData>();
-    // 인스펙터에서 드래그 앤 드롭으로 설정 가능한 스킬 리스트
-    public List<SkillData> EquippedSkills => equippedSkills; // 외부에서 읽기 전용 접근 가능
+    // 인스펙터에서 ScriptableObject(SkillData)를 드래그 앤 드롭으로 설정 가능
+    // 외부에서는 읽기만 가능하도록 프로퍼티 제공
+    public List<SkillData> EquippedSkills => equippedSkills;
 
     /// <summary>
-    /// 공격 실행 메서드 → 치명타 여부에 따라 데미지 계산
+    /// [공격 실행 메서드]
+    /// 치명타 여부를 랜덤으로 판정하여 최종 데미지를 계산 후 반환
     /// </summary>
     public double Attack()
     {
-        // Random.value는 0~1 사이의 랜덤값 반환
+        // Random.value → 0~1 사이의 랜덤값 반환
         // critRate(%)를 100으로 나눈 값보다 작으면 치명타 발생
         bool isCrit = Random.value < (critRate / 100.0);
 
@@ -40,7 +43,8 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// 골드 획득 메서드 → 운(luck)에 따라 추가 골드 계산
+    /// [골드 획득 메서드]
+    /// luck(운) 수치에 따라 추가 골드를 계산하여 반환
     /// </summary>
     public double FarmGold(double baseGold)
     {
@@ -50,23 +54,23 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// DataManager에서 스탯 레벨들을 가져와 실제 능력치로 갱신
+    /// [스탯 갱신 메서드]
+    /// DataManager에서 현재 레벨 데이터를 가져와 실제 능력치로 변환
     /// </summary>
     public void UpdateStatsFromData()
     {
-        // 1. DataManager가 없으면 기본 1레벨로 세팅
+        // DataManager가 없으면 기본 1레벨로 세팅
         int atkLv = DataManager.Instance != null ? DataManager.Instance.AttackLevel : 1;
         int critDmgLv = DataManager.Instance != null ? DataManager.Instance.CritDamageLevel : 1;
         int critRateLv = DataManager.Instance != null ? DataManager.Instance.CritRateLevel : 1;
         int luckLv = DataManager.Instance != null ? DataManager.Instance.LuckLevel : 1;
         int atkSpeedLv = DataManager.Instance != null ? DataManager.Instance.AttackSpeedLevel : 1;
 
-        // 2. 공격력 공식 적용 (지수 성장 공식)
+        // 공격력 공식 (지수 성장)
         double baseAttack = 10;       // 기본 공격력
         double growthRate = 1.1;      // 성장률 (레벨이 오를수록 증가율 적용)
         attackPower = baseAttack + (atkLv * 5) * System.Math.Pow(growthRate, atkLv - 1);
 
-        // 3. 나머지 스탯 공식 적용 (기본값 + (레벨-1) * 렙당증가치)
         // 치명타 데미지 (기본 150% + 렙당 1% 증가)
         critDamage = 150.0 + ((critDmgLv - 1) * 1.0);
 
@@ -81,41 +85,58 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log($"[Player] 스탯 갱신 완료! (공격력:{attackPower}, 치확:{critRate}%)");
 
-        // 스탯 변경 알림 → UI 갱신
+        // UI 갱신 알림
         NotifyUI();
     }
 
     /// <summary>
-    /// 게임 시작 시 초기화
+    /// [게임 시작 시 초기화]
+    /// - GameManager에 플레이어 등록
+    /// - DataManager 이벤트 구독
+    /// - 최초 스탯 갱신
+    /// - AuthManager 닉네임 연동
+    /// - 기본 스킬 슬롯 설정
     /// </summary>
     void Start()
-    { 
-        
-        //  [변경] 
+    {
+        // GameManager에 현재 플레이어 등록
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RegisterPlayer(this);
         }
 
-
-
-        // DataManager에서 데이터가 바뀔 때마다 스탯 갱신 연결
+        // DataManager에서 데이터 변경 이벤트 구독 → 스탯 자동 갱신
         if (DataManager.Instance != null)
             DataManager.Instance.OnDataChanged += UpdateStatsFromData;
 
         // 최초 스탯 갱신
         UpdateStatsFromData();
 
-        // 기본 캐릭터 스탯 설정
-        characterName = "용사";
-        skillSlots = 3;          // 스킬 슬롯 3개
+        // [수정됨] AuthManager를 통해 발급받은 임시 닉네임 덮어씌우기
+        if (AuthManager.Instance != null && !string.IsNullOrEmpty(AuthManager.Instance.CurrentNickname))
+        {
+            characterName = AuthManager.Instance.CurrentNickname;
+            Debug.Log($"[PlayerController] 닉네임 연동 완료: {characterName}");
+        }
+        else
+        {
+            // 타이틀을 거치지 않고 메인 씬에서 바로 테스트할 때를 위한 방어 코드
+            characterName = "용사";
+            Debug.Log("[PlayerController] AuthManager가 없어 기본 이름 '용사'를 사용합니다.");
+        }
+
+        // 기본 스킬 슬롯 개수 설정
+        skillSlots = 3;
 
         // UI 갱신 이벤트 호출
         NotifyUI();
-
     }
 
-    //  [추가] 
+    /// <summary>
+    /// [OnDestroy]
+    /// 오브젝트가 파괴될 때 DataManager 이벤트 구독 해제
+    /// (메모리 누수 방지)
+    /// </summary>
     private void OnDestroy()
     {
         if (DataManager.Instance != null)
@@ -125,11 +146,11 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// UI에 스탯 변경 알림 보내기
+    /// [UI 알림 메서드]
+    /// 스탯 변경 이벤트를 호출하여 UI 매니저 등에서 갱신할 수 있도록 함
     /// </summary>
     private void NotifyUI()
     {
-        // 이벤트 구독자가 있을 경우 호출
         OnStatsChanged?.Invoke();
     }
 }
