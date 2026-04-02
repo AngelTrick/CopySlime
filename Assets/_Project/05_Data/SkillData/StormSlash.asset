@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a6ea64a5cbf0564285192882c5caa95, type: 3}
+  m_Name: StormSlash
+  m_EditorClassIdentifier: 
+  _skillId: SKILL_STORM_SLASH
+  _skillName: StromSlash
+  _skillGrade: 0
+  _skillType: 0
+  _spawnType: 1
+  _spawnOffset: {x: 0, y: 2, z: 0}
+  _cooldown: 12
+  _duration: 2
+  _castDelay: 0.5
+  _damageMultiplier: 100
+  _isPiercing: 1
+  _skillRange: 2
+  _areaOfEffect: 10
+  _targetType: 3
+  _maxTargetCount: 60
+  _hitCountPerTarget: 1
+  _skillIcon: {fileID: 0}
+  _effectPrefab: {fileID: 703046282951626515, guid: 17b4d43f04865b2439fa652a4ad86d98, type: 3}
+  _animTriggerName: AttackSlash
+  _castSound: {fileID: 0}
+  _hitSound: {fileID: 0}
