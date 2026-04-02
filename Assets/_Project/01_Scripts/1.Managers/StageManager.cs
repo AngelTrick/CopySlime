@@ -40,6 +40,9 @@ public class StageManager : Singleton<StageManager>
     [Header("UI 연결")]
     public UIStage uiStage;
 
+    [Header("UI 제어")]
+    public GameObject stageUIObject;
+
     public System.Action<double> OnGoldChanged;
     public System.Action<int> OnSkinShardChanged;
 
@@ -157,12 +160,14 @@ public class StageManager : Singleton<StageManager>
             stageController.activeMonsters.Clear();
         }
     }
-    public void ChallengeBoss()
+    public void ChallengeBoss() //보스 도전
     {
         if (stageController.isBossLevel) return;
 
         if (currentStageData != null && currentStageData.stageBoss != null)
         {
+            if (stageUIObject != null) stageUIObject.SetActive(false); //일반 스테이지 UI 숨김
+
             CancelInvoke("SpawnNextWave");
 
             ClearCurrentMonsters();
@@ -176,6 +181,10 @@ public class StageManager : Singleton<StageManager>
 
             _isTimerRunning = true;
         }
+    }
+    private void RestoreStageUI()
+    {
+        if (stageUIObject != null) stageUIObject.SetActive(true);
     }
     public void OnBossClear()
     {
@@ -205,6 +214,8 @@ public class StageManager : Singleton<StageManager>
         {
             stageController.ChangeStageBackground(currentStageData.backgroundPrefab);
         }
+
+        RestoreStageUI();
 
         ClearCurrentMonsters();
 
@@ -322,6 +333,8 @@ public class StageManager : Singleton<StageManager>
         if (stageController.isBossLevel)
         {
             _isTimerRunning = false;
+
+            RestoreStageUI();
 
             ClearCurrentMonsters();
 

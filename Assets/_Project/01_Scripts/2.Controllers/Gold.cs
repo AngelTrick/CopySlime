@@ -26,6 +26,9 @@ public class Gold : MonoBehaviour
     private bool _canCollect = false;
     private Rigidbody _rb;
 
+    [Header("레이어 설정")]
+    public LayerMask playerLayer;
+
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
@@ -38,6 +41,7 @@ public class Gold : MonoBehaviour
         _isCollecting = false;
         _canCollect = false;
         _bounceCount = 0; //튕김 횟수 초기화
+        _playerTransform = null;
 
         if (StageManager.Instance != null && StageManager.Instance.stageController != null)
         {
@@ -66,19 +70,11 @@ public class Gold : MonoBehaviour
             }
             _rb.AddForce(pushForce, ForceMode.Impulse);
         }
-        FindPlayer();
 
         CancelInvoke("EnableCollection");
         Invoke("EnableCollection", 0.7f);
     }
-    private void FindPlayer()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            _playerTransform = player.transform;
-        }
-    }
+    
     private void EnableCollection()
     {
         _canCollect = true;
@@ -96,7 +92,23 @@ public class Gold : MonoBehaviour
     {
         if (_playerTransform == null)
         {
-            FindPlayer();
+            int finalMask;
+
+            if (playerLayer.value == 0)
+            {
+                finalMask = 1 << LayerMask.NameToLayer("Player");
+            }
+            else
+            {
+                finalMask = playerLayer.value;
+            }
+
+            Collider[] cols = Physics.OverlapSphere(Vector3.zero, 500f, finalMask);
+
+            if (cols.Length > 0)
+            {
+                _playerTransform = cols[0].transform;
+            }
             return;
         }
 
@@ -112,7 +124,8 @@ public class Gold : MonoBehaviour
 
             if (_canCollect && distance < magnetDistance)
             {
-                StartCollecting();
+                _isCollecting = true;
+                if (_rb != null) _rb.isKinematic = true;
             }
         }
         else

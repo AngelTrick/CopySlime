@@ -1,0 +1,55 @@
+﻿using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+/*
+ * [오프라인 보상 팝업 UI]
+ * 유저가 게임에 복귀했을 때 방치 시간과 획득한 골드 화려하게 보여주는 창입니다.
+ */
+public class UIOfflineReward : MonoBehaviour
+{
+    [Header("UI 연결")]
+    [SerializeField] private TextMeshProUGUI _timeText;         // 방치 시간 표시 텍스트
+    [SerializeField] private TextMeshProUGUI _rewardText;       // 획득 골드 표시 텍스트
+    [SerializeField] private Button _confirmButton;             // 확인(수령) 버튼
+
+    private void Awake()
+    {
+        //확인 버튼을 누르면 팝업창 닫는 이벤트를 자동으로 연결합니다.
+        if(_confirmButton != null)
+        {
+            _confirmButton.onClick.AddListener(ClosePopup);
+        }
+    }
+    /// <summary>
+    /// Gamemanager에서 오프라인 보상 계산이 끝난 직후 이 함수를 UIManager.cs 에서 호출 받아 출력합니다.
+    /// </summary>
+    /// <param name="minutes">방치한 분(Minute)</param>
+    /// <param name="gold">획득한 골드</param>
+    public void ShowReward(int minutes, double gold)
+    {
+        // 1. 팝업창 켜기
+        gameObject.SetActive(true);
+
+        // 2. 시간 표기 (예: 130분 -> 2시간 10분 형태로 변환해서 예쁘게 표기)
+        int hours = minutes / 60;
+        int mins = minutes % 60;
+
+        if(hours > 0)
+        {
+            _timeText.text = $"자동 사냥 시간 : <color=#FFD700>{hours}시간 {mins}분</color>";
+        }
+        else
+        {
+            _timeText.text = $"자동 사냥 시간 : <color=#FFD700>{mins}분</color>"; 
+        }
+
+        //3. 골드 표시
+        _rewardText.text = $"획득 골드\n<size=150%><color=#FFD700>+{gold.ToSmartCurrency()}</color></size>";
+    }
+
+    private void ClosePopup()
+    {
+        //팝업창 끄기
+        gameObject.SetActive(false);
+    }
+}
