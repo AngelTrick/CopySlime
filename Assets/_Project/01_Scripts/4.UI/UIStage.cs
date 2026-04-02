@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class UIStage : MonoBehaviour
 {
-    public Image stageBar; // 스테이지바 이미지 연결
+    public Slider stageBar; // 스테이지바 이미지 연결
     public int stageCount = 10;
     public int currentCount = 0;
     public bool isWait = false;
@@ -12,12 +12,13 @@ public class UIStage : MonoBehaviour
 
     void Start()
     {
-        stageBar.fillAmount = 0f;
-        // [수정된 부분] 보스 버튼은 언제든 누를 수 있어야 하므로 상시 활성화!
-        if (bossButton != null)
+        stageBar.minValue = 0f;
+        stageBar.maxValue = stageCount;
+        stageBar.value = 0f;
+
+        if (bossButton != null) // 나중에 보스버튼 스크립트를 따로 만들어서 연결하기
         {
             bossButton.interactable = true;
-
             // 코드로 안전하게 버튼 클릭 이벤트 연결
             // 인스펙터에서 일일이 연결 안 해도 알아서 아래 함수가 실행됩니다!
             bossButton.onClick.AddListener(OnClickBossButton);
@@ -57,14 +58,12 @@ public class UIStage : MonoBehaviour
     {
         currentCount = 0;
         isWait = false;
-        stageBar.fillAmount = 0f;
+        stageBar.value = 0f;
     }
 
     public void UpdateFillBar()
     {
-        float targetFill = (float)currentCount / stageCount;
-
-        stageBar.fillAmount = targetFill;
+        stageBar.value = currentCount;
 
     }
     public void OnBarCompleted()

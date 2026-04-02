@@ -126,7 +126,7 @@ public class AbilitySlot : MonoBehaviour, ISlot
         }
         if (Input.GetKeyDown(KeyCode.L))
         {
-            ResetCurrentLevel(0);
+            ResetCurrentLevel(1);
         }
     }
 

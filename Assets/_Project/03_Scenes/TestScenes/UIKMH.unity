@@ -516,6 +516,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4525068430134905315, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5997947402534551576, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -584,13 +588,9 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8477455504186783358, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.95
-      objectReference: {fileID: 0}
-    - target: {fileID: 8477455504186783358, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.95
+    - target: {fileID: 8493010354352784822, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
