@@ -24,7 +24,7 @@ MonoBehaviour:
   _damageMultiplier: 100
   _isPiercing: 1
   _skillRange: 2
-  _areaOfEffect: 10
+  _areaOfEffect: 3
   _targetType: 3
   _maxTargetCount: 60
   _hitCountPerTarget: 1

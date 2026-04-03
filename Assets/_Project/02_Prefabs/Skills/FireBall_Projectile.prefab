@@ -99,7 +99,7 @@ MonoBehaviour:
   _speed: 15
   _enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &3749951377492881545
 MonoBehaviour:
   m_ObjectHideFlags: 0

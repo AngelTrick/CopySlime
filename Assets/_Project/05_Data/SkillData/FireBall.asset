@@ -21,7 +21,7 @@ MonoBehaviour:
   _cooldown: 4
   _duration: 0
   _castDelay: 0.2
-  _damageMultiplier: 150
+  _damageMultiplier: 15
   _isPiercing: 0
   _skillRange: 2
   _areaOfEffect: 5
