@@ -158,9 +158,12 @@ public class GameManager : Singleton<GameManager>
                 int _rewardGold = _minutesPassed * 50;
 
                 Debug.Log($"[오프라인 보상] {_minutesPassed}분 방치! {_rewardGold} 골드 획득");
-                DataManager.Instance.AddGold(_rewardGold);
+                //DataManager.Instance.AddGold(_rewardGold);
 
-                // TODO : UIManager.Instance.ShowOfflineRewardPopup(minutesPassed, rewardGold)
+                if(UIManager.Instance != null)
+                {
+                    UIManager.Instance.ShowOfflineReward(_minutesPassed, _rewardGold);
+                }
             }
         }
         catch (Exception e)

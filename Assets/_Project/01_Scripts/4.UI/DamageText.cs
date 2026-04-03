@@ -22,7 +22,7 @@ public class DamageText : MonoBehaviour
         _textMesh.DOKill();
 
         // 1. 데미지 텍스트 세팅
-        _textMesh.text = damage.ToIdleCurrencyString();
+        _textMesh.text = damage.ToSmartCurrency();
 
         // 위치 살짝 랜덤 (여러 개 겹치지 않도록 퍼트림)
         transform.position += new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0f, 0.5f), 0f);

@@ -68,7 +68,7 @@ public class TempItemData : ScriptableObject  //임시 SO용 지우는거 생각
     public double GetUpgradeCostLevel(int level) // 특정 레벨에서의 비용 (n배수 계산용)
     {
         int fineIncrement = 15 + (level / 3);  // 나중에 숫자를 설정하는 변수 생각하기
-        if (level == 0)
+        if (level <= 1)
         {
             return baseCost;
         }
