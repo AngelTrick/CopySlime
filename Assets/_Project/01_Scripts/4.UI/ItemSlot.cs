@@ -17,9 +17,23 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
     [SerializeField] private UIHoldButton holdButton;
 
     private TempItemData data;
+    private int level;
     private int multiplier = 1; // 기본 배수 x1
 
+    private int GetCurrentLevelDataManager()
+    {
+        if (DataManager.Instance == null) return 1;
 
+        switch (data.itemName)
+        {
+            case "공격력": return DataManager.Instance.AttackLevel;
+            case "치명타 데미지": return DataManager.Instance.CritDamageLevel;
+            case "치명타 확률": return DataManager.Instance.CritRateLevel;
+            case "운": return DataManager.Instance.LuckLevel;
+            case "공격 속도": return DataManager.Instance.AttackSpeedLevel;
+            default: return 1;
+        }
+    }
 
     public void SetItem(TempItemData data)
     {
@@ -35,33 +49,36 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
         multiplier = multi;
         Refresh();
     }
-    private int GetTotalUpgradeCount() // 최대 레벨까지 남은 업그레이드 횟수 계산해서 반환하는 함수
+    private int GetTotalUpgradeCount(int currentLevel) // 최대 레벨까지 남은 업그레이드 횟수 계산해서 반환하는 함수
     {
-        int remnant = data.maxLevel - data.currentLevel;
+        //level = GetCurrentLevelDataManager();
+        int remnant = data.maxLevel - currentLevel;
         return Mathf.Min(multiplier, remnant);
     }
     public void Refresh()
     {
         if (data == null) return;
 
+        level = GetCurrentLevelDataManager();
+
         itemIcon.sprite = data.icon;
         maxLv.text = $"<size=100%>{data.itemName}</size> " +
                      $"<size=60%>Max Lv.{data.maxLevel}</size>";
-        currentLv.text = $"Lv.{data.currentLevel}";
+        currentLv.text = $"Lv.{level}";
 
-        if (data.IsMaxLevel())
+        if (data.IsMaxLevel(level))
         {
-            increase.text = $"{data.GetCurrentValue()}";
+            increase.text = $"{data.GetCurrentValue(level)}";
             upgradeCost.text = "MAX";
             upgradeButton.interactable = false;
         }
         else
         {
-            int count = GetTotalUpgradeCount();
-            double totalCost = data.GetTotalCostLevel(count);
-            float nextValue = data.GetValueAfterLevel(count);
+            int count = GetTotalUpgradeCount(level);
+            double totalCost = data.GetTotalCostLevel(level, count);
+            float nextValue = data.GetValueAfterLevel(level, count);
 
-            increase.text = $"{data.GetCurrentValue()} -> {nextValue}";
+            increase.text = $"{data.GetCurrentValue(level)} -> {nextValue}";
             upgradeCost.text = totalCost.ToString();
             upgradeButton.interactable = true;
         }
@@ -69,7 +86,9 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
 
     public void OnClickUpgradeButton()
     {
-        if (data.IsMaxLevel()) // 혹시 모를 방지
+        level = GetCurrentLevelDataManager();
+
+        if (data.IsMaxLevel(level)) // 혹시 모를 방지
         {
             Debug.Log("최대 레벨입니다.");
 
@@ -77,12 +96,11 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
             return;
         }
 
-        int count = GetTotalUpgradeCount(); // 총 업그레이드 비용
-        double totalCost = data.GetTotalCostLevel(count);
+        int count = GetTotalUpgradeCount(level); // 총 업그레이드 비용
+        double totalCost = data.GetTotalCostLevel(level, count);
 
         if (DataManager.Instance.SpendGold(totalCost)) // 21억 이상이면 데이터매니저 포함해서 long으로 교체
         {
-            data.currentLevel += count; //배수만큼 레벨업
             DataManager.Instance.UpgradeStatLevel(data.itemName, count);
             Refresh();
         }
@@ -98,16 +116,6 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
         data.maxLevel += amount;
         Refresh();
     }
-    public void ExpandCurrentLevel(int amount) // 확인용
-    {
-        data.currentLevel += amount; // or data.currentLevel = amount;
-        Refresh();
-    }
-    public void ResetCurrentLevel(int amount) // 확인용
-    {
-        data.currentLevel = amount;
-        Refresh();
-    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))
@@ -117,14 +125,6 @@ public class ItemSlot : MonoBehaviour, ISlot  // 메인 SO들어오면 변수들
         if (Input.GetKeyDown(KeyCode.O))
         {
             ExpandMaxLevel(-1);
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            ExpandCurrentLevel(30);
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            ResetCurrentLevel(0);
         }
     }
 

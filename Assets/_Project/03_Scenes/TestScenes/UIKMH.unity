@@ -492,6 +492,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainGameUI
       objectReference: {fileID: 0}
+    - target: {fileID: 1310150442781920457, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
+      propertyPath: m_MaxValue
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3029002977792152565, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -514,10 +518,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3029002977792152565, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4525068430134905315, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5997947402534551576, guid: 8b96c7bb11c50e648a81a5f8b3d5a271, type: 3}

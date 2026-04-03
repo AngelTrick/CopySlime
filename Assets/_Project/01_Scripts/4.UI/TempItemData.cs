@@ -21,7 +21,7 @@ public class TempItemData : ScriptableObject  //임시 SO용 지우는거 생각
     public Sprite icon;
     public string itemName;
     public int maxLevel;
-    public int currentLevel = 1;
+    //public int currentLevel = 1;
 
     [Header("타입 설정 공격력은 Exponential 선택 나머지는 Linear")]
     public FormulaType formulaType;  // ← 인스펙터에서 선택
@@ -48,21 +48,21 @@ public class TempItemData : ScriptableObject  //임시 SO용 지우는거 생각
                 return baseValue + ((level - 1) * growthRate);
         }
     }
-    public float GetCurrentValue()
+    public float GetCurrentValue(int level)
     {
         //return baseValue + (growthRate * currentLevel);
-        return CalcValue(currentLevel);
+        return CalcValue(level);
     }
 
-    public float GetNextValue()
+    public float GetNextValue(int level)
     {
         //return baseValue + (growthRate * (currentLevel + 1));
-        return CalcValue(currentLevel + 1);
+        return CalcValue(level + 1);
     }
-    public float GetValueAfterLevel(int count) // n레벨 후 밸류
+    public float GetValueAfterLevel(int level,int count) // n레벨 후 밸류
     {
         //return baseValue + (growthRate * (currentLevel + count));
-        return CalcValue(currentLevel + count);
+        return CalcValue(level + count);
     }
 
     public double GetUpgradeCostLevel(int level) // 특정 레벨에서의 비용 (n배수 계산용)
@@ -75,18 +75,18 @@ public class TempItemData : ScriptableObject  //임시 SO용 지우는거 생각
         return baseCost + (16 * level) + fineIncrement;
     }
     // n회 업그레이드 총 비용
-    public double GetTotalCostLevel(int count) // 나중에 숫자(21억↑)가 커지면 long으로 대체 데이터매니저도 포함해서
+    public double GetTotalCostLevel(int level, int count) // 나중에 숫자(21억↑)가 커지면 long으로 대체 데이터매니저도 포함해서
     {
         double total = 0;
         for (int i = 0; i < count; i++)
         {
-            total += GetUpgradeCostLevel(currentLevel + i);
+            total += GetUpgradeCostLevel(level + i);
         }
         return total;
     }
-    public bool IsMaxLevel()
+    public bool IsMaxLevel(int level)
     {
-        return currentLevel >= maxLevel;
+        return level >= maxLevel;
     }
 
 
