@@ -18,7 +18,7 @@ public class Stage : MonoBehaviour
     public float spawnOffset = 5.0f; //일반 몬스터 스폰 위치
     public float bossSpawnPos = 8.0f; //보스 몬스터 스폰 위치
     public float spawnHeight = 0f; //몬스터 스폰 높이
-
+     
     [Header("몬스터 프리팹")]
     public GameObject monsterBasePrefab;
 

@@ -17,7 +17,7 @@ MonoBehaviour:
   statsMultiplier: 1
   rewardMultiplier: 1
   monsterGrowthRate: 1.1
-  rewardGoalCount: 20
+  rewardGoalCount: 10
   baseRewardGold: 100
   stageTreasure: {fileID: 11400000, guid: b9ec92b6ab0c825499281482e6168f5b, type: 2}
   fieldMonsters:
