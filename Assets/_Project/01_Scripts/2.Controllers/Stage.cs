@@ -37,6 +37,9 @@ public class Stage : MonoBehaviour
     [Header("플레이어 탐색 설정")]
     public LayerMask playerLayer;
 
+    [Header("배경 위치 설정")]
+    public float backgroundYOffset = 0f;
+
     public void ChangeStageBackground(GameObject bgPrefab)
     {
         if (bgPrefab == null)
@@ -50,7 +53,7 @@ public class Stage : MonoBehaviour
         }
 
         _currentBackgroundObj = Instantiate(bgPrefab, backgroundParent);
-        _currentBackgroundObj.transform.localPosition = Vector3.zero;
+        _currentBackgroundObj.transform.localPosition = new Vector3(0, backgroundYOffset, 0);
 
         backgrounds.Clear();
 
@@ -156,25 +159,7 @@ public class Stage : MonoBehaviour
             activeMonsters.Remove(killedMonster);
         }
 
-        if (activeMonsters.Count == 0)
-        {
-            isMoving = false; 
-            StopAllCoroutines();
-
-            if (StageManager.Instance != null)
-            {
-                if (isBossLevel)
-                {
-                    StageManager.Instance.OnBossClear();
-                }
-                else
-                {
-                    // [핵심] 상자나 일반 몬스터 처치 후 다음 웨이브 호출
-                    StageManager.Instance.OnWaveCompleted();
-                }
-            }
-        }
-        else if (!isMoving)
+        if (!isMoving)
         {
             StopAllCoroutines();
             StartCoroutine(MoveWorldRoutine());

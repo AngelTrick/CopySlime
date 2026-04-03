@@ -173,6 +173,9 @@ public class StageManager : Singleton<StageManager>
     {
         if (stageController.isBossLevel) return;
 
+        CancelInvoke(nameof(SpawnNextWave));
+        CancelInvoke(nameof(GiveReward));
+
         if (currentStageData != null && currentStageData.stageBoss != null)
         {
             if (stageUIObject != null) stageUIObject.SetActive(false); //일반 스테이지 UI 숨김
@@ -301,6 +304,8 @@ public class StageManager : Singleton<StageManager>
     }
     public void AddKillCount()
     {
+        if (_isRewardPending || stageController.isBossLevel) return;
+
         _currentRewardCount++;
 
         if (uiStage != null)
@@ -322,8 +327,6 @@ public class StageManager : Singleton<StageManager>
         {
             return;
         }
-
-        CancelInvoke(nameof(SpawnNextWave));
 
         stageController.activeMonsters.Clear();
 
@@ -377,8 +380,11 @@ public class StageManager : Singleton<StageManager>
     }
     public void OnWaveCompleted()
     {
-        if (!stageController.isBossLevel)
-        {
+        if (stageController.isBossLevel) return;
+
+            CancelInvoke(nameof(SpawnNextWave));
+            CancelInvoke(nameof(GiveReward));
+
             if (_isRewardPending)
             {
                 _isRewardPending = false;
@@ -389,7 +395,7 @@ public class StageManager : Singleton<StageManager>
             {
                 Invoke(nameof(SpawnNextWave), monsterSpawnDelay); //일반 웨이브는 기존처럼 1.5초 뒤에 소환
             }
-        }
+        
     }
     private void SpawnNextWave()
     {
