@@ -68,9 +68,7 @@ public class PlayerController : MonoBehaviour
 
         // 공격력 공식 (지수 성장)
         double baseAttack = 10;       // 기본 공격력
-        double growthRate = 1.1;      // 성장률 (레벨이 오를수록 증가율 적용)
-        attackPower = baseAttack + (atkLv * 5) * System.Math.Pow(growthRate, atkLv - 1);
-
+        attackPower = baseAttack + ((atkLv - 1)*1.0);
         // 치명타 데미지 (기본 150% + 렙당 1% 증가)
         critDamage = 150.0 + ((critDmgLv - 1) * 1.0);
 
