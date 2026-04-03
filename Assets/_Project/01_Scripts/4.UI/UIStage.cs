@@ -13,7 +13,7 @@ public class UIStage : MonoBehaviour
     void Start()
     {
         stageBar.minValue = 0f;
-        stageBar.maxValue = stageCount;
+        stageBar.maxValue = StageManager.Instance.currentStageData.rewardGoalCount;
         stageBar.value = 0f;
 
         if (bossButton != null) // 나중에 보스버튼 스크립트를 따로 만들어서 연결하기
@@ -36,6 +36,31 @@ public class UIStage : MonoBehaviour
             // SoundManager.Instance.PlaySFX(클릭사운드);
         }
     }
+
+    public void ResetBar()
+    {
+        currentCount = 0;
+        isWait = false;
+        stageBar.value = 0f;
+    }
+
+    public void UpdateFillBar()
+    {
+        //stageBar.value = currentCount;
+        if (StageManager.Instance != null)
+        {
+            stageBar.value = StageManager.Instance.GetKillGaugeProgress() * stageBar.maxValue;
+
+        }
+
+    }
+    /*
+    public void OnBarCompleted()
+    {
+        isWait = true;
+        Debug.Log("100%"); // 게이지 반복 보상용으로 사용
+    }
+
     public void OnMonsterKilled()
     {
         if (isWait)
@@ -53,26 +78,6 @@ public class UIStage : MonoBehaviour
             OnBarCompleted();
         }
     }
-
-    public void ResetBar()
-    {
-        currentCount = 0;
-        isWait = false;
-        stageBar.value = 0f;
-    }
-
-    public void UpdateFillBar()
-    {
-        stageBar.value = currentCount;
-
-    }
-    public void OnBarCompleted()
-    {
-        isWait = true;
-        Debug.Log("100%"); // 게이지 반복 보상용으로 사용
-    }
-
-
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -80,5 +85,5 @@ public class UIStage : MonoBehaviour
             OnMonsterKilled();
         }
     }
-
+    */
 }
