@@ -49,6 +49,9 @@ public class StageManager : Singleton<StageManager>
     public float treasureSpawnDelay = 1.5f; //상자 스폰 시간
     public float treasureSpawnOffset = 5.0f; //상자 스폰 위치
 
+    [Header("웨이브 설정")]
+    public float monsterSpawnDelay = 1.5f; //웨이브 시간
+
     public System.Action<double> OnGoldChanged;
     public System.Action<int> OnSkinShardChanged;
 
@@ -368,7 +371,7 @@ public class StageManager : Singleton<StageManager>
 
             stageController.ReturnToField(); //스테이지 상태 복구
 
-            SpawnNextWave(); //다시 일반 소환 루프 진행
+            Invoke(nameof(SpawnNextWave), monsterSpawnDelay); //다시 일반 소환 루프 진행
 
         }
     }
@@ -384,7 +387,7 @@ public class StageManager : Singleton<StageManager>
             }
             else
             {
-                Invoke(nameof(SpawnNextWave), 1.5f); //일반 웨이브는 기존처럼 1.5초 뒤에 소환
+                Invoke(nameof(SpawnNextWave), monsterSpawnDelay); //일반 웨이브는 기존처럼 1.5초 뒤에 소환
             }
         }
     }
