@@ -47,9 +47,11 @@ public class SkillData : ScriptableObject
     [Tooltip("기준 위치로부터의 오프셋 (예: 적 머리 위면 Y값을 3으로 설정)")]
     [SerializeField] private Vector3 _spawnOffset;
 
-    [Header("발동 조건과 지속시간")]
+    [Header("쿨타임과 지속시간")]
     [SerializeField] private float _cooldown;
     [SerializeField] private float _duration;
+    [Tooltip("이 스킬을 시전한 후, 다음 스킬이 나갈 때까지 대기하는 시간(초)")]
+    [SerializeField] private float _castDelay = 0.5f;
 
     [Header("스킬 작동 방식")]
     [SerializeField] private float _damageMultiplier;
@@ -67,7 +69,12 @@ public class SkillData : ScriptableObject
     [SerializeField] private Sprite _skillIcon;
     [SerializeField] private GameObject _effectPrefab;
     [SerializeField] private string _animTriggerName = "AttackSlash";
+
+    [Tooltip("스킬 시전 시 재생할 소리 (예: 기합, 마법 캐스팅)")]
     [SerializeField] private AudioClip _castSound;
+
+    [Tooltip("투사체가 적에게 적중했을 때 재생할 소리 (예: 폭발음, 베는 소리)")]
+    [SerializeField] private AudioClip _hitSound;
 
     // 프로퍼티 매핑
     public string SkillId => _skillId;
@@ -76,6 +83,7 @@ public class SkillData : ScriptableObject
     public SkillType Type => _skillType;
     public float Cooldown => _cooldown;
     public float Duration => _duration;
+    public float CastDelay => _castDelay;
     public float DamageMultiplier => _damageMultiplier;
     public float SkillRange => _skillRange;
     public float AreaOfEffect => _areaOfEffect;
@@ -86,11 +94,12 @@ public class SkillData : ScriptableObject
     public GameObject EffectPrefab => _effectPrefab;
     public string AnimTriggerName => _animTriggerName;
     public AudioClip CastSound => _castSound;
+    public AudioClip HitSound => _hitSound;
     public SpawnPositionType SpawnType => _spawnType;
     public Vector3 SpawnOffset => _spawnOffset;
     public bool IsPiercing => _isPiercing;
 
-    // Transform 대신 좌표(Vector3) 리스트를 반환하도록 설계된 궁극의 검출 함수
+    // Transform 대신 좌표(Vector3) 리스트를 반환
     public List<Vector3> GetSpawnPositions(Vector3 casterPosition, LayerMask enemyLayer)
     {
         List<Vector3> spawnPositions = new List<Vector3>();
@@ -98,7 +107,7 @@ public class SkillData : ScriptableObject
         // 1. 발동 조건 검사: SkillRange 내에 적이 최소 1마리 이상 있는지 확인
         Collider[] colliders = Physics.OverlapSphere(casterPosition, _skillRange, enemyLayer);
 
-        // 허공 스윙 방지: 적이 한 마리도 없으면 텅 빈 리스트를 반환하여 스킬 발동 취소
+        // 헛스윙 방지: 적이 한 마리도 없으면 텅 빈 리스트를 반환하여 스킬 발동 취소
         if (colliders.Length == 0)
         {
             return spawnPositions;
@@ -143,13 +152,14 @@ public class SkillData : ScriptableObject
                 break;
 
             case TargetingType.AreaRandomBarrage:
-                // 가장 가까운 적(primaryTarget)의 위치를 중심으로, 
-                // X축 기준 -AreaOfEffect 부터 +AreaOfEffect 사이의 무작위 좌표를 MaxTargetCount 만큼 생성
+                
+                // 가장 가까운 적을 기준으로 무조건 "오른쪽(Vector3.right)"으로만 범위를 전개합니다.
                 for (int i = 0; i < _maxTargetCount; i++)
                 {
-                    float randomXOffset = Random.Range(-_areaOfEffect, _areaOfEffect);
+                    // 0부터 AreaOfEffect 사이의 무작위 거리 추출 (음수 없음)
+                    float randomXOffset = Random.Range(0f, _areaOfEffect);
 
-                    // 타겟의 위치에서 X축으로만 오프셋 적용
+                    // 무조건 Vector3.right(X축 양수)를 곱해서 오른쪽으로만 뻗어나가게 고정
                     Vector3 randomPos = primaryTarget.position + (Vector3.right * randomXOffset);
 
                     spawnPositions.Add(randomPos + _spawnOffset);

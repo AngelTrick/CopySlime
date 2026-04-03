@@ -15,7 +15,8 @@ public class SkillManager : Singleton<SkillManager>
     private bool _isAutoMode = true;
 
     private Dictionary<string, float> _cooldownTimers = new Dictionary<string, float>();
-    private float _basicAttackTimer = 0f;
+    private float _basicAttackTimer = 0f; // 일반공격(평타)의 기본 쿨타임
+    private float _actionDelayTimer = 0f; // 현재 진행 중인 액션(모션)의 남은 딜레이 시간
 
     private PlayerController _player;
     private Animator _playerAnimator;
@@ -74,6 +75,13 @@ public class SkillManager : Singleton<SkillManager>
 
         UpdateCooldowns();
 
+        // 모션 딜레이 처리: 딜레이가 남아있다면 아무 스킬도 쏘지 않고 리턴 (Animation Lock)
+        if (_actionDelayTimer > 0)
+        {
+            _actionDelayTimer -= Time.deltaTime;
+            return;
+        }
+
         bool isSkillCasted = false;
 
         // 오토 모드가 켜져 있을 때만 장착된 스킬의 쿨타임을 검사하고 자동 발사
@@ -127,8 +135,10 @@ public class SkillManager : Singleton<SkillManager>
                 if (CastSkill(skill))
                 {
                     _cooldownTimers[skill.SkillId] = skill.Cooldown;
+                    Debug.Log(_cooldownTimers[skill.SkillId]);
                     return true;
                 }
+ 
             }
         }
         return false;
@@ -139,6 +149,9 @@ public class SkillManager : Singleton<SkillManager>
     {
         // 인덱스 방어 코드: 슬롯 범위를 벗어난 터치 무시
         if (_player == null || slotIndex < 0 || slotIndex >= _player.EquippedSkills.Count) return;
+
+        // 수동 클릭 시에도 모션 딜레이 중복 시전 방지
+        if (_actionDelayTimer > 0) return;
 
         SkillData skillToCast = _player.EquippedSkills[slotIndex];
         if (skillToCast == null) return;
@@ -192,6 +205,9 @@ public class SkillManager : Singleton<SkillManager>
             StartCoroutine(SpawnSkillEffectsRoutine(skill, spawnPositions));
         }
 
+        // 스킬 시전에 성공했다면, 해당 스킬의 CastDelay만큼 전체 행동을 정지시킴
+        _actionDelayTimer = skill.CastDelay;
+
         return true;
     }
 
@@ -226,7 +242,7 @@ public class SkillManager : Singleton<SkillManager>
                 double finalDamage = _player.attackPower * skill.DamageMultiplier;
 
                 // 데이터에서 직접 관통 여부(IsPiercing)를 읽어와서 투사체에 주입
-                projectile.Init(fireDirection, finalDamage, skill.IsPiercing);
+                projectile.Init(fireDirection, finalDamage, skill.IsPiercing, skill.HitSound);
             }
 
             // 계산된 시간만큼 대기한 후 다음 이펙트를 소환

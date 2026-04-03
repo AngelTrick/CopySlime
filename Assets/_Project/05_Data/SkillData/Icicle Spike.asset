@@ -10,20 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a6ea64a5cbf0564285192882c5caa95, type: 3}
-  m_Name: Thunder
+  m_Name: Icicle Spike
   m_EditorClassIdentifier: 
-  _skillId: Thunder01
-  _skillName: Thunder
+  _skillId: SKILL_ICICLE_SPIKE
+  _skillName: 
   _skillGrade: 0
-  _skillType: 1
-  _spawnType: 1
-  _spawnOffset: {x: 0, y: 5, z: 0}
-  _cooldown: 12
-  _duration: 0.5
-  _damageMultiplier: 80
-  _skillRange: 10
+  _skillType: 0
+  _spawnType: 0
+  _spawnOffset: {x: 0, y: 0, z: 0}
+  _cooldown: 6
+  _duration: 0
+  _castDelay: 0.5
+  _damageMultiplier: 0
+  _isPiercing: 1
+  _skillRange: 0
+  _areaOfEffect: 3
   _targetType: 0
-  _maxTargetCount: 4
-  _hitCountPerTarget: 2
+  _maxTargetCount: 1
+  _hitCountPerTarget: 1
   _skillIcon: {fileID: 0}
-  _effectPrefab: {fileID: 3894317257969057344, guid: 882cf5328715c3f40acee4e1be26e59e, type: 3}
+  _effectPrefab: {fileID: 0}
+  _animTriggerName: AttackSlash
+  _castSound: {fileID: 0}
+  _hitSound: {fileID: 0}

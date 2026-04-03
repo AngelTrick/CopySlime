@@ -6,6 +6,7 @@ public class StageManager : Singleton<StageManager>
     public Stage stageController;
     public StageData currentStageData;
     private int _currentRewardCount = 0; //킬게이지
+    private bool _isRewardPending = false;
 
     public double totalGold //플레이어가 현재 가진 총 골드
     {
@@ -34,9 +35,6 @@ public class StageManager : Singleton<StageManager>
     private float _currentBossTimer; //보스전 타이머
     private bool _isTimerRunning = false;
 
-    [Header("보물 상자 설정")]
-    public GameObject treasureChestPrefab;
-
     [Header("UI 연결")]
     public UIStage uiStage;
 
@@ -45,6 +43,14 @@ public class StageManager : Singleton<StageManager>
 
     [Header("보스 UI 연결")]
     public BossBattleUI uiBossBattle;
+
+    [Header("보물 상자 설정")]
+    public GameObject treasureChestPrefab;
+    public float treasureSpawnDelay = 1.5f; //상자 스폰 시간
+    public float treasureSpawnOffset = 5.0f; //상자 스폰 위치
+
+    [Header("웨이브 설정")]
+    public float monsterSpawnDelay = 1.5f; //웨이브 시간
 
     public System.Action<double> OnGoldChanged;
     public System.Action<int> OnSkinShardChanged;
@@ -304,7 +310,7 @@ public class StageManager : Singleton<StageManager>
 
         if (_currentRewardCount >= currentStageData.rewardGoalCount)
         {
-            GiveReward();
+            _isRewardPending = true;
             _currentRewardCount = 0; //게이지 초기화
 
             if (uiStage != null) uiStage.ResetBar();
@@ -312,40 +318,44 @@ public class StageManager : Singleton<StageManager>
     }
     private void GiveReward()
     {
-        if (treasureChestPrefab != null && currentStageData.stageTreasure != null)
+        if (currentStageData == null || currentStageData.stageTreasure == null)
         {
-            CancelInvoke("SpawnNextWave");
-
-            ClearCurrentMonsters();
-
-            int actualLevel = GetCurrentLevel();
-
-            double growth = currentStageData.monsterGrowthRate;
-            double exponentialMultiplier = System.Math.Pow(growth, actualLevel - 1);
-
-            double finalChestGold = (double)currentStageData.baseRewardGold * (double)currentStageData.rewardMultiplier * exponentialMultiplier;
-
-            Vector3 spawnPos = new Vector3(stageController.bossSpawnPos, stageController.spawnHeight, 0f);
-
-            GameObject chestGo = PoolManager.Instance.Pop(currentStageData.stageTreasure.chestPrefab, spawnPos, Quaternion.identity);
-
-            chestGo.transform.localScale = Vector3.one * 1.5f; //상자 크기 조절
-
-            TreasureChest chestScript = chestGo.GetComponent<TreasureChest>();
-            if (chestScript != null)
-            {
-                //계산된 최종 골드를 상자에 주입
-                chestScript.Init(currentStageData.stageTreasure, finalChestGold);
-            }
-
-            stageController.activeMonsters.Add(chestGo);
-
-            if (stageController != null)
-            {
-                stageController.StopAllCoroutines();
-                stageController.StartCoroutine("MoveWorldRoutine");
-            }
+            return;
         }
+
+        CancelInvoke(nameof(SpawnNextWave));
+
+        stageController.activeMonsters.Clear();
+
+        int actualLevel = GetCurrentLevel();
+
+        double growth = currentStageData.monsterGrowthRate;
+        double exponentialMultiplier = System.Math.Pow(growth, actualLevel - 1);
+
+        double finalChestGold = (double)currentStageData.baseRewardGold * (double)currentStageData.rewardMultiplier * exponentialMultiplier;
+
+        float finalX = stageController.bossSpawnPos + treasureSpawnOffset;
+        Vector3 spawnPos = new Vector3(finalX, stageController.spawnHeight, 0f);
+
+        GameObject chestGo = PoolManager.Instance.Pop(currentStageData.stageTreasure.chestPrefab, spawnPos, Quaternion.identity);
+
+        chestGo.transform.localScale = Vector3.one * 1.5f; //상자 크기 조절
+
+        TreasureChest chestScript = chestGo.GetComponent<TreasureChest>();
+        if (chestScript != null)
+        {
+            //계산된 최종 골드를 상자에 주입
+            chestScript.Init(currentStageData.stageTreasure, finalChestGold);
+        }
+
+        stageController.activeMonsters.Add(chestGo);
+
+        if (stageController != null)
+        {
+            stageController.StopAllCoroutines();
+            stageController.StartCoroutine("MoveWorldRoutine");
+        }
+
     }
     public void OnBossChallengeFailed()
     {
@@ -361,7 +371,7 @@ public class StageManager : Singleton<StageManager>
 
             stageController.ReturnToField(); //스테이지 상태 복구
 
-            SpawnNextWave(); //다시 일반 소환 루프 진행
+            Invoke(nameof(SpawnNextWave), monsterSpawnDelay); //다시 일반 소환 루프 진행
 
         }
     }
@@ -369,10 +379,16 @@ public class StageManager : Singleton<StageManager>
     {
         if (!stageController.isBossLevel)
         {
-            if (stageController.activeMonsters.Count > 0) return;
+            if (_isRewardPending)
+            {
+                _isRewardPending = false;
 
-            CancelInvoke("SpawnNextWave");
-            Invoke("SpawnNextWave", 1.5f); //보스전 중이 아니라면 무조건 다음 웨이브 소환 (무한 반복)
+                Invoke(nameof(GiveReward), treasureSpawnDelay); //상자 소환 시간 1.5초
+            }
+            else
+            {
+                Invoke(nameof(SpawnNextWave), monsterSpawnDelay); //일반 웨이브는 기존처럼 1.5초 뒤에 소환
+            }
         }
     }
     private void SpawnNextWave()
